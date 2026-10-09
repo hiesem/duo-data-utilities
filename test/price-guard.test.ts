@@ -193,3 +193,11 @@ describe("paying with a wallet", () => {
     }
   });
 });
+
+describe("usdToAtomic rounding", () => {
+  it("rounds down, so a fractional cap never allows more than it says", () => {
+    expect(usdToAtomic(0.0499996)).toBe(49999n);
+    expect(usdToAtomic(0.57)).toBe(570000n);
+    expect(usdToAtomic(0.05)).toBe(50000n);
+  });
+});

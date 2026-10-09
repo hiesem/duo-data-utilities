@@ -19,10 +19,10 @@ DEFAULT_MAX_PRICE_USD = 0.05
 
 
 def usd_to_atomic(usd: float) -> int:
-    """USD to atomic USDC units (6 decimals), rounded to the nearest unit."""
+    """USD to atomic USDC units (6 decimals), rounded down so the cap is never exceeded."""
     if not math.isfinite(usd) or usd <= 0:
         raise ValueError(f"max_price_usd must be a positive number, got {usd}")
-    atomic = round(usd * 1_000_000)
+    atomic = math.floor(usd * 1_000_000 + 1e-6)  # the tolerance absorbs binary float error (0.57 * 1e6)
     if atomic < 1:
         raise ValueError("max_price_usd must be at least 0.000001 (one USDC base unit)")
     return atomic

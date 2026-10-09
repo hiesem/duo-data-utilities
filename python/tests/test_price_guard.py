@@ -75,3 +75,9 @@ def test_any_payee_only_when_pay_to_is_none() -> None:
     other = requirement(payTo="0x0000000000000000000000000000000000000002")
     assert requirement_problem(other, 50000, None) is None
     assert requirement_problem(other, 50000, "0x0000000000000000000000000000000000000002") is None
+
+
+def test_rounds_the_cap_down() -> None:
+    assert usd_to_atomic(0.0499996) == 49999
+    assert usd_to_atomic(0.57) == 570000
+    assert usd_to_atomic(0.05) == 50000

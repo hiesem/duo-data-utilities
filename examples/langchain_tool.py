@@ -2,7 +2,7 @@
 
 Cost: $0.05 per call (x402, USDC on Base). validate_iban costs $0.05. check_counterparty costs $0.15
 (three calls). Needs DUO_PAYER_KEY: a 0x-prefixed private key for a wallet that holds a little USDC on Base.
-Never write a key into this file. Install: pip install duo-data-utilities langchain-core
+Never write a key into this file. Install: pip install "git+https://github.com/hiesem/duo-data-utilities#subdirectory=python" langchain-core
 Not run in CI.
 """
 

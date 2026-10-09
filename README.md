@@ -8,7 +8,7 @@ Timezone and DST, geo distance and geohash, hashes and JWT decoding, airport, co
 npm install duo-data-utilities viem
 ```
 
-`viem` creates the wallet account that pays. This package also depends on it. Node.js 18 or later.
+`viem` creates the wallet account that pays. This package also depends on it. Node.js 20 or later.
 
 Python (not on PyPI, install from GitHub):
 

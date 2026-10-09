@@ -10,10 +10,10 @@ export const DEFAULT_MAX_PRICE_USD = 0.05;
 /** The service's public receiving address. By default the client signs payments to this address only. */
 export const DEFAULT_PAY_TO = "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39";
 
-/** USD to atomic USDC units (6 decimals), rounded to the nearest unit. */
+/** USD to atomic USDC units (6 decimals), rounded down. */
 export function usdToAtomic(usd: number): bigint {
   if (!Number.isFinite(usd) || usd <= 0) throw new RangeError(`maxPriceUsd must be a positive number, got ${usd}`);
-  const atomic = BigInt(Math.round(usd * 1_000_000));
+  const atomic = BigInt(Math.floor(usd * 1_000_000 + 1e-6)); // rounded down so the cap is never exceeded; the tolerance absorbs float error
   if (atomic < 1n) throw new RangeError("maxPriceUsd must be at least 0.000001 (one USDC base unit)");
   return atomic;
 }
