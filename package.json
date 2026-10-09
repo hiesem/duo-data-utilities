@@ -1,0 +1,80 @@
+{
+  "name": "duo-data-utilities",
+  "version": "0.1.0",
+  "description": "IBAN, ISIN, VAT/tax ID and GTIN barcode validation plus 29 more pay-per-call utilities (timezone, geo, hash and more) for AI agents (x402, no API key)",
+  "keywords": [
+    "iban",
+    "iban-validator",
+    "isin",
+    "cusip",
+    "vat",
+    "tax-id",
+    "gtin",
+    "ean",
+    "barcode",
+    "timezone",
+    "dst",
+    "geohash",
+    "airport",
+    "iata",
+    "semver",
+    "jwt",
+    "x402",
+    "usdc",
+    "mcp",
+    "ai-agents",
+    "pay-per-call",
+    "mod-97",
+    "checksum",
+    "iso-3166",
+    "iso-4217"
+  ],
+  "author": "Duo Data Utilities",
+  "license": "MIT",
+  "homepage": "https://api.duoleads.com",
+  "repository": "github:hiesem/duo-data-utilities",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "generate": "node scripts/generate.mjs",
+    "check:generated": "node scripts/generate.mjs --check",
+    "typecheck": "tsc --noEmit",
+    "build": "tsup",
+    "prepack": "npm run build",
+    "test": "npm run check:generated && vitest run"
+  },
+  "dependencies": {
+    "@x402/evm": "^2.27.0",
+    "@x402/fetch": "^2.27.0",
+    "viem": "^2.48.11"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.43",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.11"
+  }
+}

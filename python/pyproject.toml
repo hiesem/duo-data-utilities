@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "duo-data-utilities"
+version = "0.1.0"
+description = "IBAN, ISIN, VAT/tax ID and GTIN barcode validation plus 29 more pay-per-call utilities for AI agents (x402, USDC on Base, no API key)."
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "Duo Data Utilities" }]
+requires-python = ">=3.10"
+keywords = ["iban", "isin", "vat", "tax-id", "gtin", "barcode", "x402", "usdc", "ai-agents", "pay-per-call", "mod-97"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "License :: OSI Approved :: MIT License",
+  "Typing :: Typed",
+]
+dependencies = [
+  "x402[requests,evm]>=2.25.0,<3",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[project.urls]
+Homepage = "https://api.duoleads.com"
+Repository = "https://github.com/hiesem/duo-data-utilities"
+
+[tool.setuptools.packages.find]
+include = ["duo_data_utilities*"]
+
+[tool.setuptools.package-data]
+duo_data_utilities = ["py.typed"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

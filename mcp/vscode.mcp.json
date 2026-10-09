@@ -1,0 +1,8 @@
+{
+  "servers": {
+    "duo-data-utilities": {
+      "type": "http",
+      "url": "https://api.duoleads.com/mcp"
+    }
+  }
+}

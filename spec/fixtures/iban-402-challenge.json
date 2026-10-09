@@ -1,0 +1,298 @@
+{
+  "_source": "Real unpaid challenge: GET https://api.duoleads.com/v1/id/iban?iban=NL91%20ABNA%200417%201643%2000 (example from /v1/manifest). Captured 2026-10-09. No payment was made or signed.",
+  "request": {
+    "method": "GET",
+    "url": "https://api.duoleads.com/v1/id/iban?iban=NL91%20ABNA%200417%201643%2000"
+  },
+  "response": {
+    "status": 402,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "no-store",
+      "payment-required": "eyJ4NDAyVmVyc2lvbiI6MiwiZXJyb3IiOiJQYXltZW50IHJlcXVpcmVkIiwicmVzb3VyY2UiOnsidXJsIjoiaHR0cHM6Ly9hcGkuZHVvbGVhZHMuY29tL3YxL2lkL2liYW4iLCJkZXNjcmlwdGlvbiI6IlZhbGlkYXRlIGFuIElCQU46IGxlbmd0aCBmb3IgaXRzIGNvdW50cnksIHBlcm1pdHRlZCBjaGFyYWN0ZXIgY2xhc3NlcyBwZXIgZmllbGQsIGFuZCB0aGUgSVNPIDcwNjQgbW9kLTk3LTEwIGNoZWNrIGRpZ2l0cy4gUmV0dXJucyB0aGUgdmVyZGljdCB3aXRoIGEgc3BlY2lmaWMgZmFpbHVyZSByZWFzb24sIHRoZSBlbGVjdHJvbmljIGFuZCBwcmludCBmb3JtYXRzLCBhbmQgdGhlIGRlY29tcG9zZWQgYmFuayBjb2RlLCBicmFuY2ggY29kZSBhbmQgYWNjb3VudCBudW1iZXIgYWNjb3JkaW5nIHRvIHRoYXQgY291bnRyeSdzIHJlZ2lzdGVyZWQgbGF5b3V0LiBDb3ZlcnMgdGhlIDg5IGNvdW50cmllcyBvZiB0aGUgU1dJRlQgSUJBTiByZWdpc3RyeS4gU3RydWN0dXJlIGFuZCBjaGVja3N1bSBvbmx5LCBpdCBkb2VzIG5vdCBjb25maXJtIHRoZSBhY2NvdW50IGV4aXN0cy4iLCJtaW1lVHlwZSI6ImFwcGxpY2F0aW9uL2pzb24iLCJzZXJ2aWNlTmFtZSI6IkR1byBEYXRhIFV0aWxpdGllcyIsInRhZ3MiOlsiZGV0ZXJtaW5pc3RpYyIsIm5vLWFwaS1rZXkiLCJpZCIsImlkZW50aWZpZXJzIiwiYmFua2luZyJdLCJpY29uVXJsIjoiaHR0cHM6Ly9hcGkuZHVvbGVhZHMuY29tL2xvZ28ucG5nIn0sImFjY2VwdHMiOlt7InNjaGVtZSI6ImV4YWN0IiwibmV0d29yayI6ImVpcDE1NTo4NDUzIiwiYW1vdW50IjoiNTAwMDAiLCJhc3NldCI6IjB4ODMzNTg5ZkNENmVEYjZFMDhmNGM3QzMyRDRmNzFiNTRiZEEwMjkxMyIsInBheVRvIjoiMHhDRDY3M2Y3ZTFkYUQyNTQzNDdBRWFiNmJlMERFRmU4YjlDNmIzQTM5IiwibWF4VGltZW91dFNlY29uZHMiOjEyMCwiZXh0cmEiOnsibmFtZSI6IlVTRCBDb2luIiwidmVyc2lvbiI6IjIifX1dLCJleHRlbnNpb25zIjp7ImJhemFhciI6eyJpbmZvIjp7ImlucHV0Ijp7InR5cGUiOiJodHRwIiwibWV0aG9kIjoiR0VUIiwicXVlcnlQYXJhbXMiOnsiaWJhbiI6Ik5MOTEgQUJOQSAwNDE3IDE2NDMgMDAifX0sIm91dHB1dCI6eyJ0eXBlIjoianNvbiIsImV4YW1wbGUiOnsib2siOnRydWUsInJvdXRlIjoiL3YxL2lkL2liYW4iLCJ2ZXJzaW9uIjoiMS4wLjAiLCJkYXRhIjp7InZhbGlkIjp0cnVlLCJpYmFuIjoiTkw5MUFCTkEwNDE3MTY0MzAwIiwiaWJhbl9wcmludCI6Ik5MOTEgQUJOQSAwNDE3IDE2NDMgMDAiLCJjb3VudHJ5IjoiTkwiLCJjaGVja19kaWdpdHMiOiI5MSIsImJiYW4iOiJBQk5BMDQxNzE2NDMwMCIsInBhcnRzIjp7ImJhbmsiOiJBQk5BIiwiYnJhbmNoIjpudWxsLCJhY2NvdW50IjoiMDQxNzE2NDMwMCJ9LCJsZW5ndGgiOjE4LCJleHBlY3RlZF9sZW5ndGgiOjE4LCJyZWFzb24iOm51bGwsImFsZ29yaXRobSI6Im1vZC05Ny0xMCJ9LCJtZXRhIjp7InJlcXVlc3RfaWQiOiIwMUs2QjdRNFpDOEgzRjJNOVdYUjVUWU4wRCIsImNvbXB1dGVkX2F0IjoiMjAyNi0wOS0yOFQxMjowMDowMC4wMDBaIiwicHJpY2VfdXNkIjoiMC4wNSIsImRldGVybWluaXN0aWMiOnRydWUsInNvdXJjZXMiOlt7ImlkIjoiaWJhbi1yZWdpc3RyeSIsInZlcnNpb24iOiJpYmFudG9vbHMgNC41LjQsIGZpZWxkIGxheW91dCBzY2h3aWZ0eSAyMDI2LjcuMyIsInB1Ymxpc2hlZCI6IjIwMjYtMDQtMTAiLCJhdHRyaWJ1dGlvbiI6IklCQU4gcmVnaXN0cnkgdmlhIGliYW50b29scyAoTUlUKTsgZmllbGQgb2Zmc2V0cyB2aWEgc2Nod2lmdHkgKE1JVCk7IHVuZGVybHlpbmcgZGF0YTogU1dJRlQgSUJBTiBSZWdpc3RyeSwgcHVibGljIiwibGljZW5jZSI6Ik1JVCJ9XSwiZGlzY2xhaW1lciI6IkZhY3R1YWwgb3V0cHV0IG9mIGEgZGV0ZXJtaW5pc3RpYyBjb21wdXRhdGlvbiBvdmVyIHB1YmxpYyBkYXRhLiBQcm92aWRlZCBhcyBpcywgd2l0aCBubyB3YXJyYW50eSBvZiBhY2N1cmFjeSwgY29tcGxldGVuZXNzIG9yIGF2YWlsYWJpbGl0eS4gTm90IGludmVzdG1lbnQsIGZpbmFuY2lhbCwgbGVnYWwsIHRheCwgbWVkaWNhbCBvciBhbnkgb3RoZXIgcHJvZmVzc2lvbmFsIGFkdmljZSwgYW5kIG5vdCBhIHJlY29tbWVuZGF0aW9uLiBWZXJpZnkgYmVmb3JlIHJlbHlpbmcgb24gaXQuIFRlcm1zOiBodHRwczovL2FwaS5kdW9sZWFkcy5jb20vdGVybXMifX19fSwic2NoZW1hIjp7IiRzY2hlbWEiOiJodHRwczovL2pzb24tc2NoZW1hLm9yZy9kcmFmdC8yMDIwLTEyL3NjaGVtYSIsInR5cGUiOiJvYmplY3QiLCJwcm9wZXJ0aWVzIjp7ImlucHV0Ijp7InR5cGUiOiJvYmplY3QiLCJwcm9wZXJ0aWVzIjp7InR5cGUiOnsidHlwZSI6InN0cmluZyIsImNvbnN0IjoiaHR0cCJ9LCJtZXRob2QiOnsidHlwZSI6InN0cmluZyIsImVudW0iOlsiR0VUIl19LCJxdWVyeVBhcmFtcyI6eyJ0eXBlIjoib2JqZWN0IiwicHJvcGVydGllcyI6eyJpYmFuIjp7InR5cGUiOiJzdHJpbmciLCJkZXNjcmlwdGlvbiI6IlRoZSBJQkFOLiBTcGFjZXMgYW5kIG5vbi1icmVha2luZyBzcGFjZXMgYXJlIHN0cmlwcGVkOyBsb3dlcmNhc2UgaXMgYWNjZXB0ZWQgYW5kIHVwcGVyY2FzZWQuIiwibWF4TGVuZ3RoIjo2NH19LCJyZXF1aXJlZCI6WyJpYmFuIl19fSwicmVxdWlyZWQiOlsidHlwZSIsIm1ldGhvZCJdLCJhZGRpdGlvbmFsUHJvcGVydGllcyI6ZmFsc2V9LCJvdXRwdXQiOnsidHlwZSI6Im9iamVjdCIsInByb3BlcnRpZXMiOnsidHlwZSI6eyJ0eXBlIjoic3RyaW5nIn0sImV4YW1wbGUiOnsidHlwZSI6Im9iamVjdCIsInJlcXVpcmVkIjpbIm9rIiwicm91dGUiLCJ2ZXJzaW9uIiwiZGF0YSIsIm1ldGEiXSwicHJvcGVydGllcyI6eyJvayI6eyJjb25zdCI6dHJ1ZX0sInJvdXRlIjp7ImNvbnN0IjoiL3YxL2lkL2liYW4ifSwidmVyc2lvbiI6eyJ0eXBlIjoic3RyaW5nIn0sImRhdGEiOnsidHlwZSI6Im9iamVjdCIsInByb3BlcnRpZXMiOnsidmFsaWQiOnsidHlwZSI6ImJvb2xlYW4ifSwiaWJhbiI6eyJ0eXBlIjoic3RyaW5nIn0sImliYW5fcHJpbnQiOnsidHlwZSI6InN0cmluZyJ9LCJjb3VudHJ5Ijp7InR5cGUiOiJzdHJpbmcifSwiY2hlY2tfZGlnaXRzIjp7InR5cGUiOiJzdHJpbmcifSwiYmJhbiI6eyJ0eXBlIjoic3RyaW5nIn0sInBhcnRzIjp7InR5cGUiOiJvYmplY3QiLCJwcm9wZXJ0aWVzIjp7ImJhbmsiOnsidHlwZSI6WyJzdHJpbmciLCJudWxsIl19LCJicmFuY2giOnsidHlwZSI6WyJzdHJpbmciLCJudWxsIl19LCJhY2NvdW50Ijp7InR5cGUiOlsic3RyaW5nIiwibnVsbCJdfX0sInJlcXVpcmVkIjpbImJhbmsiLCJicmFuY2giLCJhY2NvdW50Il19LCJsZW5ndGgiOnsidHlwZSI6ImludGVnZXIifSwiZXhwZWN0ZWRfbGVuZ3RoIjp7InR5cGUiOlsiaW50ZWdlciIsIm51bGwiXX0sInJlYXNvbiI6eyJ0eXBlIjpbInN0cmluZyIsIm51bGwiXX0sImFsZ29yaXRobSI6eyJ0eXBlIjoic3RyaW5nIn19LCJyZXF1aXJlZCI6WyJ2YWxpZCIsImliYW4iLCJpYmFuX3ByaW50IiwiY291bnRyeSIsImNoZWNrX2RpZ2l0cyIsImJiYW4iLCJwYXJ0cyIsImxlbmd0aCIsImV4cGVjdGVkX2xlbmd0aCIsInJlYXNvbiIsImFsZ29yaXRobSJdfSwibWV0YSI6eyJ0eXBlIjoib2JqZWN0IiwicmVxdWlyZWQiOlsicmVxdWVzdF9pZCIsImNvbXB1dGVkX2F0IiwicHJpY2VfdXNkIiwiZGV0ZXJtaW5pc3RpYyIsImRpc2NsYWltZXIiXSwicHJvcGVydGllcyI6eyJyZXF1ZXN0X2lkIjp7InR5cGUiOiJzdHJpbmcifSwiY29tcHV0ZWRfYXQiOnsidHlwZSI6InN0cmluZyIsImRlc2NyaXB0aW9uIjoiUkZDIDMzMzkgVVRDIHdpdGggbWlsbGlzZWNvbmRzIn0sInByaWNlX3VzZCI6eyJ0eXBlIjoic3RyaW5nIn0sImRldGVybWluaXN0aWMiOnsidHlwZSI6ImJvb2xlYW4ifSwic291cmNlcyI6eyJ0eXBlIjoiYXJyYXkiLCJpdGVtcyI6eyJ0eXBlIjoib2JqZWN0IiwicmVxdWlyZWQiOlsiaWQiLCJ2ZXJzaW9uIiwicHVibGlzaGVkIl19fSwiZGlzY2xhaW1lciI6eyJ0eXBlIjoic3RyaW5nIn19fX19fSwicmVxdWlyZWQiOlsidHlwZSJdfX0sInJlcXVpcmVkIjpbImlucHV0Il19fX19"
+    },
+    "body": {
+      "x402Version": 2,
+      "error": "Payment required",
+      "resource": {
+        "url": "https://api.duoleads.com/v1/id/iban",
+        "description": "Validate an IBAN: length for its country, permitted character classes per field, and the ISO 7064 mod-97-10 check digits. Returns the verdict with a specific failure reason, the electronic and print formats, and the decomposed bank code, branch code and account number according to that country's registered layout. Covers the 89 countries of the SWIFT IBAN registry. Structure and checksum only, it does not confirm the account exists.",
+        "mimeType": "application/json",
+        "serviceName": "Duo Data Utilities",
+        "tags": [
+          "deterministic",
+          "no-api-key",
+          "id",
+          "identifiers",
+          "banking"
+        ],
+        "iconUrl": "https://api.duoleads.com/logo.png"
+      },
+      "accepts": [
+        {
+          "scheme": "exact",
+          "network": "eip155:8453",
+          "amount": "50000",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39",
+          "maxTimeoutSeconds": 120,
+          "extra": {
+            "name": "USD Coin",
+            "version": "2"
+          }
+        }
+      ],
+      "extensions": {
+        "bazaar": {
+          "info": {
+            "input": {
+              "type": "http",
+              "method": "GET",
+              "queryParams": {
+                "iban": "NL91 ABNA 0417 1643 00"
+              }
+            },
+            "output": {
+              "type": "json",
+              "example": {
+                "ok": true,
+                "route": "/v1/id/iban",
+                "version": "1.0.0",
+                "data": {
+                  "valid": true,
+                  "iban": "NL91ABNA0417164300",
+                  "iban_print": "NL91 ABNA 0417 1643 00",
+                  "country": "NL",
+                  "check_digits": "91",
+                  "bban": "ABNA0417164300",
+                  "parts": {
+                    "bank": "ABNA",
+                    "branch": null,
+                    "account": "0417164300"
+                  },
+                  "length": 18,
+                  "expected_length": 18,
+                  "reason": null,
+                  "algorithm": "mod-97-10"
+                },
+                "meta": {
+                  "request_id": "01K6B7Q4ZC8H3F2M9WXR5TYN0D",
+                  "computed_at": "2026-09-28T12:00:00.000Z",
+                  "price_usd": "0.05",
+                  "deterministic": true,
+                  "sources": [
+                    {
+                      "id": "iban-registry",
+                      "version": "ibantools 4.5.4, field layout schwifty 2026.7.3",
+                      "published": "2026-04-10",
+                      "attribution": "IBAN registry via ibantools (MIT); field offsets via schwifty (MIT); underlying data: SWIFT IBAN Registry, public",
+                      "licence": "MIT"
+                    }
+                  ],
+                  "disclaimer": "Factual output of a deterministic computation over public data. Provided as is, with no warranty of accuracy, completeness or availability. Not investment, financial, legal, tax, medical or any other professional advice, and not a recommendation. Verify before relying on it. Terms: https://api.duoleads.com/terms"
+                }
+              }
+            }
+          },
+          "schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+              "input": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "const": "http"
+                  },
+                  "method": {
+                    "type": "string",
+                    "enum": [
+                      "GET"
+                    ]
+                  },
+                  "queryParams": {
+                    "type": "object",
+                    "properties": {
+                      "iban": {
+                        "type": "string",
+                        "description": "The IBAN. Spaces and non-breaking spaces are stripped; lowercase is accepted and uppercased.",
+                        "maxLength": 64
+                      }
+                    },
+                    "required": [
+                      "iban"
+                    ]
+                  }
+                },
+                "required": [
+                  "type",
+                  "method"
+                ],
+                "additionalProperties": false
+              },
+              "output": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "example": {
+                    "type": "object",
+                    "required": [
+                      "ok",
+                      "route",
+                      "version",
+                      "data",
+                      "meta"
+                    ],
+                    "properties": {
+                      "ok": {
+                        "const": true
+                      },
+                      "route": {
+                        "const": "/v1/id/iban"
+                      },
+                      "version": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "object",
+                        "properties": {
+                          "valid": {
+                            "type": "boolean"
+                          },
+                          "iban": {
+                            "type": "string"
+                          },
+                          "iban_print": {
+                            "type": "string"
+                          },
+                          "country": {
+                            "type": "string"
+                          },
+                          "check_digits": {
+                            "type": "string"
+                          },
+                          "bban": {
+                            "type": "string"
+                          },
+                          "parts": {
+                            "type": "object",
+                            "properties": {
+                              "bank": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "branch": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "account": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "bank",
+                              "branch",
+                              "account"
+                            ]
+                          },
+                          "length": {
+                            "type": "integer"
+                          },
+                          "expected_length": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ]
+                          },
+                          "reason": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "algorithm": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "valid",
+                          "iban",
+                          "iban_print",
+                          "country",
+                          "check_digits",
+                          "bban",
+                          "parts",
+                          "length",
+                          "expected_length",
+                          "reason",
+                          "algorithm"
+                        ]
+                      },
+                      "meta": {
+                        "type": "object",
+                        "required": [
+                          "request_id",
+                          "computed_at",
+                          "price_usd",
+                          "deterministic",
+                          "disclaimer"
+                        ],
+                        "properties": {
+                          "request_id": {
+                            "type": "string"
+                          },
+                          "computed_at": {
+                            "type": "string",
+                            "description": "RFC 3339 UTC with milliseconds"
+                          },
+                          "price_usd": {
+                            "type": "string"
+                          },
+                          "deterministic": {
+                            "type": "boolean"
+                          },
+                          "sources": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "required": [
+                                "id",
+                                "version",
+                                "published"
+                              ]
+                            }
+                          },
+                          "disclaimer": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "required": [
+                  "type"
+                ]
+              }
+            },
+            "required": [
+              "input"
+            ]
+          }
+        }
+      },
+      "terms": "https://api.duoleads.com/terms",
+      "disclaimer": "Factual output of a deterministic computation over public data. Provided as is, with no warranty of accuracy, completeness or availability. Not investment, financial, legal, tax, medical or any other professional advice, and not a recommendation. Verify before relying on it. Terms: https://api.duoleads.com/terms"
+    }
+  }
+}

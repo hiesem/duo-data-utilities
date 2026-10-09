@@ -1,0 +1,137 @@
+{
+  "_source": "Copied from growth/keywords.json (findability keyword inventory) on 2026-10-09. Only the tool name and keyword-first summary per route; no other fields.",
+  "routes": {
+    "/v1/id/iban": {
+      "tool": "iban_validate",
+      "summary": "IBAN validator: length, mod-97 check digits, bank/branch/account breakdown (89 countries)"
+    },
+    "/v1/id/iban-build": {
+      "tool": "iban_generate",
+      "summary": "IBAN generator: build an IBAN from country and BBAN or bank/branch/account, computing check digits"
+    },
+    "/v1/id/national": {
+      "tool": "vat_tax_id_validate",
+      "summary": "VAT, tax ID and national ID validator: 23 countries, checksum only (VAT formats BE, DE, FR, IT, PL, AT, CH, IE)"
+    },
+    "/v1/id/security": {
+      "tool": "isin_cusip_sedol_validate",
+      "summary": "ISIN validator plus CUSIP, SEDOL and FIGI check-digit validation; builds an ISIN from an NSIN"
+    },
+    "/v1/id/gs1": {
+      "tool": "gtin_barcode_validate",
+      "summary": "GTIN barcode validator: EAN-13, UPC-A (GTIN-12), GTIN-8/14, GLN and SSCC check digits"
+    },
+    "/v1/time/zone": {
+      "tool": "timezone_convert",
+      "summary": "Timezone converter: instant to local time in an IANA time zone and back, with UTC offset and DST state"
+    },
+    "/v1/time/dst": {
+      "tool": "dst_transitions",
+      "summary": "DST transitions: next daylight-saving time changes for an IANA time zone"
+    },
+    "/v1/time/business-days": {
+      "tool": "business_days_calculate",
+      "summary": "Business days calculator: add or count working days with your weekend mask and holiday list"
+    },
+    "/v1/time/rrule": {
+      "tool": "rrule_expand",
+      "summary": "RRULE expander: RFC 5545 recurrence rule to concrete occurrence dates"
+    },
+    "/v1/time/calendar": {
+      "tool": "calendar_convert",
+      "summary": "Calendar converter: Gregorian to Hijri, Hebrew, Japanese era, Persian and more, plus Easter date"
+    },
+    "/v1/text/similarity": {
+      "tool": "string_similarity",
+      "summary": "String similarity: Levenshtein, Jaro-Winkler distance and Soundex/Metaphone phonetic keys"
+    },
+    "/v1/text/slug": {
+      "tool": "slug_generate",
+      "summary": "Slug generator: Unicode-aware URL slug with transliteration"
+    },
+    "/v1/text/transliterate": {
+      "tool": "cyrillic_transliterate",
+      "summary": "Cyrillic transliteration to Latin (ISO 9:1995, BGN/PCGN Russian)"
+    },
+    "/v1/text/unicode": {
+      "tool": "unicode_confusables_check",
+      "summary": "Unicode normalization (NFC/NFKC), script detection and homoglyph/confusable check"
+    },
+    "/v1/code/hash": {
+      "tool": "hash_generate",
+      "summary": "Hash generator: SHA-256, SHA-512, SHA-3, Keccak-256, BLAKE2 and HMAC digests"
+    },
+    "/v1/code/idn": {
+      "tool": "punycode_convert",
+      "summary": "Punycode converter: IDN domain to ASCII and back, with IDNA2008 label validation"
+    },
+    "/v1/code/jwt": {
+      "tool": "jwt_decode",
+      "summary": "JWT decoder: header, claims and expiry state (no signature verification)"
+    },
+    "/v1/code/semver": {
+      "tool": "semver_compare",
+      "summary": "Semver parser: parse and compare versions, check range satisfaction"
+    },
+    "/v1/code/url": {
+      "tool": "url_parse",
+      "summary": "URL parser: parse, canonicalize and extract the registrable domain (eTLD+1)"
+    },
+    "/v1/geo/geohash": {
+      "tool": "geohash_encode_decode",
+      "summary": "Geohash encoder and decoder with neighbour cells"
+    },
+    "/v1/geo/pluscode": {
+      "tool": "plus_code_encode_decode",
+      "summary": "Plus code (Open Location Code) encoder and decoder"
+    },
+    "/v1/geo/polygon": {
+      "tool": "point_in_polygon",
+      "summary": "Point in polygon check, plus bounding box, centroid and area for GeoJSON"
+    },
+    "/v1/geo/distance": {
+      "tool": "geo_distance",
+      "summary": "Distance calculator: geodesic distance, bearing and destination point on WGS-84"
+    },
+    "/v1/chain/address": {
+      "tool": "crypto_address_validate",
+      "summary": "Crypto address validator: detect the blockchain and verify the checksum (EVM, Bitcoin, Solana and more)"
+    },
+    "/v1/chain/selector": {
+      "tool": "solidity_function_selector",
+      "summary": "Solidity function selector: Keccak-256, 4-byte selector and event topic from a signature"
+    },
+    "/v1/ref/airport": {
+      "tool": "airport_lookup",
+      "summary": "Airport lookup by IATA or ICAO code: name, coordinates, elevation, time zone; nearest airports"
+    },
+    "/v1/ref/country": {
+      "tool": "country_lookup",
+      "summary": "Country lookup: ISO 3166 codes, currency, TLD, UN region and ISO 3166-2 subdivisions"
+    },
+    "/v1/ref/currency": {
+      "tool": "currency_lookup",
+      "summary": "Currency lookup: ISO 4217 codes, names, minor units and cash rounding"
+    },
+    "/v1/ref/nuts": {
+      "tool": "nuts_region_lookup",
+      "summary": "NUTS region lookup: EU statistical region codes, names and hierarchy"
+    },
+    "/v1/num/allocate": {
+      "tool": "money_split",
+      "summary": "Money split: allocate an amount into shares with no rounding loss"
+    },
+    "/v1/num/radix": {
+      "tool": "base_convert",
+      "summary": "Base converter: integers between number bases 2 to 36 (hex, binary, octal)"
+    },
+    "/v1/num/stats": {
+      "tool": "statistics_calculate",
+      "summary": "Statistics calculator: mean, median, standard deviation, quartiles and percentiles"
+    },
+    "/v1/num/words": {
+      "tool": "number_to_words",
+      "summary": "Number to words in 12 languages, with ordinal and currency forms"
+    }
+  }
+}

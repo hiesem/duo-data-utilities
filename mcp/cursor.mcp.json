@@ -1,0 +1,7 @@
+{
+  "mcpServers": {
+    "duo-data-utilities": {
+      "url": "https://api.duoleads.com/mcp"
+    }
+  }
+}
