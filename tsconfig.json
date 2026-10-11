@@ -29,6 +29,8 @@
     "test",
     "scripts",
     "examples/node-basic.ts",
+    "examples/supplier-onboarding-agent/*.ts",
+    "examples/mcp-paid-client/*.ts",
     "tsup.config.ts",
     "vitest.config.ts"
   ]

@@ -1,0 +1,19 @@
+{
+  "name": "duo-mcp-paid-client",
+  "private": true,
+  "type": "module",
+  "description": "MCP client that pays per tool call with x402 (USDC on Base): IBAN, VAT/tax ID, ISIN, GTIN and 29 more tools at https://api.duoleads.com/mcp",
+  "scripts": {
+    "list": "tsx mcp-agent.ts list",
+    "call": "tsx mcp-agent.ts call"
+  },
+  "dependencies": {
+    "@x402/evm": "^2.27.0",
+    "@x402/fetch": "^2.27.0",
+    "viem": "^2.48.11"
+  },
+  "devDependencies": {
+    "tsx": "^4.20.0",
+    "typescript": "^5.9.3"
+  }
+}

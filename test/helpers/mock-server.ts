@@ -7,6 +7,8 @@ export interface RecordedRequest {
   search: string;
   /** Base64 PAYMENT-SIGNATURE header, present only on a paid retry. */
   paymentSignature: string | null;
+  /** The User-Agent header as received. */
+  userAgent: string | null;
 }
 
 export interface MockReply {
@@ -32,6 +34,7 @@ export async function startMockServer(reply: (request: RecordedRequest) => MockR
       path: url.pathname,
       search: url.search,
       paymentSignature: typeof signature === "string" ? signature : null,
+      userAgent: req.headers["user-agent"] ?? null,
     };
     requests.push(recorded);
     const answer = reply(recorded);

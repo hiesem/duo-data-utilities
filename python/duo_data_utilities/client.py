@@ -14,6 +14,7 @@ from x402.http.clients.requests import PaymentError, wrapRequestsWithPayment
 from x402.http.utils import decode_payment_response_header
 from x402.mechanisms.evm.exact.client import ExactEvmScheme
 
+from ._version import USER_AGENT
 from .counterparty import CounterpartyResult, run_counterparty_check
 from .errors import DuoApiError, PriceGuardError
 from .generated import DuoMethods
@@ -170,6 +171,8 @@ class DuoClient(DuoMethods):
     with your wallet. The client refuses any price above `max_price_usd`, and any payee other than `pay_to`
     (default: the service's public address; None accepts any), before it signs. Pass `session`
     instead to use a requests.Session that already pays; the price guard cannot check payments made inside it.
+    Every request carries `user_agent` (default USER_AGENT, naming the SDK and its version); to append your own
+    product, pass f"{USER_AGENT} my-agent/1.0".
     """
 
     def __init__(
@@ -181,10 +184,14 @@ class DuoClient(DuoMethods):
         max_price_usd: float = DEFAULT_MAX_PRICE_USD,
         timeout: float | None = None,
         pay_to: str | None = DEFAULT_PAY_TO,
+        user_agent: str = USER_AGENT,
     ) -> None:
         if (account is None) == (session is None):
             raise TypeError("pass exactly one of account (pays with your wallet) or session (a requests.Session that already pays)")
+        if "\r" in user_agent or "\n" in user_agent:
+            raise ValueError("user_agent must not contain line breaks")
         max_atomic = usd_to_atomic(max_price_usd)
+        self._user_agent = user_agent
         self._base_url = normalise_base_url(base_url)
         self._max_price_usd = max_price_usd
         self._timeout = timeout
@@ -202,7 +209,7 @@ class DuoClient(DuoMethods):
             response = self._session.get(
                 f"{self._base_url}{path}",
                 params=_query(params or {}),
-                headers={"accept": "application/json"},
+                headers={"accept": "application/json", "User-Agent": self._user_agent},
                 timeout=self._timeout,
             )
         except PaymentError as error:

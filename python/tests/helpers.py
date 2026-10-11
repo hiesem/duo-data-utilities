@@ -66,6 +66,7 @@ class Recorded:
     path: str
     query: dict[str, list[str]]
     payment_signature: str | None
+    user_agent: str | None = None
 
 
 @dataclass
@@ -90,6 +91,7 @@ class MockServer:
                     path=url.path,
                     query=parse_qs(url.query, keep_blank_values=True),
                     payment_signature=self.headers.get("PAYMENT-SIGNATURE"),
+                    user_agent=self.headers.get("User-Agent"),
                 )
                 outer.requests.append(recorded)
                 answer = reply(recorded)

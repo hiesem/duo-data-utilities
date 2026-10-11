@@ -76,6 +76,6 @@ describe("package metadata", () => {
   it("uses the MIT licence and the agreed package name and version", () => {
     expect(pkg.license).toBe("MIT");
     expect(pkg.name).toBe("duo-data-utilities");
-    expect(pkg.version).toBe("0.1.1");
+    expect(pkg.version).toBe("0.1.2");
   });
 });

@@ -1,5 +1,6 @@
 export { createClient, DEFAULT_BASE_URL } from "./client.js";
 export type { DuoClient, DuoClientOptions, EvmSigner, PaidResult, SettlementReceipt } from "./client.js";
+export { SDK_USER_AGENT, SDK_VERSION } from "./version.js";
 export { checkCounterparty } from "./counterparty.js";
 export type { CheckStatus, CounterpartyCheck, CounterpartyInput, CounterpartyResult } from "./counterparty.js";
 export { DuoApiError, PriceGuardError } from "./errors.js";

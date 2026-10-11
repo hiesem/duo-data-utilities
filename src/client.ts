@@ -5,6 +5,7 @@ import { checkCounterparty, type CounterpartyInput, type CounterpartyResult } fr
 import { DuoApiError } from "./errors.js";
 import { createGeneratedClient, type GeneratedClient } from "./generated.js";
 import { BASE_NETWORK, DEFAULT_MAX_PRICE_USD, DEFAULT_PAY_TO, guardChallenges, guardPolicy, usdToAtomic } from "./price-guard.js";
+import { SDK_USER_AGENT } from "./version.js";
 
 export const DEFAULT_BASE_URL = "https://api.duoleads.com";
 
@@ -33,6 +34,13 @@ export interface DuoClientOptions {
    * or pass null to accept any payee.
    */
   payTo?: string | null;
+  /**
+   * The User-Agent sent with every request. Default: `SDK_USER_AGENT`, e.g.
+   * "duo-data-utilities-js/0.1.2 (+https://github.com/hiesem/duo-data-utilities)". To append your own
+   * product, pass `${SDK_USER_AGENT} my-agent/1.0`. Browsers do not let a page set User-Agent, so the
+   * client sends none there.
+   */
+  userAgent?: string;
 }
 
 /** A route's result with the response meta and the settlement receipt. */
@@ -51,6 +59,15 @@ export type DuoClient = GeneratedClient & {
   /** Runs IBAN, tax ID and country checks: three calls, $0.15. Structure and checksum only. */
   checkCounterparty(input: CounterpartyInput): Promise<CounterpartyResult>;
 };
+
+/**
+ * True outside browsers. In a browser (window or worker) the client sends no User-Agent: most browsers
+ * drop it, and one that sends it would trigger a CORS preflight the API does not allow.
+ */
+function canSetUserAgent(): boolean {
+  const scope = globalThis as Record<string, unknown>;
+  return typeof scope.document === "undefined" && typeof scope.WorkerGlobalScope === "undefined";
+}
 
 const LOOPBACK_HOSTS = new Set(["localhost", "127.0.0.1", "[::1]"]);
 
@@ -140,6 +157,8 @@ export function createClient(options: DuoClientOptions = {}): DuoClient {
   }
   const baseUrl = normaliseBaseUrl(options.baseUrl ?? DEFAULT_BASE_URL);
   const maxPriceUsd = options.maxPriceUsd ?? DEFAULT_MAX_PRICE_USD;
+  const userAgent = options.userAgent ?? SDK_USER_AGENT;
+  if (/[\r\n]/.test(userAgent)) throw new TypeError("userAgent must not contain line breaks");
   const maxAtomic = usdToAtomic(maxPriceUsd);
   const payingFetch: FetchLike =
     options.account !== undefined ? buildPayingFetch(options.account, maxAtomic, maxPriceUsd, options.payTo === undefined ? DEFAULT_PAY_TO : options.payTo) : (options.fetch as FetchLike);
@@ -147,10 +166,9 @@ export function createClient(options: DuoClientOptions = {}): DuoClient {
   const callPaid = async <T>(path: string, params: object = {}): Promise<PaidResult<T>> => {
     assertRoutePath(path);
     const query = buildQuery(params);
-    const response = await payingFetch(`${baseUrl}${path}${query ? `?${query}` : ""}`, {
-      method: "GET",
-      headers: { accept: "application/json" },
-    });
+    const headers: Record<string, string> = { accept: "application/json" };
+    if (canSetUserAgent() && userAgent) headers["user-agent"] = userAgent;
+    const response = await payingFetch(`${baseUrl}${path}${query ? `?${query}` : ""}`, { method: "GET", headers });
     const body = parseJson(await response.text());
     if (response.ok && isRecord(body) && body.ok === true && "data" in body) {
       return { data: body.data as T, meta: isRecord(body.meta) ? body.meta : {}, receipt: receiptOf(response) };

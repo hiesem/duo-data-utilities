@@ -121,6 +121,30 @@ print(check.verdict, check.reasons)
 - Plain `http://` is refused except for loopback addresses (`localhost`, `127.0.0.1`, `[::1]`).
 - With `fetch` instead of `account`, you pass a fetch that already pays. The price guard cannot check payments made inside it, so use `account` to keep the guard.
 
+## Examples
+
+Runnable agents in [`examples/`](examples/). Each folder has a README with setup, environment variables and cost.
+
+| Example | Language | What it does |
+|---|---|---|
+| [supplier-onboarding-agent](examples/supplier-onboarding-agent/) | TypeScript | Supplier / vendor onboarding check: builds and validates IBANs, checks VAT numbers, compares the account holder name. Approve, review or reject per supplier. |
+| [kyb-payout-agent-python](examples/kyb-payout-agent-python/) | Python | KYB payout validation agent with Claude tool use: IBAN, VAT / tax ID, country and name checks, with a spend cap. |
+| [mcp-paid-client](examples/mcp-paid-client/) | TypeScript | MCP client for `https://api.duoleads.com/mcp` that pays each `tools/call` with x402, plus an MCP host config. |
+| [node-basic.ts](examples/node-basic.ts) | TypeScript | IBAN, time zone, counterparty check and a settlement receipt in one script. |
+| [vercel-ai-sdk-tool.ts](examples/vercel-ai-sdk-tool.ts) | TypeScript | IBAN and counterparty checks as Vercel AI SDK tools. |
+| [langchain_tool.py](examples/langchain_tool.py) | Python | IBAN and counterparty checks as LangChain tools. |
+| [claude-mcp.md](examples/claude-mcp.md) | | Adding the MCP server to Claude Code. |
+
+Every call costs $0.05 in USDC on Base, paid by the wallet you configure. The examples' tests run offline with mocked responses; nothing in CI pays.
+
+## User-Agent and privacy
+
+The SDK sends a User-Agent naming the SDK and version; the API stores only a coarse client class, see https://api.duoleads.com/privacy
+
+- TypeScript: `duo-data-utilities-js/<version> (+https://github.com/hiesem/duo-data-utilities)`. Override it with `createClient({ userAgent })`, or append your own product: ``userAgent: `${SDK_USER_AGENT} my-agent/1.0` ``.
+- Python: `duo-data-utilities-py/<version> (+https://github.com/hiesem/duo-data-utilities)`. Override it with `DuoClient(..., user_agent=...)`, or append to `duo_data_utilities.USER_AGENT`.
+- In browsers a page cannot set User-Agent, so the client sends none there, and it adds no other header in its place (one would make the browser send a CORS preflight, which the API does not accept). The browser's own User-Agent is sent instead.
+
 ## What this is not
 
 - Not a registry lookup. IBAN, tax ID and VAT checks are structure and checksum only.
