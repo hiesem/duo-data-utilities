@@ -1,0 +1,8 @@
+{
+  "servers": {
+    "duo-derivs": {
+      "type": "http",
+      "url": "https://derivs.duoleads.com/mcp"
+    }
+  }
+}

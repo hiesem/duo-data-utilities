@@ -59,3 +59,38 @@ The 33 tools and the route each one calls. The earlier names (`<group>_<name>`, 
 | `base_convert` | `/v1/num/radix` |
 | `statistics_calculate` | `/v1/num/stats` |
 | `number_to_words` | `/v1/num/words` |
+
+
+## Crypto derivatives MCP server: perp funding rates, open interest, futures basis, implied volatility, liquidations, order book depth
+
+A second MCP server at `https://derivs.duoleads.com/mcp` (Streamable HTTP) serves crypto derivatives data from Bybit, Hyperliquid, dYdX, Gate, Kraken, Bitfinex, Deribit and OKX.
+
+- `tools/list` is free.
+- `tools/call` costs **$0.003 or $0.005** per call (table below), paid in USDC on Base with x402 v2, payment in `_meta["x402/payment"]`, to the same address `0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39`.
+- Bad arguments are a free tool error. When too few venues answer, the call is not charged.
+
+| Client | How to add the server |
+|---|---|
+| Claude Code | `claude mcp add --transport http duo-derivs https://derivs.duoleads.com/mcp`, or copy `mcp/derivs.mcp.json` to `.mcp.json` |
+| Claude Desktop | `mcp/derivs.claude-desktop.json` (uses the `mcp-remote` bridge) |
+| Cursor | Copy `mcp/derivs.cursor.mcp.json` to `.cursor/mcp.json` |
+| VS Code | Copy `mcp/derivs.vscode.mcp.json` to `.vscode/mcp.json` |
+
+The same payment caveat applies as above: a paid call needs an x402-capable client or wallet bridge. [`examples/mcp-paid-client`](../examples/mcp-paid-client/) pays derivs tools with `DUO_MCP=derivs` (cap $0.005 per call).
+
+```json
+{ "mcpServers": { "duo-derivs": { "type": "http", "url": "https://derivs.duoleads.com/mcp" } } }
+```
+
+| Tool | Route | Price |
+|---|---|---|
+| `perp_funding_rates` | `/v1/funding-rates` | $0.003 |
+| `funding_rate_history` | `/v1/funding-history` | $0.003 |
+| `funding_arbitrage_scan` | `/v1/funding-arbitrage` | $0.005 |
+| `perp_screener` | `/v1/perp-screener` | $0.005 |
+| `open_interest` | `/v1/open-interest` | $0.003 |
+| `futures_basis` | `/v1/basis` | $0.003 |
+| `implied_volatility` | `/v1/options` | $0.003 |
+| `liquidations` | `/v1/liquidations` | $0.003 |
+| `order_book_depth` | `/v1/orderbook` | $0.003 |
+| `derivatives_snapshot` | `/v1/derivatives-snapshot` | $0.005 |

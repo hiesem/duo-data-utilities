@@ -131,3 +131,28 @@ class SpySigner:
     def sign_typed_data(self, *args: Any, **kwargs: Any) -> Any:
         self.signatures += 1
         return self._inner.sign_typed_data(*args, **kwargs)
+
+
+DERIVS_SPEC = json.loads((SPEC / "derivs.json").read_text(encoding="utf-8"))
+
+
+def derivs_example(path: str) -> dict[str, Any]:
+    """The recorded output example of a derivs route (spec/derivs.json)."""
+    return next(r["outputExample"] for r in DERIVS_SPEC["routes"] if r["path"] == path)
+
+
+def derivs_amount(path: str) -> str:
+    return next(r["amount"] for r in DERIVS_SPEC["routes"] if r["path"] == path)
+
+
+def derivs_challenge_header(path: str, amount: str, edit: Callable[[dict[str, Any]], None] | None = None) -> str:
+    """The real captured challenge with a derivs price (3000 = $0.003, 5000 = $0.005) and resource."""
+
+    def change(challenge: dict[str, Any]) -> None:
+        challenge["accepts"][0]["amount"] = amount
+        challenge["resource"] = {"url": f"https://derivs.duoleads.com{path}", "mimeType": "application/json", "serviceName": "Crypto Derivatives Data API"}
+        challenge.pop("extensions", None)
+        if edit is not None:
+            edit(challenge)
+
+    return challenge_header(change)

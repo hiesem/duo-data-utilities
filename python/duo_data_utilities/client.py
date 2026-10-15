@@ -2,27 +2,29 @@
 
 from __future__ import annotations
 
-import re
 from dataclasses import dataclass
-from typing import Any, Callable, Mapping
-from urllib.parse import urlsplit, urlunsplit
+from typing import Any, Mapping
 
 import requests
-from x402 import SchemeRegistration, x402ClientConfig, x402ClientSync
-from x402.http import x402HTTPClientSync
-from x402.http.clients.requests import PaymentError, wrapRequestsWithPayment
-from x402.http.utils import decode_payment_response_header
-from x402.mechanisms.evm.exact.client import ExactEvmScheme
+from x402.http.clients.requests import PaymentError
 
+from ._http import (
+    _paying_session,
+    _parse_json,
+    _price_guard_refusal,
+    _query,
+    _receipt_of,
+    assert_route_path,
+    normalise_base_url,
+)
 from ._version import USER_AGENT
 from .counterparty import CounterpartyResult, run_counterparty_check
-from .errors import DuoApiError, PriceGuardError
+from .derivs import DEFAULT_DERIVS_BASE_URL, DEFAULT_DERIVS_MAX_PRICE_USD, DerivsClient
+from .errors import DuoApiError
 from .generated import DuoMethods
-from .price_guard import BASE_NETWORK, DEFAULT_MAX_PRICE_USD, DEFAULT_PAY_TO, guard_policy, requirement_problem, usd_to_atomic
+from .price_guard import DEFAULT_MAX_PRICE_USD, DEFAULT_PAY_TO, usd_to_atomic
 
 DEFAULT_BASE_URL = "https://api.duoleads.com"
-# urllib returns IPv6 hosts without brackets.
-_LOOPBACK_HOSTS = frozenset({"localhost", "127.0.0.1", "::1"})
 
 
 @dataclass(frozen=True)
@@ -32,53 +34,6 @@ class PaidResult:
     data: dict[str, Any]
     meta: dict[str, Any]
     receipt: Any
-
-
-def normalise_base_url(raw: str) -> str:
-    parts = urlsplit(raw)
-    plain_loopback = parts.scheme == "http" and parts.hostname in _LOOPBACK_HOSTS
-    if parts.scheme != "https" and not plain_loopback:
-        raise ValueError(f"base_url must use https (plain http is only allowed for localhost): {raw}")
-    if parts.query or parts.fragment:
-        raise ValueError("base_url must not contain a query or a fragment")
-    return urlunsplit((parts.scheme, parts.netloc, parts.path.rstrip("/"), "", ""))
-
-
-def assert_route_path(path: str) -> None:
-    if not re.fullmatch(r"/v1/[a-z]+/[a-z0-9-]+", path):
-        raise ValueError(f"not a route path: {path!r} (expected /v1/<group>/<name>)")
-
-
-def _query_value(name: str, value: Any) -> str:
-    # bool is a subclass of int, so it is checked first. The API expects "true" and "false".
-    if isinstance(value, bool):
-        return "true" if value else "false"
-    if isinstance(value, (int, float)):
-        return str(value)
-    if isinstance(value, str):
-        return value
-    raise TypeError(f"parameter {name} must be a string, number or boolean")
-
-
-def _query(params: Mapping[str, Any]) -> dict[str, str]:
-    return {name: _query_value(name, value) for name, value in params.items() if value is not None}
-
-
-def _parse_json(response: requests.Response) -> Any:
-    try:
-        return response.json()
-    except ValueError:
-        return None
-
-
-def _receipt_of(response: requests.Response) -> Any:
-    header = response.headers.get("PAYMENT-RESPONSE")
-    if not header:
-        return None
-    try:
-        return decode_payment_response_header(header)
-    except ValueError:
-        return None
 
 
 def _api_error(path: str, response: requests.Response, body: Any) -> DuoApiError:
@@ -115,54 +70,6 @@ def _api_error(path: str, response: requests.Response, body: Any) -> DuoApiError
     return DuoApiError(code=f"HTTP_{status}", message=f"{path} failed with HTTP {status}", status=status, route=path, request_id=request_id)
 
 
-def _price_guard_refusal(error: BaseException) -> PriceGuardError | None:
-    """The PriceGuardError inside an x402 PaymentError chain, if there is one."""
-    current: BaseException | None = error
-    while current is not None:
-        if isinstance(current, PriceGuardError):
-            return current
-        current = current.__cause__ or current.__context__
-    return None
-
-
-def _challenge_guard(max_atomic: int, max_price_usd: float, pay_to: str | None) -> Callable[[Any], None]:
-    """Checks every option of a 402 challenge before the x402 client selects or signs anything.
-
-    Runs as an on_payment_required hook. It refuses a challenge with no acceptable option, the same way the
-    TypeScript client does. Any exception it raises reaches the caller wrapped in PaymentError, which
-    _price_guard_refusal unwraps.
-    """
-
-    def check(context: Any) -> None:
-        required = context.payment_required
-        reasons: list[str] = []
-        if required.x402_version != 2:
-            reasons.append(f"x402Version {required.x402_version} is not 2")
-        options = list(required.accepts or [])
-        problems = [requirement_problem(option, max_atomic, pay_to) for option in options]
-        if not options:
-            reasons.append("the challenge offers no payment option")
-        elif all(problem is not None for problem in problems):
-            reasons.extend(problem for problem in problems if problem is not None)
-        if reasons:
-            raise PriceGuardError(reasons, max_price_usd)
-
-    return check
-
-
-def _paying_session(account: Any, max_atomic: int, max_price_usd: float, pay_to: str | None) -> requests.Session:
-    config = x402ClientConfig(
-        schemes=[SchemeRegistration(network=BASE_NETWORK, client=ExactEvmScheme(account))],
-        policies=[guard_policy(max_atomic, max_price_usd, pay_to)],
-        # The price guard is the only spend control. It is stricter (Base USDC only, at most max_price_usd),
-        # and the payment layer's default-asset check would refuse the same requirements with a vaguer error.
-        spend_controls=False,
-    )
-    http_client = x402HTTPClientSync(x402ClientSync.from_config(config)).on_payment_required(
-        _challenge_guard(max_atomic, max_price_usd, pay_to)
-    )
-    return wrapRequestsWithPayment(requests.Session(), http_client)
-
 
 class DuoClient(DuoMethods):
     """Typed methods for every route, plus call, call_with_receipt and check_counterparty.
@@ -173,6 +80,9 @@ class DuoClient(DuoMethods):
     instead to use a requests.Session that already pays; the price guard cannot check payments made inside it.
     Every request carries `user_agent` (default USER_AGENT, naming the SDK and its version); to append your own
     product, pass f"{USER_AGENT} my-agent/1.0".
+
+    `derivs` is a DerivsClient for https://derivs.duoleads.com (crypto derivatives data, $0.003 or $0.005 per
+    call) on the same wallet or session, with its own price cap `derivs_max_price_usd` (default 0.005).
     """
 
     def __init__(
@@ -185,6 +95,8 @@ class DuoClient(DuoMethods):
         timeout: float | None = None,
         pay_to: str | None = DEFAULT_PAY_TO,
         user_agent: str = USER_AGENT,
+        derivs_base_url: str = DEFAULT_DERIVS_BASE_URL,
+        derivs_max_price_usd: float = DEFAULT_DERIVS_MAX_PRICE_USD,
     ) -> None:
         if (account is None) == (session is None):
             raise TypeError("pass exactly one of account (pays with your wallet) or session (a requests.Session that already pays)")
@@ -197,6 +109,15 @@ class DuoClient(DuoMethods):
         self._timeout = timeout
         self._session = session if session is not None else _paying_session(account, max_atomic, max_price_usd, pay_to)
         super().__init__(self.call)
+        self.derivs = DerivsClient(
+            account if session is None else None,
+            session=session,
+            base_url=derivs_base_url,
+            max_price_usd=derivs_max_price_usd,
+            timeout=timeout,
+            pay_to=pay_to,
+            user_agent=user_agent,
+        )
 
     def call(self, path: str, params: Mapping[str, Any] | None = None) -> dict[str, Any]:
         """Calls any route by path and returns its `data` object. Costs $0.05 per call."""

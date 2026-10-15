@@ -1,0 +1,6196 @@
+{
+ "_source": "Snapshot of the derivatives Worker's route catalogue (src/derivs/catalog.ts, src/derivs/schemas.ts, src/derivs/output-examples.json) in the service source, exported 2026-10-15. The same data is published at https://derivs.duoleads.com/openapi.json once the service is live. Nothing here was fetched from a venue or paid for.",
+ "origin": "https://derivs.duoleads.com",
+ "serviceName": "Crypto Derivatives Data API",
+ "venues": [
+  "Bybit",
+  "Hyperliquid",
+  "dYdX",
+  "Gate",
+  "Kraken",
+  "Bitfinex",
+  "Deribit",
+  "OKX"
+ ],
+ "errorSchema": {
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Error",
+  "type": "object",
+  "properties": {
+   "error": {
+    "type": "object",
+    "properties": {
+     "status": {
+      "type": "integer"
+     },
+     "code": {
+      "type": "string",
+      "enum": [
+       "INVALID_PARAM",
+       "MISSING_PARAM",
+       "NOT_FOUND",
+       "METHOD_NOT_ALLOWED",
+       "PAYMENT_FAILED",
+       "INTERNAL",
+       "UPSTREAM_UNAVAILABLE",
+       "SERVICE_UNAVAILABLE"
+      ]
+     },
+     "message": {
+      "type": "string"
+     },
+     "param": {
+      "type": "string",
+      "description": "The input the error is about."
+     },
+     "expected": {
+      "type": "string",
+      "description": "What would have been accepted."
+     }
+    },
+    "required": [
+     "status",
+     "code",
+     "message"
+    ],
+    "additionalProperties": false
+   },
+   "request_id": {
+    "type": "string"
+   }
+  },
+  "required": [
+   "error"
+  ],
+  "additionalProperties": false
+ },
+ "routes": [
+  {
+   "path": "/v1/funding-rates",
+   "method": "GET",
+   "tool": "perp_funding_rates",
+   "title": "Perp funding rates by exchange (one coin)",
+   "serviceName": "Perp Funding Rates by Exchange",
+   "topPhrase": "funding rates",
+   "tags": [
+    "funding",
+    "funding-rates",
+    "perp-funding",
+    "funding-rate",
+    "perp"
+   ],
+   "amount": "3000",
+   "priceUsd": "0.003",
+   "description": "Funding rates for perpetual futures (perp funding) of one coin across 8 exchanges: Bybit, Hyperliquid, dYdX, Gate, Kraken, Bitfinex, Deribit, OKX. Per venue the current funding rate, interval, 8h rate, APR, next funding time, mark and index; predicted funding incl. Binance and Bybit (via Hyperliquid); the last 24 hourly prints with avg/min/max/% positive. Perpetual swap funding for BTC, ETH, SOL and more. Data only. Bad input is free; under 3 venues not charged.",
+   "minVenues": 3,
+   "inputExample": {
+    "coin": "BTC"
+   },
+   "querySchema": {
+    "properties": {
+     "coin": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 32,
+      "description": "Coin symbol: BTC, ETH, SOL, PEPE ... (also BTCUSDT, BTC-PERP, XBT, 1000PEPE, kPEPE)."
+     }
+    },
+    "required": [
+     "coin"
+    ]
+   },
+   "outputSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Perp funding rates by exchange",
+    "type": "object",
+    "properties": {
+     "coin": {
+      "type": "string"
+     },
+     "venues": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "venue": {
+         "type": "string",
+         "enum": [
+          "bybit",
+          "hyperliquid",
+          "dydx",
+          "gate",
+          "kraken",
+          "bitfinex",
+          "deribit",
+          "okx"
+         ]
+        },
+        "symbol": {
+         "type": "string"
+        },
+        "quote": {
+         "type": "string"
+        },
+        "contract_multiplier": {
+         "type": "number"
+        },
+        "rate": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "interval_h": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "rate_8h": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "apr_pct": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "next_funding_time": {
+         "type": [
+          "string",
+          "null"
+         ],
+         "description": "ISO 8601 UTC"
+        },
+        "predicted_rate": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "mark": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "index": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "as_of": {
+         "type": [
+          "string",
+          "null"
+         ],
+         "description": "ISO 8601 UTC"
+        },
+        "stale": {
+         "type": "boolean"
+        }
+       },
+       "required": [
+        "venue",
+        "symbol",
+        "quote",
+        "contract_multiplier",
+        "rate",
+        "interval_h",
+        "rate_8h",
+        "apr_pct",
+        "next_funding_time",
+        "predicted_rate",
+        "mark",
+        "index",
+        "as_of",
+        "stale"
+       ],
+       "additionalProperties": false
+      }
+     },
+     "summary": {
+      "type": [
+       "object",
+       "null"
+      ],
+      "properties": {
+       "venues": {
+        "type": "integer",
+        "minimum": 0
+       },
+       "avg_rate_8h": {
+        "type": [
+         "number",
+         "null"
+        ]
+       },
+       "avg_apr_pct": {
+        "type": [
+         "number",
+         "null"
+        ]
+       },
+       "min_apr": {
+        "type": "object",
+        "properties": {
+         "venue": {
+          "type": "string",
+          "enum": [
+           "bybit",
+           "hyperliquid",
+           "dydx",
+           "gate",
+           "kraken",
+           "bitfinex",
+           "deribit",
+           "okx"
+          ]
+         },
+         "apr_pct": {
+          "type": [
+           "number",
+           "null"
+          ]
+         }
+        },
+        "required": [
+         "venue",
+         "apr_pct"
+        ],
+        "additionalProperties": false
+       },
+       "max_apr": {
+        "type": "object",
+        "properties": {
+         "venue": {
+          "type": "string",
+          "enum": [
+           "bybit",
+           "hyperliquid",
+           "dydx",
+           "gate",
+           "kraken",
+           "bitfinex",
+           "deribit",
+           "okx"
+          ]
+         },
+         "apr_pct": {
+          "type": [
+           "number",
+           "null"
+          ]
+         }
+        },
+        "required": [
+         "venue",
+         "apr_pct"
+        ],
+        "additionalProperties": false
+       },
+       "spread_apr_pct": {
+        "type": [
+         "number",
+         "null"
+        ]
+       }
+      },
+      "required": [
+       "venues",
+       "avg_rate_8h",
+       "avg_apr_pct",
+       "min_apr",
+       "max_apr",
+       "spread_apr_pct"
+      ],
+      "additionalProperties": false
+     },
+     "predicted": {
+      "type": [
+       "object",
+       "null"
+      ],
+      "properties": {
+       "as_of": {
+        "type": [
+         "string",
+         "null"
+        ],
+        "description": "ISO 8601 UTC"
+       },
+       "rows": {
+        "type": "array",
+        "items": {
+         "type": "object",
+         "properties": {
+          "source": {
+           "type": "string",
+           "enum": [
+            "hyperliquid",
+            "binance",
+            "bybit"
+           ]
+          },
+          "rate": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "interval_h": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "rate_8h": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "apr_pct": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "next_funding_time": {
+           "type": [
+            "string",
+            "null"
+           ],
+           "description": "ISO 8601 UTC"
+          }
+         },
+         "required": [
+          "source",
+          "rate",
+          "interval_h",
+          "rate_8h",
+          "apr_pct",
+          "next_funding_time"
+         ],
+         "additionalProperties": false
+        }
+       }
+      },
+      "required": [
+       "as_of",
+       "rows"
+      ],
+      "additionalProperties": false
+     },
+     "recent": {
+      "type": [
+       "object",
+       "null"
+      ],
+      "properties": {
+       "venue": {
+        "const": "hyperliquid"
+       },
+       "hours": {
+        "type": "integer",
+        "minimum": 0
+       },
+       "prints": {
+        "type": "array",
+        "items": {
+         "type": "object",
+         "properties": {
+          "time": {
+           "type": [
+            "string",
+            "null"
+           ],
+           "description": "ISO 8601 UTC"
+          },
+          "rate": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "rate_8h": {
+           "type": [
+            "number",
+            "null"
+           ]
+          }
+         },
+         "required": [
+          "time",
+          "rate",
+          "rate_8h"
+         ],
+         "additionalProperties": false
+        }
+       },
+       "stats": {
+        "type": [
+         "object",
+         "null"
+        ],
+        "properties": {
+         "n": {
+          "type": "integer",
+          "minimum": 0
+         },
+         "avg_rate_8h": {
+          "type": [
+           "number",
+           "null"
+          ]
+         },
+         "min_rate_8h": {
+          "type": [
+           "number",
+           "null"
+          ]
+         },
+         "max_rate_8h": {
+          "type": [
+           "number",
+           "null"
+          ]
+         },
+         "pct_positive": {
+          "type": [
+           "number",
+           "null"
+          ]
+         },
+         "avg_apr_pct": {
+          "type": [
+           "number",
+           "null"
+          ]
+         }
+        },
+        "required": [
+         "n",
+         "avg_rate_8h",
+         "min_rate_8h",
+         "max_rate_8h",
+         "pct_positive",
+         "avg_apr_pct"
+        ],
+        "additionalProperties": false
+       },
+       "as_of": {
+        "type": [
+         "string",
+         "null"
+        ],
+        "description": "ISO 8601 UTC"
+       }
+      },
+      "required": [
+       "venue",
+       "hours",
+       "prints",
+       "stats",
+       "as_of"
+      ],
+      "additionalProperties": false
+     },
+     "venues_missing": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "venue": {
+         "type": "string",
+         "enum": [
+          "bybit",
+          "hyperliquid",
+          "dydx",
+          "gate",
+          "kraken",
+          "bitfinex",
+          "deribit",
+          "okx"
+         ]
+        },
+        "reason": {
+         "type": "string",
+         "enum": [
+          "not_listed",
+          "timeout",
+          "blocked",
+          "error",
+          "unavailable",
+          "not_cached",
+          "symbol_mismatch",
+          "not_covered",
+          "stale"
+         ],
+         "description": "not_cached = not refreshed in this request (one large refresh per request); retry shortly."
+        },
+        "detail": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "venue",
+        "reason"
+       ],
+       "additionalProperties": false
+      }
+     },
+     "units": {
+      "type": "object",
+      "additionalProperties": {
+       "type": "string"
+      }
+     },
+     "as_of": {
+      "type": [
+       "string",
+       "null"
+      ],
+      "description": "ISO 8601 UTC"
+     },
+     "colo": {
+      "type": [
+       "string",
+       "null"
+      ],
+      "description": "Cloudflare location that fetched the data (venue reach differs by location)."
+     },
+     "disclaimer": {
+      "const": "Data only, not investment advice, not a benchmark; not affiliated with any exchange"
+     },
+     "see_also": {
+      "type": "object",
+      "properties": {
+       "endpoint": {
+        "type": "string"
+       },
+       "params": {
+        "type": "array",
+        "items": {
+         "type": "string"
+        }
+       },
+       "reason": {
+        "type": "string"
+       }
+      },
+      "required": [
+       "endpoint",
+       "params",
+       "reason"
+      ],
+      "additionalProperties": false
+     },
+     "request_id": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "coin",
+     "venues",
+     "summary",
+     "predicted",
+     "recent",
+     "venues_missing",
+     "units",
+     "as_of",
+     "colo",
+     "disclaimer",
+     "see_also",
+     "request_id"
+    ],
+    "additionalProperties": false
+   },
+   "outputExample": {
+    "coin": "BTC",
+    "venues": [
+     {
+      "venue": "bybit",
+      "symbol": "BTCUSDT",
+      "quote": "USDT",
+      "contract_multiplier": 1,
+      "rate": 3.501e-05,
+      "interval_h": 8,
+      "rate_8h": 3.501e-05,
+      "apr_pct": 3.83359,
+      "next_funding_time": "2026-10-15T00:00:00Z",
+      "predicted_rate": null,
+      "mark": 81631.8,
+      "index": 81672.62,
+      "as_of": "2026-10-14T23:00:00Z",
+      "stale": false
+     },
+     {
+      "venue": "hyperliquid",
+      "symbol": "BTC",
+      "quote": "USDC",
+      "contract_multiplier": 1,
+      "rate": 1.25e-05,
+      "interval_h": 1,
+      "rate_8h": 0.0001,
+      "apr_pct": 10.95,
+      "next_funding_time": "2026-10-15T00:00:00Z",
+      "predicted_rate": null,
+      "mark": 81624,
+      "index": 81658,
+      "as_of": "2026-10-14T23:00:00Z",
+      "stale": false
+     },
+     {
+      "venue": "dydx",
+      "symbol": "BTC-USD",
+      "quote": "USD",
+      "contract_multiplier": 1,
+      "rate": 0,
+      "interval_h": 1,
+      "rate_8h": 0,
+      "apr_pct": 0,
+      "next_funding_time": "2026-10-15T00:00:00Z",
+      "predicted_rate": 0,
+      "mark": null,
+      "index": 81538.38,
+      "as_of": "2026-10-14T23:00:00Z",
+      "stale": false
+     }
+    ],
+    "summary": {
+     "venues": 8,
+     "avg_rate_8h": 4.8465931e-05,
+     "avg_apr_pct": 5.30702,
+     "min_apr": {
+      "venue": "dydx",
+      "apr_pct": 0
+     },
+     "max_apr": {
+      "venue": "kraken",
+      "apr_pct": 11.8121
+     },
+     "spread_apr_pct": 11.8121
+    },
+    "predicted": {
+     "as_of": "2026-10-14T23:00:00Z",
+     "rows": [
+      {
+       "source": "binance",
+       "rate": -4.729e-05,
+       "interval_h": 8,
+       "rate_8h": -4.729e-05,
+       "apr_pct": -5.17826,
+       "next_funding_time": "2026-10-15T00:00:00Z"
+      },
+      {
+       "source": "bybit",
+       "rate": 3.501e-05,
+       "interval_h": 8,
+       "rate_8h": 3.501e-05,
+       "apr_pct": 3.83359,
+       "next_funding_time": "2026-10-15T00:00:00Z"
+      },
+      {
+       "source": "hyperliquid",
+       "rate": 1.25e-05,
+       "interval_h": 1,
+       "rate_8h": 0.0001,
+       "apr_pct": 10.95,
+       "next_funding_time": "2026-10-15T00:00:00Z"
+      }
+     ]
+    },
+    "recent": {
+     "venue": "hyperliquid",
+     "hours": 24,
+     "prints": [
+      {
+       "time": "2026-10-13T23:00:00Z",
+       "rate": 1.25e-05,
+       "rate_8h": 0.0001
+      },
+      {
+       "time": "2026-10-14T00:00:00Z",
+       "rate": 6.651e-06,
+       "rate_8h": 5.3208e-05
+      }
+     ],
+     "stats": {
+      "n": 24,
+      "avg_rate_8h": 9.098383333e-05,
+      "min_rate_8h": 3.46392e-05,
+      "max_rate_8h": 0.0001,
+      "pct_positive": 100,
+      "avg_apr_pct": 9.96273
+     },
+     "as_of": "2026-10-14T23:00:00Z"
+    },
+    "venues_missing": [],
+    "units": {
+     "rate": "fraction per funding interval (0.0001 = 0.01 %)",
+     "interval_h": "hours between funding payments",
+     "rate_8h": "fraction per 8 hours = rate * 8 / interval_h",
+     "apr_pct": "simple annualised percent = rate * 24 / interval_h * 365 * 100",
+     "mark": "USD per coin (USDT/USDC at par)",
+     "index": "USD per coin (oracle price on Hyperliquid and dYdX)",
+     "times": "ISO 8601 UTC"
+    },
+    "as_of": "2026-10-14T23:00:00Z",
+    "colo": null,
+    "disclaimer": "Data only, not investment advice, not a benchmark; not affiliated with any exchange",
+    "see_also": {
+     "endpoint": "https://derivs.duoleads.com/v1/funding-arbitrage",
+     "params": [
+      "min_apr",
+      "min_volume_usd"
+     ],
+     "reason": "Looking for the widest funding spread across venues? The arbitrage scanner ranks every coin, fee-adjusted."
+    },
+    "request_id": "01KEXAMPLE0000000000000000"
+   }
+  },
+  {
+   "path": "/v1/funding-history",
+   "method": "GET",
+   "tool": "funding_rate_history",
+   "title": "Funding rate history (one coin, one venue, up to 30 days)",
+   "serviceName": "Funding Rate History (Perps)",
+   "topPhrase": "funding rate history",
+   "tags": [
+    "funding-rate-history",
+    "funding",
+    "funding-rates",
+    "perp",
+    "historical-data"
+   ],
+   "amount": "3000",
+   "priceUsd": "0.003",
+   "description": "Funding rate history of one coin on one exchange (Bybit, Hyperliquid, dYdX, Gate, Kraken, Deribit or OKX), up to 30 days: every past funding print with interval, 8h rate and APR, plus avg/min/max/% positive and the window covered. Historical perpetual swap funding for backtests and carry studies on BTC, ETH, SOL and more. Data only. Bad input is free; a venue that fails is not charged.",
+   "minVenues": 1,
+   "inputExample": {
+    "coin": "BTC",
+    "venue": "bybit",
+    "days": "7"
+   },
+   "querySchema": {
+    "properties": {
+     "coin": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 32,
+      "description": "Coin symbol: BTC, ETH, SOL ... (also BTCUSDT, BTC-PERP, XBT, 1000PEPE)."
+     },
+     "venue": {
+      "type": "string",
+      "enum": [
+       "bybit",
+       "hyperliquid",
+       "dydx",
+       "gate",
+       "kraken",
+       "deribit",
+       "okx"
+      ],
+      "description": "The exchange whose funding history to return."
+     },
+     "days": {
+      "type": "string",
+      "pattern": "^[0-9]{1,2}$",
+      "default": "7",
+      "description": "Days back, 1-30. Default 7."
+     }
+    },
+    "required": [
+     "coin",
+     "venue"
+    ]
+   },
+   "outputSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Funding rate history",
+    "type": "object",
+    "properties": {
+     "coin": {
+      "type": "string"
+     },
+     "venue": {
+      "type": "string",
+      "enum": [
+       "bybit",
+       "hyperliquid",
+       "dydx",
+       "gate",
+       "kraken",
+       "bitfinex",
+       "deribit",
+       "okx"
+      ]
+     },
+     "symbol": {
+      "type": "string"
+     },
+     "days": {
+      "type": "integer",
+      "minimum": 0
+     },
+     "interval_h": {
+      "type": "number"
+     },
+     "prints": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "time": {
+         "type": [
+          "string",
+          "null"
+         ],
+         "description": "ISO 8601 UTC"
+        },
+        "rate": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "interval_h": {
+         "type": "number"
+        },
+        "rate_8h": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "apr_pct": {
+         "type": [
+          "number",
+          "null"
+         ]
+        }
+       },
+       "required": [
+        "time",
+        "rate",
+        "interval_h",
+        "rate_8h",
+        "apr_pct"
+       ],
+       "additionalProperties": false
+      }
+     },
+     "stats": {
+      "type": [
+       "object",
+       "null"
+      ],
+      "properties": {
+       "n": {
+        "type": "integer",
+        "minimum": 0
+       },
+       "avg_rate_8h": {
+        "type": [
+         "number",
+         "null"
+        ]
+       },
+       "min_rate_8h": {
+        "type": [
+         "number",
+         "null"
+        ]
+       },
+       "max_rate_8h": {
+        "type": [
+         "number",
+         "null"
+        ]
+       },
+       "avg_apr_pct": {
+        "type": [
+         "number",
+         "null"
+        ]
+       },
+       "pct_positive": {
+        "type": [
+         "number",
+         "null"
+        ]
+       }
+      },
+      "required": [
+       "n",
+       "avg_rate_8h",
+       "min_rate_8h",
+       "max_rate_8h",
+       "avg_apr_pct",
+       "pct_positive"
+      ],
+      "additionalProperties": false
+     },
+     "coverage": {
+      "type": "object",
+      "properties": {
+       "from": {
+        "type": [
+         "string",
+         "null"
+        ],
+        "description": "ISO 8601 UTC"
+       },
+       "to": {
+        "type": [
+         "string",
+         "null"
+        ],
+        "description": "ISO 8601 UTC"
+       },
+       "requested_from": {
+        "type": [
+         "string",
+         "null"
+        ],
+        "description": "ISO 8601 UTC"
+       },
+       "complete": {
+        "type": "boolean"
+       }
+      },
+      "required": [
+       "from",
+       "to",
+       "requested_from",
+       "complete"
+      ],
+      "additionalProperties": false
+     },
+     "venue_as_of": {
+      "type": [
+       "string",
+       "null"
+      ],
+      "description": "ISO 8601 UTC"
+     },
+     "stale": {
+      "type": "boolean"
+     },
+     "venues_missing": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "venue": {
+         "type": "string",
+         "enum": [
+          "bybit",
+          "hyperliquid",
+          "dydx",
+          "gate",
+          "kraken",
+          "bitfinex",
+          "deribit",
+          "okx"
+         ]
+        },
+        "reason": {
+         "type": "string",
+         "enum": [
+          "not_listed",
+          "timeout",
+          "blocked",
+          "error",
+          "unavailable",
+          "not_cached",
+          "symbol_mismatch",
+          "not_covered",
+          "stale"
+         ],
+         "description": "not_cached = not refreshed in this request (one large refresh per request); retry shortly."
+        },
+        "detail": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "venue",
+        "reason"
+       ],
+       "additionalProperties": false
+      }
+     },
+     "units": {
+      "type": "object",
+      "additionalProperties": {
+       "type": "string"
+      }
+     },
+     "as_of": {
+      "type": [
+       "string",
+       "null"
+      ],
+      "description": "ISO 8601 UTC"
+     },
+     "colo": {
+      "type": [
+       "string",
+       "null"
+      ],
+      "description": "Cloudflare location that fetched the data (venue reach differs by location)."
+     },
+     "disclaimer": {
+      "const": "Data only, not investment advice, not a benchmark; not affiliated with any exchange"
+     },
+     "see_also": {
+      "type": "object",
+      "properties": {
+       "endpoint": {
+        "type": "string"
+       },
+       "params": {
+        "type": "array",
+        "items": {
+         "type": "string"
+        }
+       },
+       "reason": {
+        "type": "string"
+       }
+      },
+      "required": [
+       "endpoint",
+       "params",
+       "reason"
+      ],
+      "additionalProperties": false
+     },
+     "request_id": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "coin",
+     "venue",
+     "symbol",
+     "days",
+     "interval_h",
+     "prints",
+     "stats",
+     "coverage",
+     "venue_as_of",
+     "stale",
+     "venues_missing",
+     "units",
+     "as_of",
+     "colo",
+     "disclaimer",
+     "see_also",
+     "request_id"
+    ],
+    "additionalProperties": false
+   },
+   "outputExample": {
+    "coin": "BTC",
+    "venue": "bybit",
+    "symbol": "BTCUSDT",
+    "days": 7,
+    "interval_h": 8,
+    "prints": [
+     {
+      "time": "2026-10-08T00:00:00Z",
+      "rate": 1.078e-05,
+      "interval_h": 8,
+      "rate_8h": 1.078e-05,
+      "apr_pct": 1.18041
+     },
+     {
+      "time": "2026-10-08T08:00:00Z",
+      "rate": -1.339e-05,
+      "interval_h": 8,
+      "rate_8h": -1.339e-05,
+      "apr_pct": -1.46621
+     }
+    ],
+    "stats": {
+     "n": 21,
+     "avg_rate_8h": 2.060857143e-05,
+     "min_rate_8h": -2.132e-05,
+     "max_rate_8h": 8.676e-05,
+     "avg_apr_pct": 2.25664,
+     "pct_positive": 61.9048
+    },
+    "coverage": {
+     "from": "2026-10-08T00:00:00Z",
+     "to": "2026-10-14T16:00:00Z",
+     "requested_from": "2026-10-07T23:00:00Z",
+     "complete": true
+    },
+    "venue_as_of": "2026-10-14T23:00:00Z",
+    "stale": false,
+    "venues_missing": [],
+    "units": {
+     "rate": "fraction per funding interval",
+     "interval_h": "hours between funding payments (per print: the gap to its neighbouring print, whole hours 1-8)",
+     "rate_8h": "fraction per 8 hours = rate * 8 / interval_h",
+     "apr_pct": "simple annualised percent = rate * 24 / interval_h * 365 * 100",
+     "times": "ISO 8601 UTC"
+    },
+    "as_of": "2026-10-14T23:00:00Z",
+    "colo": null,
+    "disclaimer": "Data only, not investment advice, not a benchmark; not affiliated with any exchange",
+    "see_also": {
+     "endpoint": "https://derivs.duoleads.com/v1/funding-rates",
+     "params": [
+      "coin"
+     ],
+     "reason": "Current funding on every venue, with predicted next funding (incl. Binance and Bybit via Hyperliquid)."
+    },
+    "request_id": "01KEXAMPLE0000000000000000"
+   }
+  },
+  {
+   "path": "/v1/funding-arbitrage",
+   "method": "GET",
+   "tool": "funding_arbitrage_scan",
+   "title": "Funding arbitrage scanner (all coins)",
+   "serviceName": "Funding Rate Arbitrage Scanner",
+   "topPhrase": "funding arbitrage",
+   "tags": [
+    "funding-arbitrage",
+    "funding",
+    "funding-rates",
+    "perp",
+    "arbitrage"
+   ],
+   "amount": "5000",
+   "priceUsd": "0.005",
+   "description": "Funding arbitrage scanner across 8 exchanges (Bybit, Hyperliquid, dYdX, Gate, Kraken, Bitfinex, Deribit, OKX): for every coin the widest cross-venue perp funding spread, the long and short venue, both funding rates, gross and fee-adjusted net APR and breakeven days, with a 24h volume liquidity filter. Funding rate arbitrage, basis trade and carry screening of perpetual swaps. Data only, no advice. Bad input is free; under 3 venues not charged.",
+   "minVenues": 3,
+   "inputExample": {
+    "min_apr": "10"
+   },
+   "querySchema": {
+    "properties": {
+     "min_apr": {
+      "type": "string",
+      "default": "10",
+      "description": "Minimum gross spread, in APR percent (0-10000). Default 10."
+     },
+     "min_volume_usd": {
+      "type": "string",
+      "default": "0",
+      "description": "Liquidity filter: both legs need at least this 24 h volume in USD (0-1e12). Venues that publish no volume are excluded when > 0. Default 0."
+     },
+     "fee_pct": {
+      "type": "string",
+      "default": "0.05",
+      "description": "Taker fee per fill in percent of notional (0-1); 4 fills per round trip. Default 0.05."
+     },
+     "holding_days": {
+      "type": "string",
+      "default": "30",
+      "description": "Days the position is held, to amortise the fees in net_apr_pct (1-365). Default 30."
+     },
+     "limit": {
+      "type": "string",
+      "default": "20",
+      "description": "Opportunities returned, 1-100. Default 20."
+     }
+    },
+    "required": []
+   },
+   "outputSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Funding rate arbitrage opportunities",
+    "type": "object",
+    "properties": {
+     "filters": {
+      "type": "object",
+      "properties": {
+       "min_apr": {
+        "type": "number"
+       },
+       "min_volume_usd": {
+        "type": "number"
+       }
+      },
+      "required": [
+       "min_apr",
+       "min_volume_usd"
+      ],
+      "additionalProperties": false
+     },
+     "fees": {
+      "type": "object",
+      "properties": {
+       "taker_fee_pct": {
+        "type": "number"
+       },
+       "fills": {
+        "type": "integer",
+        "minimum": 0
+       },
+       "holding_days": {
+        "type": "integer",
+        "minimum": 0
+       }
+      },
+      "required": [
+       "taker_fee_pct",
+       "fills",
+       "holding_days"
+      ],
+      "additionalProperties": false
+     },
+     "coins_scanned": {
+      "type": "integer",
+      "minimum": 0
+     },
+     "count": {
+      "type": "integer",
+      "minimum": 0
+     },
+     "opportunities": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "coin": {
+         "type": "string"
+        },
+        "long": {
+         "type": "object",
+         "properties": {
+          "venue": {
+           "type": "string",
+           "enum": [
+            "bybit",
+            "hyperliquid",
+            "dydx",
+            "gate",
+            "kraken",
+            "bitfinex",
+            "deribit",
+            "okx"
+           ]
+          },
+          "symbol": {
+           "type": "string"
+          },
+          "rate": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "interval_h": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "apr_pct": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "volume_24h_usd": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "oi_usd": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "next_funding_time": {
+           "type": [
+            "string",
+            "null"
+           ],
+           "description": "ISO 8601 UTC"
+          }
+         },
+         "required": [
+          "venue",
+          "symbol",
+          "rate",
+          "interval_h",
+          "apr_pct",
+          "volume_24h_usd",
+          "oi_usd",
+          "next_funding_time"
+         ],
+         "additionalProperties": false
+        },
+        "short": {
+         "type": "object",
+         "properties": {
+          "venue": {
+           "type": "string",
+           "enum": [
+            "bybit",
+            "hyperliquid",
+            "dydx",
+            "gate",
+            "kraken",
+            "bitfinex",
+            "deribit",
+            "okx"
+           ]
+          },
+          "symbol": {
+           "type": "string"
+          },
+          "rate": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "interval_h": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "apr_pct": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "volume_24h_usd": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "oi_usd": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "next_funding_time": {
+           "type": [
+            "string",
+            "null"
+           ],
+           "description": "ISO 8601 UTC"
+          }
+         },
+         "required": [
+          "venue",
+          "symbol",
+          "rate",
+          "interval_h",
+          "apr_pct",
+          "volume_24h_usd",
+          "oi_usd",
+          "next_funding_time"
+         ],
+         "additionalProperties": false
+        },
+        "gross_apr_pct": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "fee_cost_pct": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "net_apr_pct": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "breakeven_days": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "venues_compared": {
+         "type": "integer",
+         "minimum": 0
+        }
+       },
+       "required": [
+        "coin",
+        "long",
+        "short",
+        "gross_apr_pct",
+        "fee_cost_pct",
+        "net_apr_pct",
+        "breakeven_days",
+        "venues_compared"
+       ],
+       "additionalProperties": false
+      }
+     },
+     "venues": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "venue": {
+         "type": "string",
+         "enum": [
+          "bybit",
+          "hyperliquid",
+          "dydx",
+          "gate",
+          "kraken",
+          "bitfinex",
+          "deribit",
+          "okx"
+         ]
+        },
+        "coins": {
+         "type": "integer",
+         "minimum": 0
+        },
+        "as_of": {
+         "type": [
+          "string",
+          "null"
+         ],
+         "description": "ISO 8601 UTC"
+        },
+        "stale": {
+         "type": "boolean"
+        }
+       },
+       "required": [
+        "venue",
+        "coins",
+        "as_of",
+        "stale"
+       ],
+       "additionalProperties": false
+      }
+     },
+     "venues_missing": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "venue": {
+         "type": "string",
+         "enum": [
+          "bybit",
+          "hyperliquid",
+          "dydx",
+          "gate",
+          "kraken",
+          "bitfinex",
+          "deribit",
+          "okx"
+         ]
+        },
+        "reason": {
+         "type": "string",
+         "enum": [
+          "not_listed",
+          "timeout",
+          "blocked",
+          "error",
+          "unavailable",
+          "not_cached",
+          "symbol_mismatch",
+          "not_covered",
+          "stale"
+         ],
+         "description": "not_cached = not refreshed in this request (one large refresh per request); retry shortly."
+        },
+        "detail": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "venue",
+        "reason"
+       ],
+       "additionalProperties": false
+      }
+     },
+     "units": {
+      "type": "object",
+      "additionalProperties": {
+       "type": "string"
+      }
+     },
+     "as_of": {
+      "type": [
+       "string",
+       "null"
+      ],
+      "description": "ISO 8601 UTC"
+     },
+     "colo": {
+      "type": [
+       "string",
+       "null"
+      ],
+      "description": "Cloudflare location that fetched the data (venue reach differs by location)."
+     },
+     "disclaimer": {
+      "const": "Data only, not investment advice, not a benchmark; not affiliated with any exchange"
+     },
+     "see_also": {
+      "type": "object",
+      "properties": {
+       "endpoint": {
+        "type": "string"
+       },
+       "params": {
+        "type": "array",
+        "items": {
+         "type": "string"
+        }
+       },
+       "reason": {
+        "type": "string"
+       }
+      },
+      "required": [
+       "endpoint",
+       "params",
+       "reason"
+      ],
+      "additionalProperties": false
+     },
+     "request_id": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "filters",
+     "fees",
+     "coins_scanned",
+     "count",
+     "opportunities",
+     "venues",
+     "venues_missing",
+     "units",
+     "as_of",
+     "colo",
+     "disclaimer",
+     "see_also",
+     "request_id"
+    ],
+    "additionalProperties": false
+   },
+   "outputExample": {
+    "filters": {
+     "min_apr": 10,
+     "min_volume_usd": 0
+    },
+    "fees": {
+     "taker_fee_pct": 0.05,
+     "fills": 4,
+     "holding_days": 30
+    },
+    "coins_scanned": 188,
+    "count": 20,
+    "opportunities": [
+     {
+      "coin": "MOG",
+      "long": {
+       "venue": "kraken",
+       "symbol": "PF_MOGUSD",
+       "rate": -0.000127961375,
+       "interval_h": 1,
+       "apr_pct": -112.094,
+       "volume_24h_usd": 553.84639,
+       "oi_usd": 18305.125,
+       "next_funding_time": "2026-10-15T00:00:00Z"
+      },
+      "short": {
+       "venue": "deribit",
+       "symbol": "1000MOG_USDC-PERPETUAL",
+       "rate": 0.00152027,
+       "interval_h": 8,
+       "apr_pct": 166.47,
+       "volume_24h_usd": 0,
+       "oi_usd": 55856.904,
+       "next_funding_time": null
+      },
+      "gross_apr_pct": 278.564,
+      "fee_cost_pct": 0.2,
+      "net_apr_pct": 276.13,
+      "breakeven_days": 0.262059,
+      "venues_compared": 4
+     },
+     {
+      "coin": "ETC",
+      "long": {
+       "venue": "bitfinex",
+       "symbol": "tETCF0:USTF0",
+       "rate": -0.00061259,
+       "interval_h": 8,
+       "apr_pct": -67.0786,
+       "volume_24h_usd": null,
+       "oi_usd": 295142.69,
+       "next_funding_time": "2026-10-15T00:00:00Z"
+      },
+      "short": {
+       "venue": "hyperliquid",
+       "symbol": "ETC",
+       "rate": 1.25e-05,
+       "interval_h": 1,
+       "apr_pct": 10.95,
+       "volume_24h_usd": 405454.24,
+       "oi_usd": 3381121.8,
+       "next_funding_time": "2026-10-15T00:00:00Z"
+      },
+      "gross_apr_pct": 78.0286,
+      "fee_cost_pct": 0.2,
+      "net_apr_pct": 75.5953,
+      "breakeven_days": 0.935554,
+      "venues_compared": 2
+     },
+     {
+      "coin": "ZEC",
+      "long": {
+       "venue": "bitfinex",
+       "symbol": "tZECF0:USTF0",
+       "rate": -0.00056459,
+       "interval_h": 8,
+       "apr_pct": -61.8226,
+       "volume_24h_usd": null,
+       "oi_usd": 501923.5,
+       "next_funding_time": "2026-10-15T00:00:00Z"
+      },
+      "short": {
+       "venue": "hyperliquid",
+       "symbol": "ZEC",
+       "rate": 1.25e-05,
+       "interval_h": 1,
+       "apr_pct": 10.95,
+       "volume_24h_usd": 314511400,
+       "oi_usd": 550252790,
+       "next_funding_time": "2026-10-15T00:00:00Z"
+      },
+      "gross_apr_pct": 72.7726,
+      "fee_cost_pct": 0.2,
+      "net_apr_pct": 70.3393,
+      "breakeven_days": 1.00312,
+      "venues_compared": 2
+     }
+    ],
+    "venues": [
+     {
+      "venue": "bybit",
+      "coins": 23,
+      "as_of": "2026-10-14T23:00:00Z",
+      "stale": false
+     },
+     {
+      "venue": "hyperliquid",
+      "coins": 178,
+      "as_of": "2026-10-14T23:00:00Z",
+      "stale": false
+     },
+     {
+      "venue": "dydx",
+      "coins": 11,
+      "as_of": "2026-10-14T23:00:00Z",
+      "stale": false
+     }
+    ],
+    "venues_missing": [],
+    "units": {
+     "apr_pct": "simple annualised funding in percent",
+     "gross_apr_pct": "short-leg APR minus long-leg APR",
+     "fee_cost_pct": "round-trip fees in percent of one leg's notional (4 fills x fee_pct)",
+     "net_apr_pct": "gross_apr_pct - fee_cost_pct * 365 / holding_days",
+     "breakeven_days": "days of the gross spread that pay the round-trip fees",
+     "volume_24h_usd": "USD",
+     "oi_usd": "USD"
+    },
+    "as_of": "2026-10-14T23:00:00Z",
+    "colo": null,
+    "disclaimer": "Data only, not investment advice, not a benchmark; not affiliated with any exchange",
+    "see_also": {
+     "endpoint": "https://derivs.duoleads.com/v1/funding-history",
+     "params": [
+      "coin",
+      "venue"
+     ],
+     "reason": "Check how stable a spread is: past funding prints of one venue, up to 30 days."
+    },
+    "request_id": "01KEXAMPLE0000000000000000"
+   }
+  },
+  {
+   "path": "/v1/perp-screener",
+   "method": "GET",
+   "tool": "perp_screener",
+   "title": "Perp screener (every perpetual, sorted)",
+   "serviceName": "Perp Market Screener (All Coins)",
+   "topPhrase": "perp screener",
+   "tags": [
+    "perp-screener",
+    "funding-screener",
+    "perp",
+    "funding",
+    "open-interest"
+   ],
+   "amount": "5000",
+   "priceUsd": "0.005",
+   "description": "Perp screener for all coins: every perpetual future on Bybit, Hyperliquid, dYdX, Gate, Kraken, Bitfinex, Deribit and OKX in one call, sorted by funding rate (APR), open interest (OI), 24h volume or 24h change, with the highest and lowest funding views. A funding screener and perpetuals market ranking for BTC, ETH, SOL and hundreds of altcoins. Data only. Bad input is free; under 3 venues not charged.",
+   "minVenues": 3,
+   "inputExample": {
+    "sort": "funding",
+    "order": "desc",
+    "limit": "20"
+   },
+   "querySchema": {
+    "properties": {
+     "sort": {
+      "type": "string",
+      "enum": [
+       "funding",
+       "oi",
+       "volume",
+       "change"
+      ],
+      "default": "funding",
+      "description": "funding = average funding APR across venues; oi = total open interest USD; volume = total 24 h volume USD; change = median 24 h price change."
+     },
+     "order": {
+      "type": "string",
+      "enum": [
+       "desc",
+       "asc"
+      ],
+      "default": "desc",
+      "description": "desc (highest first) or asc."
+     },
+     "limit": {
+      "type": "string",
+      "default": "50",
+      "description": "Coins returned, 1-200. Default 50."
+     },
+     "min_volume_usd": {
+      "type": "string",
+      "default": "0",
+      "description": "Only coins whose total 24 h volume is at least this (USD, 0-1e12). Default 0."
+     }
+    },
+    "required": []
+   },
+   "outputSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Perp market screener",
+    "type": "object",
+    "properties": {
+     "sort": {
+      "type": "string",
+      "enum": [
+       "funding",
+       "oi",
+       "volume",
+       "change"
+      ]
+     },
+     "order": {
+      "type": "string",
+      "enum": [
+       "desc",
+       "asc"
+      ]
+     },
+     "coins_total": {
+      "type": "integer",
+      "minimum": 0
+     },
+     "count": {
+      "type": "integer",
+      "minimum": 0
+     },
+     "rows": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "coin": {
+         "type": "string"
+        },
+        "venues": {
+         "type": "array",
+         "items": {
+          "type": "string",
+          "enum": [
+           "bybit",
+           "hyperliquid",
+           "dydx",
+           "gate",
+           "kraken",
+           "bitfinex",
+           "deribit",
+           "okx"
+          ]
+         }
+        },
+        "price": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "avg_apr_pct": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "max_apr": {
+         "type": [
+          "object",
+          "null"
+         ],
+         "properties": {
+          "venue": {
+           "type": "string",
+           "enum": [
+            "bybit",
+            "hyperliquid",
+            "dydx",
+            "gate",
+            "kraken",
+            "bitfinex",
+            "deribit",
+            "okx"
+           ]
+          },
+          "apr_pct": {
+           "type": [
+            "number",
+            "null"
+           ]
+          }
+         },
+         "required": [
+          "venue",
+          "apr_pct"
+         ],
+         "additionalProperties": false
+        },
+        "min_apr": {
+         "type": [
+          "object",
+          "null"
+         ],
+         "properties": {
+          "venue": {
+           "type": "string",
+           "enum": [
+            "bybit",
+            "hyperliquid",
+            "dydx",
+            "gate",
+            "kraken",
+            "bitfinex",
+            "deribit",
+            "okx"
+           ]
+          },
+          "apr_pct": {
+           "type": [
+            "number",
+            "null"
+           ]
+          }
+         },
+         "required": [
+          "venue",
+          "apr_pct"
+         ],
+         "additionalProperties": false
+        },
+        "oi_usd": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "volume_24h_usd": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "change_24h_pct": {
+         "type": [
+          "number",
+          "null"
+         ]
+        }
+       },
+       "required": [
+        "coin",
+        "venues",
+        "price",
+        "avg_apr_pct",
+        "max_apr",
+        "min_apr",
+        "oi_usd",
+        "volume_24h_usd",
+        "change_24h_pct"
+       ],
+       "additionalProperties": false
+      }
+     },
+     "extremes": {
+      "type": "object",
+      "properties": {
+       "highest_funding": {
+        "type": "array",
+        "items": {
+         "type": "object",
+         "properties": {
+          "coin": {
+           "type": "string"
+          },
+          "avg_apr_pct": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "venues": {
+           "type": "integer",
+           "minimum": 0
+          }
+         },
+         "required": [
+          "coin",
+          "avg_apr_pct",
+          "venues"
+         ],
+         "additionalProperties": false
+        }
+       },
+       "lowest_funding": {
+        "type": "array",
+        "items": {
+         "type": "object",
+         "properties": {
+          "coin": {
+           "type": "string"
+          },
+          "avg_apr_pct": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "venues": {
+           "type": "integer",
+           "minimum": 0
+          }
+         },
+         "required": [
+          "coin",
+          "avg_apr_pct",
+          "venues"
+         ],
+         "additionalProperties": false
+        }
+       }
+      },
+      "required": [
+       "highest_funding",
+       "lowest_funding"
+      ],
+      "additionalProperties": false
+     },
+     "venues": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "venue": {
+         "type": "string",
+         "enum": [
+          "bybit",
+          "hyperliquid",
+          "dydx",
+          "gate",
+          "kraken",
+          "bitfinex",
+          "deribit",
+          "okx"
+         ]
+        },
+        "coins": {
+         "type": "integer",
+         "minimum": 0
+        },
+        "as_of": {
+         "type": [
+          "string",
+          "null"
+         ],
+         "description": "ISO 8601 UTC"
+        },
+        "stale": {
+         "type": "boolean"
+        }
+       },
+       "required": [
+        "venue",
+        "coins",
+        "as_of",
+        "stale"
+       ],
+       "additionalProperties": false
+      }
+     },
+     "venues_missing": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "venue": {
+         "type": "string",
+         "enum": [
+          "bybit",
+          "hyperliquid",
+          "dydx",
+          "gate",
+          "kraken",
+          "bitfinex",
+          "deribit",
+          "okx"
+         ]
+        },
+        "reason": {
+         "type": "string",
+         "enum": [
+          "not_listed",
+          "timeout",
+          "blocked",
+          "error",
+          "unavailable",
+          "not_cached",
+          "symbol_mismatch",
+          "not_covered",
+          "stale"
+         ],
+         "description": "not_cached = not refreshed in this request (one large refresh per request); retry shortly."
+        },
+        "detail": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "venue",
+        "reason"
+       ],
+       "additionalProperties": false
+      }
+     },
+     "units": {
+      "type": "object",
+      "additionalProperties": {
+       "type": "string"
+      }
+     },
+     "as_of": {
+      "type": [
+       "string",
+       "null"
+      ],
+      "description": "ISO 8601 UTC"
+     },
+     "colo": {
+      "type": [
+       "string",
+       "null"
+      ],
+      "description": "Cloudflare location that fetched the data (venue reach differs by location)."
+     },
+     "disclaimer": {
+      "const": "Data only, not investment advice, not a benchmark; not affiliated with any exchange"
+     },
+     "see_also": {
+      "type": "object",
+      "properties": {
+       "endpoint": {
+        "type": "string"
+       },
+       "params": {
+        "type": "array",
+        "items": {
+         "type": "string"
+        }
+       },
+       "reason": {
+        "type": "string"
+       }
+      },
+      "required": [
+       "endpoint",
+       "params",
+       "reason"
+      ],
+      "additionalProperties": false
+     },
+     "request_id": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "sort",
+     "order",
+     "coins_total",
+     "count",
+     "rows",
+     "extremes",
+     "venues",
+     "venues_missing",
+     "units",
+     "as_of",
+     "colo",
+     "disclaimer",
+     "see_also",
+     "request_id"
+    ],
+    "additionalProperties": false
+   },
+   "outputExample": {
+    "sort": "funding",
+    "order": "desc",
+    "coins_total": 188,
+    "count": 20,
+    "rows": [
+     {
+      "coin": "CASHCAT",
+      "venues": [
+       "hyperliquid"
+      ],
+      "price": 0.12892,
+      "avg_apr_pct": 35.5359,
+      "max_apr": {
+       "venue": "hyperliquid",
+       "apr_pct": 35.5359
+      },
+      "min_apr": {
+       "venue": "hyperliquid",
+       "apr_pct": 35.5359
+      },
+      "oi_usd": 28626661.25,
+      "volume_24h_usd": 13195929.17,
+      "change_24h_pct": 15.9457
+     },
+     {
+      "coin": "MOG",
+      "venues": [
+       "bybit",
+       "deribit",
+       "gate"
+      ],
+      "price": 1.02275e-07,
+      "avg_apr_pct": 19.0689,
+      "max_apr": {
+       "venue": "deribit",
+       "apr_pct": 166.47
+      },
+      "min_apr": {
+       "venue": "kraken",
+       "apr_pct": -112.094
+      },
+      "oi_usd": 840781.2901,
+      "volume_24h_usd": 288716.6037,
+      "change_24h_pct": -2.3
+     },
+     {
+      "coin": "0G",
+      "venues": [
+       "hyperliquid"
+      ],
+      "price": 0.24711,
+      "avg_apr_pct": 10.95,
+      "max_apr": {
+       "venue": "hyperliquid",
+       "apr_pct": 10.95
+      },
+      "min_apr": {
+       "venue": "hyperliquid",
+       "apr_pct": 10.95
+      },
+      "oi_usd": 2226124.536,
+      "volume_24h_usd": 370616.848,
+      "change_24h_pct": -2.84265
+     }
+    ],
+    "extremes": {
+     "highest_funding": [
+      {
+       "coin": "CASHCAT",
+       "avg_apr_pct": 35.5359,
+       "venues": 1
+      },
+      {
+       "coin": "MOG",
+       "avg_apr_pct": 19.0689,
+       "venues": 4
+      }
+     ],
+     "lowest_funding": [
+      {
+       "coin": "BLUR",
+       "avg_apr_pct": -1232.98,
+       "venues": 1
+      },
+      {
+       "coin": "BERA",
+       "avg_apr_pct": -114.443,
+       "venues": 1
+      }
+     ]
+    },
+    "venues": [
+     {
+      "venue": "bybit",
+      "coins": 12,
+      "as_of": "2026-10-14T23:00:00Z",
+      "stale": false
+     },
+     {
+      "venue": "hyperliquid",
+      "coins": 178,
+      "as_of": "2026-10-14T23:00:00Z",
+      "stale": false
+     },
+     {
+      "venue": "dydx",
+      "coins": 11,
+      "as_of": "2026-10-14T23:00:00Z",
+      "stale": false
+     }
+    ],
+    "venues_missing": [],
+    "units": {
+     "avg_apr_pct": "mean of the venues' simple annualised funding, percent",
+     "oi_usd": "USD, sum over venues",
+     "volume_24h_usd": "USD, sum over venues that publish it",
+     "change_24h_pct": "percent, median over venues",
+     "price": "USD per coin, median over venues"
+    },
+    "as_of": "2026-10-14T23:00:00Z",
+    "colo": null,
+    "disclaimer": "Data only, not investment advice, not a benchmark; not affiliated with any exchange",
+    "see_also": {
+     "endpoint": "https://derivs.duoleads.com/v1/derivatives-snapshot",
+     "params": [
+      "coin"
+     ],
+     "reason": "Drill into one coin: funding, open interest, basis, liquidations and long/short in one call."
+    },
+    "request_id": "01KEXAMPLE0000000000000000"
+   }
+  },
+  {
+   "path": "/v1/open-interest",
+   "method": "GET",
+   "tool": "open_interest",
+   "title": "Open interest by exchange (one coin)",
+   "serviceName": "Open Interest by Exchange (OI)",
+   "topPhrase": "open interest",
+   "tags": [
+    "open-interest",
+    "oi",
+    "perp-open-interest",
+    "perp",
+    "futures"
+   ],
+   "amount": "3000",
+   "priceUsd": "0.003",
+   "description": "Open interest (OI) of one coin's perpetual futures by exchange: Bybit, Hyperliquid, dYdX, Gate, Kraken, Bitfinex, Deribit, OKX. Per venue OI in coins and USD and its share, the total, and the OI change over 1h, 4h and 24h from the venues' own history. Perp open interest and futures open interest for BTC, ETH, SOL and more. Data only. Bad input is free; under 3 venues not charged.",
+   "minVenues": 3,
+   "inputExample": {
+    "coin": "BTC"
+   },
+   "querySchema": {
+    "properties": {
+     "coin": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 32,
+      "description": "Coin symbol: BTC, ETH, SOL, PEPE ... (also BTCUSDT, BTC-PERP, XBT, 1000PEPE)."
+     }
+    },
+    "required": [
+     "coin"
+    ]
+   },
+   "outputSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Open interest by exchange",
+    "type": "object",
+    "properties": {
+     "coin": {
+      "type": "string"
+     },
+     "total_oi_usd": {
+      "type": [
+       "number",
+       "null"
+      ]
+     },
+     "total_oi_coins": {
+      "type": [
+       "number",
+       "null"
+      ]
+     },
+     "venues": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "venue": {
+         "type": "string",
+         "enum": [
+          "bybit",
+          "hyperliquid",
+          "dydx",
+          "gate",
+          "kraken",
+          "bitfinex",
+          "deribit",
+          "okx"
+         ]
+        },
+        "symbols": {
+         "type": "array",
+         "items": {
+          "type": "string"
+         }
+        },
+        "oi_coins": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "oi_usd": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "share_pct": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "as_of": {
+         "type": [
+          "string",
+          "null"
+         ],
+         "description": "ISO 8601 UTC"
+        },
+        "stale": {
+         "type": "boolean"
+        }
+       },
+       "required": [
+        "venue",
+        "symbols",
+        "oi_coins",
+        "oi_usd",
+        "share_pct",
+        "as_of",
+        "stale"
+       ],
+       "additionalProperties": false
+      }
+     },
+     "change": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "venue": {
+         "type": "string",
+         "enum": [
+          "bybit",
+          "hyperliquid",
+          "dydx",
+          "gate",
+          "kraken",
+          "bitfinex",
+          "deribit",
+          "okx"
+         ]
+        },
+        "symbol": {
+         "type": "string"
+        },
+        "unit": {
+         "type": "string",
+         "enum": [
+          "coins",
+          "usd"
+         ]
+        },
+        "latest": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "latest_time": {
+         "type": [
+          "string",
+          "null"
+         ],
+         "description": "ISO 8601 UTC"
+        },
+        "change_1h_pct": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "change_4h_pct": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "change_24h_pct": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "as_of": {
+         "type": [
+          "string",
+          "null"
+         ],
+         "description": "ISO 8601 UTC"
+        }
+       },
+       "required": [
+        "venue",
+        "symbol",
+        "unit",
+        "latest",
+        "latest_time",
+        "change_1h_pct",
+        "change_4h_pct",
+        "change_24h_pct",
+        "as_of"
+       ],
+       "additionalProperties": false
+      }
+     },
+     "venues_missing": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "venue": {
+         "type": "string",
+         "enum": [
+          "bybit",
+          "hyperliquid",
+          "dydx",
+          "gate",
+          "kraken",
+          "bitfinex",
+          "deribit",
+          "okx"
+         ]
+        },
+        "reason": {
+         "type": "string",
+         "enum": [
+          "not_listed",
+          "timeout",
+          "blocked",
+          "error",
+          "unavailable",
+          "not_cached",
+          "symbol_mismatch",
+          "not_covered",
+          "stale"
+         ],
+         "description": "not_cached = not refreshed in this request (one large refresh per request); retry shortly."
+        },
+        "detail": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "venue",
+        "reason"
+       ],
+       "additionalProperties": false
+      }
+     },
+     "units": {
+      "type": "object",
+      "additionalProperties": {
+       "type": "string"
+      }
+     },
+     "as_of": {
+      "type": [
+       "string",
+       "null"
+      ],
+      "description": "ISO 8601 UTC"
+     },
+     "colo": {
+      "type": [
+       "string",
+       "null"
+      ],
+      "description": "Cloudflare location that fetched the data (venue reach differs by location)."
+     },
+     "disclaimer": {
+      "const": "Data only, not investment advice, not a benchmark; not affiliated with any exchange"
+     },
+     "see_also": {
+      "type": "object",
+      "properties": {
+       "endpoint": {
+        "type": "string"
+       },
+       "params": {
+        "type": "array",
+        "items": {
+         "type": "string"
+        }
+       },
+       "reason": {
+        "type": "string"
+       }
+      },
+      "required": [
+       "endpoint",
+       "params",
+       "reason"
+      ],
+      "additionalProperties": false
+     },
+     "request_id": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "coin",
+     "total_oi_usd",
+     "total_oi_coins",
+     "venues",
+     "change",
+     "venues_missing",
+     "units",
+     "as_of",
+     "colo",
+     "disclaimer",
+     "see_also",
+     "request_id"
+    ],
+    "additionalProperties": false
+   },
+   "outputExample": {
+    "coin": "BTC",
+    "total_oi_usd": 15396127720,
+    "total_oi_coins": 188622.1742,
+    "venues": [
+     {
+      "venue": "gate",
+      "symbols": [
+       "BTC_USDT"
+      ],
+      "oi_coins": 53224.3312,
+      "oi_usd": 4344915053,
+      "share_pct": 28.2208,
+      "as_of": "2026-10-14T23:00:00Z",
+      "stale": false
+     },
+     {
+      "venue": "hyperliquid",
+      "symbols": [
+       "BTC"
+      ],
+      "oi_coins": 40178.15264,
+      "oi_usd": 3279501531,
+      "share_pct": 21.3008,
+      "as_of": "2026-10-14T23:00:00Z",
+      "stale": false
+     },
+     {
+      "venue": "okx",
+      "symbols": [
+       "BTC-USD-SWAP",
+       "BTC-USDT-SWAP"
+      ],
+      "oi_coins": 38822.6842,
+      "oi_usd": 3168502615,
+      "share_pct": 20.5799,
+      "as_of": "2026-10-14T23:00:00Z",
+      "stale": false
+     }
+    ],
+    "change": [
+     {
+      "venue": "bybit",
+      "symbol": "BTCUSDT",
+      "unit": "coins",
+      "latest": 30086.085,
+      "latest_time": "2026-10-14T22:00:00Z",
+      "change_1h_pct": 0.645335,
+      "change_4h_pct": 1.4056,
+      "change_24h_pct": 7.46048,
+      "as_of": "2026-10-14T23:00:00Z"
+     },
+     {
+      "venue": "gate",
+      "symbol": "BTC_USDT",
+      "unit": "usd",
+      "latest": 4343972013,
+      "latest_time": "2026-10-14T22:00:00Z",
+      "change_1h_pct": -0.00334619,
+      "change_4h_pct": -0.0314464,
+      "change_24h_pct": 1.28509,
+      "as_of": "2026-10-14T23:00:00Z"
+     }
+    ],
+    "venues_missing": [],
+    "units": {
+     "oi_coins": "coins (one side of the book), all perpetuals of the coin on the venue",
+     "oi_usd": "USD (OI x mark price)",
+     "share_pct": "percent of the total oi_usd",
+     "change_pct": "percent change of the venue's own OI series (unit in `unit`)",
+     "times": "ISO 8601 UTC"
+    },
+    "as_of": "2026-10-14T23:00:00Z",
+    "colo": null,
+    "disclaimer": "Data only, not investment advice, not a benchmark; not affiliated with any exchange",
+    "see_also": {
+     "endpoint": "https://derivs.duoleads.com/v1/liquidations",
+     "params": [
+      "coin",
+      "hours"
+     ],
+     "reason": "Open interest falling? See the recent long and short liquidations per venue."
+    },
+    "request_id": "01KEXAMPLE0000000000000000"
+   }
+  },
+  {
+   "path": "/v1/basis",
+   "method": "GET",
+   "tool": "futures_basis",
+   "title": "Futures basis, term structure and perp premium (one coin)",
+   "serviceName": "Futures Basis & Perp Premium",
+   "topPhrase": "futures basis",
+   "tags": [
+    "futures-basis",
+    "basis",
+    "perp-basis",
+    "term-structure",
+    "futures"
+   ],
+   "amount": "3000",
+   "priceUsd": "0.003",
+   "description": "Futures basis and term structure of one coin: dated futures on Bybit, Deribit, Kraken, Gate and OKX with days to expiry, basis vs index and annualised basis (contango or backwardation, the carry), the perp premium (mark vs index/oracle) on Hyperliquid, dYdX, Bitfinex and the others, and predicted funding. Crypto futures basis for BTC, ETH and more. Data only. Bad input is free; under 2 venues not charged.",
+   "minVenues": 2,
+   "inputExample": {
+    "coin": "BTC"
+   },
+   "querySchema": {
+    "properties": {
+     "coin": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 32,
+      "description": "Coin symbol: BTC, ETH, SOL ... (also BTCUSDT, BTC-PERP, XBT)."
+     }
+    },
+    "required": [
+     "coin"
+    ]
+   },
+   "outputSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Futures basis, term structure and perp premium",
+    "type": "object",
+    "properties": {
+     "coin": {
+      "type": "string"
+     },
+     "futures": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "venue": {
+         "type": "string",
+         "enum": [
+          "bybit",
+          "hyperliquid",
+          "dydx",
+          "gate",
+          "kraken",
+          "bitfinex",
+          "deribit",
+          "okx"
+         ]
+        },
+        "symbol": {
+         "type": "string"
+        },
+        "quote": {
+         "type": "string"
+        },
+        "expiry": {
+         "type": [
+          "string",
+          "null"
+         ],
+         "description": "ISO 8601 UTC"
+        },
+        "days_to_expiry": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "mark": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "index": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "basis_pct": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "annualised_basis_pct": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "oi_usd": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "volume_24h_usd": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "as_of": {
+         "type": [
+          "string",
+          "null"
+         ],
+         "description": "ISO 8601 UTC"
+        },
+        "stale": {
+         "type": "boolean"
+        }
+       },
+       "required": [
+        "venue",
+        "symbol",
+        "quote",
+        "expiry",
+        "days_to_expiry",
+        "mark",
+        "index",
+        "basis_pct",
+        "annualised_basis_pct",
+        "oi_usd",
+        "volume_24h_usd",
+        "as_of",
+        "stale"
+       ],
+       "additionalProperties": false
+      }
+     },
+     "term_structure": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "expiry_date": {
+         "type": "string"
+        },
+        "days_to_expiry": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "venues": {
+         "type": "array",
+         "items": {
+          "type": "string",
+          "enum": [
+           "bybit",
+           "hyperliquid",
+           "dydx",
+           "gate",
+           "kraken",
+           "bitfinex",
+           "deribit",
+           "okx"
+          ]
+         }
+        },
+        "avg_annualised_basis_pct": {
+         "type": [
+          "number",
+          "null"
+         ]
+        }
+       },
+       "required": [
+        "expiry_date",
+        "days_to_expiry",
+        "venues",
+        "avg_annualised_basis_pct"
+       ],
+       "additionalProperties": false
+      }
+     },
+     "perp_premium": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "venue": {
+         "type": "string",
+         "enum": [
+          "bybit",
+          "hyperliquid",
+          "dydx",
+          "gate",
+          "kraken",
+          "bitfinex",
+          "deribit",
+          "okx"
+         ]
+        },
+        "symbol": {
+         "type": "string"
+        },
+        "mark": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "index": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "premium_pct": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "funding_rate_8h": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "as_of": {
+         "type": [
+          "string",
+          "null"
+         ],
+         "description": "ISO 8601 UTC"
+        },
+        "stale": {
+         "type": "boolean"
+        }
+       },
+       "required": [
+        "venue",
+        "symbol",
+        "mark",
+        "index",
+        "premium_pct",
+        "funding_rate_8h",
+        "as_of",
+        "stale"
+       ],
+       "additionalProperties": false
+      }
+     },
+     "predicted_funding": {
+      "type": [
+       "object",
+       "null"
+      ],
+      "properties": {
+       "as_of": {
+        "type": [
+         "string",
+         "null"
+        ],
+        "description": "ISO 8601 UTC"
+       },
+       "rows": {
+        "type": "array",
+        "items": {
+         "type": "object",
+         "properties": {
+          "source": {
+           "type": "string",
+           "enum": [
+            "hyperliquid",
+            "binance",
+            "bybit"
+           ]
+          },
+          "rate": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "interval_h": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "rate_8h": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "apr_pct": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "next_funding_time": {
+           "type": [
+            "string",
+            "null"
+           ],
+           "description": "ISO 8601 UTC"
+          }
+         },
+         "required": [
+          "source",
+          "rate",
+          "interval_h",
+          "rate_8h",
+          "apr_pct",
+          "next_funding_time"
+         ],
+         "additionalProperties": false
+        }
+       }
+      },
+      "required": [
+       "as_of",
+       "rows"
+      ],
+      "additionalProperties": false
+     },
+     "venues_missing": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "venue": {
+         "type": "string",
+         "enum": [
+          "bybit",
+          "hyperliquid",
+          "dydx",
+          "gate",
+          "kraken",
+          "bitfinex",
+          "deribit",
+          "okx"
+         ]
+        },
+        "reason": {
+         "type": "string",
+         "enum": [
+          "not_listed",
+          "timeout",
+          "blocked",
+          "error",
+          "unavailable",
+          "not_cached",
+          "symbol_mismatch",
+          "not_covered",
+          "stale"
+         ],
+         "description": "not_cached = not refreshed in this request (one large refresh per request); retry shortly."
+        },
+        "detail": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "venue",
+        "reason"
+       ],
+       "additionalProperties": false
+      }
+     },
+     "units": {
+      "type": "object",
+      "additionalProperties": {
+       "type": "string"
+      }
+     },
+     "as_of": {
+      "type": [
+       "string",
+       "null"
+      ],
+      "description": "ISO 8601 UTC"
+     },
+     "colo": {
+      "type": [
+       "string",
+       "null"
+      ],
+      "description": "Cloudflare location that fetched the data (venue reach differs by location)."
+     },
+     "disclaimer": {
+      "const": "Data only, not investment advice, not a benchmark; not affiliated with any exchange"
+     },
+     "see_also": {
+      "type": "object",
+      "properties": {
+       "endpoint": {
+        "type": "string"
+       },
+       "params": {
+        "type": "array",
+        "items": {
+         "type": "string"
+        }
+       },
+       "reason": {
+        "type": "string"
+       }
+      },
+      "required": [
+       "endpoint",
+       "params",
+       "reason"
+      ],
+      "additionalProperties": false
+     },
+     "request_id": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "coin",
+     "futures",
+     "term_structure",
+     "perp_premium",
+     "predicted_funding",
+     "venues_missing",
+     "units",
+     "as_of",
+     "colo",
+     "disclaimer",
+     "see_also",
+     "request_id"
+    ],
+    "additionalProperties": false
+   },
+   "outputExample": {
+    "coin": "BTC",
+    "futures": [
+     {
+      "venue": "deribit",
+      "symbol": "BTC-15OCT26",
+      "quote": "USD",
+      "expiry": "2026-10-15T08:00:00Z",
+      "days_to_expiry": 0.375,
+      "mark": 81562.96,
+      "index": 81563.54,
+      "basis_pct": -0.000711102,
+      "annualised_basis_pct": null,
+      "oi_usd": 1362060,
+      "volume_24h_usd": 1294160,
+      "as_of": "2026-10-14T23:00:00Z",
+      "stale": false
+     },
+     {
+      "venue": "bybit",
+      "symbol": "BTCUSDT-16OCT26",
+      "quote": "USDT",
+      "expiry": "2026-10-16T08:00:00Z",
+      "days_to_expiry": 1.375,
+      "mark": 81542.6,
+      "index": 81654,
+      "basis_pct": -0.136429,
+      "annualised_basis_pct": -36.2158,
+      "oi_usd": 6074760.61,
+      "volume_24h_usd": 146515.9953,
+      "as_of": "2026-10-14T23:00:00Z",
+      "stale": false
+     },
+     {
+      "venue": "deribit",
+      "symbol": "BTC-16OCT26",
+      "quote": "USD",
+      "expiry": "2026-10-16T08:00:00Z",
+      "days_to_expiry": 1.375,
+      "mark": 81582.4,
+      "index": 81563.54,
+      "basis_pct": 0.0231231,
+      "annualised_basis_pct": 6.13813,
+      "oi_usd": 8947950,
+      "volume_24h_usd": 2927380,
+      "as_of": "2026-10-14T23:00:00Z",
+      "stale": false
+     }
+    ],
+    "term_structure": [
+     {
+      "expiry_date": "2026-10-15",
+      "days_to_expiry": 0.375,
+      "venues": [
+       "deribit"
+      ],
+      "avg_annualised_basis_pct": null
+     },
+     {
+      "expiry_date": "2026-10-16",
+      "days_to_expiry": 1.375,
+      "venues": [
+       "bybit",
+       "deribit",
+       "gate"
+      ],
+      "avg_annualised_basis_pct": -7.39756
+     }
+    ],
+    "perp_premium": [
+     {
+      "venue": "bybit",
+      "symbol": "BTCUSDT",
+      "mark": 81631.8,
+      "index": 81672.62,
+      "premium_pct": -0.04998,
+      "funding_rate_8h": 3.501e-05,
+      "as_of": "2026-10-14T23:00:00Z",
+      "stale": false
+     },
+     {
+      "venue": "hyperliquid",
+      "symbol": "BTC",
+      "mark": 81624,
+      "index": 81658,
+      "premium_pct": -0.0416371,
+      "funding_rate_8h": 0.0001,
+      "as_of": "2026-10-14T23:00:00Z",
+      "stale": false
+     }
+    ],
+    "predicted_funding": {
+     "as_of": "2026-10-14T23:00:00Z",
+     "rows": [
+      {
+       "source": "binance",
+       "rate": -4.729e-05,
+       "interval_h": 8,
+       "rate_8h": -4.729e-05,
+       "apr_pct": -5.17826,
+       "next_funding_time": "2026-10-15T00:00:00Z"
+      },
+      {
+       "source": "bybit",
+       "rate": 3.501e-05,
+       "interval_h": 8,
+       "rate_8h": 3.501e-05,
+       "apr_pct": 3.83359,
+       "next_funding_time": "2026-10-15T00:00:00Z"
+      },
+      {
+       "source": "hyperliquid",
+       "rate": 1.25e-05,
+       "interval_h": 1,
+       "rate_8h": 0.0001,
+       "apr_pct": 10.95,
+       "next_funding_time": "2026-10-15T00:00:00Z"
+      }
+     ]
+    },
+    "venues_missing": [
+     {
+      "venue": "dydx",
+      "reason": "not_listed"
+     }
+    ],
+    "units": {
+     "mark": "USD per coin",
+     "index": "USD per coin (the venue's index; oracle on Hyperliquid and dYdX)",
+     "basis_pct": "(future - index) / index * 100",
+     "annualised_basis_pct": "basis_pct * 365 / days_to_expiry (simple); null when the future expires in less than 1 day (and left out of the term-structure average)",
+     "premium_pct": "(perp mark - index) / index * 100",
+     "days_to_expiry": "days (fractional)",
+     "times": "ISO 8601 UTC"
+    },
+    "as_of": "2026-10-14T23:00:00Z",
+    "colo": null,
+    "disclaimer": "Data only, not investment advice, not a benchmark; not affiliated with any exchange",
+    "see_also": {
+     "endpoint": "https://derivs.duoleads.com/v1/funding-rates",
+     "params": [
+      "coin"
+     ],
+     "reason": "Compare the futures basis with perpetual funding on every venue."
+    },
+    "request_id": "01KEXAMPLE0000000000000000"
+   }
+  },
+  {
+   "path": "/v1/options",
+   "method": "GET",
+   "tool": "implied_volatility",
+   "title": "Implied volatility, skew and max pain (crypto options)",
+   "serviceName": "Implied Volatility & Max Pain",
+   "topPhrase": "implied volatility",
+   "tags": [
+    "implied-volatility",
+    "iv",
+    "volatility",
+    "options",
+    "options-chain"
+   ],
+   "amount": "3000",
+   "priceUsd": "0.003",
+   "description": "Implied volatility (IV) of crypto options per expiry from Deribit, Bybit and OKX: ATM IV, 25-delta skew, put/call open interest ratio, max pain and Deribit's DVOL index; with an expiry, the options chain per strike with the greeks as each venue publishes them. Volatility surface inputs for BTC and ETH options. Data only. Bad input is free; nothing is charged when no venue answers.",
+   "minVenues": 1,
+   "inputExample": {
+    "coin": "BTC"
+   },
+   "querySchema": {
+    "properties": {
+     "coin": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 32,
+      "description": "Underlying coin: BTC, ETH, SOL ... (options exist mainly for BTC and ETH)."
+     },
+     "expiry": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+      "description": "Optional expiry date YYYY-MM-DD (UTC): only that expiry, plus its chain per strike with the venues' greeks. Default: the 6 nearest expiries, no chain."
+     }
+    },
+    "required": [
+     "coin"
+    ]
+   },
+   "outputSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Implied volatility, skew and max pain",
+    "type": "object",
+    "properties": {
+     "coin": {
+      "type": "string"
+     },
+     "expiries": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "expiry": {
+         "type": [
+          "string",
+          "null"
+         ],
+         "description": "ISO 8601 UTC"
+        },
+        "days_to_expiry": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "venues": {
+         "type": "array",
+         "items": {
+          "type": "object",
+          "properties": {
+           "venue": {
+            "type": "string",
+            "enum": [
+             "bybit",
+             "hyperliquid",
+             "dydx",
+             "gate",
+             "kraken",
+             "bitfinex",
+             "deribit",
+             "okx"
+            ]
+           },
+           "underlying": {
+            "type": [
+             "number",
+             "null"
+            ]
+           },
+           "atm_iv": {
+            "type": [
+             "number",
+             "null"
+            ]
+           },
+           "skew_25d": {
+            "type": [
+             "object",
+             "null"
+            ],
+            "properties": {
+             "call_iv": {
+              "type": [
+               "number",
+               "null"
+              ]
+             },
+             "put_iv": {
+              "type": [
+               "number",
+               "null"
+              ]
+             },
+             "call_delta": {
+              "type": [
+               "number",
+               "null"
+              ]
+             },
+             "put_delta": {
+              "type": [
+               "number",
+               "null"
+              ]
+             },
+             "skew": {
+              "type": [
+               "number",
+               "null"
+              ]
+             },
+             "risk_reversal": {
+              "type": [
+               "number",
+               "null"
+              ]
+             }
+            },
+            "required": [
+             "call_iv",
+             "put_iv",
+             "call_delta",
+             "put_delta",
+             "skew",
+             "risk_reversal"
+            ],
+            "additionalProperties": false
+           },
+           "put_call_oi_ratio": {
+            "type": [
+             "number",
+             "null"
+            ]
+           },
+           "max_pain": {
+            "type": [
+             "number",
+             "null"
+            ]
+           },
+           "oi_coins": {
+            "type": [
+             "number",
+             "null"
+            ]
+           },
+           "strikes": {
+            "type": "integer",
+            "minimum": 0
+           },
+           "as_of": {
+            "type": [
+             "string",
+             "null"
+            ],
+            "description": "ISO 8601 UTC"
+           },
+           "stale": {
+            "type": "boolean"
+           }
+          },
+          "required": [
+           "venue",
+           "underlying",
+           "atm_iv",
+           "skew_25d",
+           "put_call_oi_ratio",
+           "max_pain",
+           "oi_coins",
+           "strikes",
+           "as_of",
+           "stale"
+          ],
+          "additionalProperties": false
+         }
+        }
+       },
+       "required": [
+        "expiry",
+        "days_to_expiry",
+        "venues"
+       ],
+       "additionalProperties": false
+      }
+     },
+     "chain": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "venue": {
+         "type": "string",
+         "enum": [
+          "bybit",
+          "hyperliquid",
+          "dydx",
+          "gate",
+          "kraken",
+          "bitfinex",
+          "deribit",
+          "okx"
+         ]
+        },
+        "symbol": {
+         "type": "string"
+        },
+        "strike": {
+         "type": "number"
+        },
+        "type": {
+         "type": "string",
+         "enum": [
+          "call",
+          "put"
+         ]
+        },
+        "iv": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "delta": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "gamma": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "vega": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "theta": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "oi_coins": {
+         "type": [
+          "number",
+          "null"
+         ]
+        }
+       },
+       "required": [
+        "venue",
+        "symbol",
+        "strike",
+        "type",
+        "iv",
+        "delta",
+        "gamma",
+        "vega",
+        "theta",
+        "oi_coins"
+       ],
+       "additionalProperties": false
+      }
+     },
+     "dvol": {
+      "type": [
+       "object",
+       "null"
+      ],
+      "properties": {
+       "venue": {
+        "const": "deribit"
+       },
+       "value": {
+        "type": [
+         "number",
+         "null"
+        ]
+       },
+       "time": {
+        "type": [
+         "string",
+         "null"
+        ],
+        "description": "ISO 8601 UTC"
+       },
+       "change_24h": {
+        "type": [
+         "number",
+         "null"
+        ]
+       },
+       "high_24h": {
+        "type": [
+         "number",
+         "null"
+        ]
+       },
+       "low_24h": {
+        "type": [
+         "number",
+         "null"
+        ]
+       },
+       "as_of": {
+        "type": [
+         "string",
+         "null"
+        ],
+        "description": "ISO 8601 UTC"
+       }
+      },
+      "required": [
+       "venue",
+       "value",
+       "time",
+       "change_24h",
+       "high_24h",
+       "low_24h",
+       "as_of"
+      ],
+      "additionalProperties": false
+     },
+     "available_expiries": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "venues_missing": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "venue": {
+         "type": "string",
+         "enum": [
+          "bybit",
+          "hyperliquid",
+          "dydx",
+          "gate",
+          "kraken",
+          "bitfinex",
+          "deribit",
+          "okx"
+         ]
+        },
+        "reason": {
+         "type": "string",
+         "enum": [
+          "not_listed",
+          "timeout",
+          "blocked",
+          "error",
+          "unavailable",
+          "not_cached",
+          "symbol_mismatch",
+          "not_covered",
+          "stale"
+         ],
+         "description": "not_cached = not refreshed in this request (one large refresh per request); retry shortly."
+        },
+        "detail": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "venue",
+        "reason"
+       ],
+       "additionalProperties": false
+      }
+     },
+     "units": {
+      "type": "object",
+      "additionalProperties": {
+       "type": "string"
+      }
+     },
+     "as_of": {
+      "type": [
+       "string",
+       "null"
+      ],
+      "description": "ISO 8601 UTC"
+     },
+     "colo": {
+      "type": [
+       "string",
+       "null"
+      ],
+      "description": "Cloudflare location that fetched the data (venue reach differs by location)."
+     },
+     "disclaimer": {
+      "const": "Data only, not investment advice, not a benchmark; not affiliated with any exchange"
+     },
+     "see_also": {
+      "type": "object",
+      "properties": {
+       "endpoint": {
+        "type": "string"
+       },
+       "params": {
+        "type": "array",
+        "items": {
+         "type": "string"
+        }
+       },
+       "reason": {
+        "type": "string"
+       }
+      },
+      "required": [
+       "endpoint",
+       "params",
+       "reason"
+      ],
+      "additionalProperties": false
+     },
+     "request_id": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "coin",
+     "expiries",
+     "dvol",
+     "available_expiries",
+     "venues_missing",
+     "units",
+     "as_of",
+     "colo",
+     "disclaimer",
+     "see_also",
+     "request_id"
+    ],
+    "additionalProperties": false
+   },
+   "outputExample": {
+    "coin": "BTC",
+    "expiries": [
+     {
+      "expiry": "2026-10-15T08:00:00Z",
+      "days_to_expiry": 0.375,
+      "venues": [
+       {
+        "venue": "deribit",
+        "underlying": 81562.84,
+        "atm_iv": 0.390797,
+        "skew_25d": null,
+        "put_call_oi_ratio": 1.42436,
+        "max_pain": 83500,
+        "oi_coins": 3102.7,
+        "strikes": 28,
+        "as_of": "2026-10-14T23:00:00Z",
+        "stale": false
+       },
+       {
+        "venue": "bybit",
+        "underlying": 81646.3838,
+        "atm_iv": 0.390494,
+        "skew_25d": {
+         "call_iv": 0.3866,
+         "put_iv": 0.4155,
+         "call_delta": 0.27996,
+         "put_delta": -0.274783,
+         "skew": 0.0289,
+         "risk_reversal": -0.0289
+        },
+        "put_call_oi_ratio": 0.765449,
+        "max_pain": 82500,
+        "oi_coins": 2832.08,
+        "strikes": 28,
+        "as_of": "2026-10-14T23:00:00Z",
+        "stale": false
+       },
+       {
+        "venue": "okx",
+        "underlying": 81622.81366,
+        "atm_iv": 0.386518,
+        "skew_25d": {
+         "call_iv": 0.392882,
+         "put_iv": 0.40066,
+         "call_delta": 0.201432,
+         "put_delta": -0.27447,
+         "skew": 0.00777776,
+         "risk_reversal": -0.00777776
+        },
+        "put_call_oi_ratio": null,
+        "max_pain": null,
+        "oi_coins": null,
+        "strikes": 27,
+        "as_of": "2026-10-14T23:00:00Z",
+        "stale": false
+       }
+      ]
+     },
+     {
+      "expiry": "2026-10-16T08:00:00Z",
+      "days_to_expiry": 1.375,
+      "venues": [
+       {
+        "venue": "deribit",
+        "underlying": 81582.3,
+        "atm_iv": 0.387452,
+        "skew_25d": null,
+        "put_call_oi_ratio": 1.42795,
+        "max_pain": 83000,
+        "oi_coins": 17322.2,
+        "strikes": 26,
+        "as_of": "2026-10-14T23:00:00Z",
+        "stale": false
+       },
+       {
+        "venue": "bybit",
+        "underlying": 81565.5,
+        "atm_iv": 0.373493,
+        "skew_25d": {
+         "call_iv": 0.3861,
+         "put_iv": 0.4091,
+         "call_delta": 0.235112,
+         "put_delta": -0.216943,
+         "skew": 0.023,
+         "risk_reversal": -0.023
+        },
+        "put_call_oi_ratio": 1.08242,
+        "max_pain": 83000,
+        "oi_coins": 3288.83,
+        "strikes": 35,
+        "as_of": "2026-10-14T23:00:00Z",
+        "stale": false
+       },
+       {
+        "venue": "okx",
+        "underlying": 81625.13401,
+        "atm_iv": 0.379213,
+        "skew_25d": {
+         "call_iv": 0.364241,
+         "put_iv": 0.435268,
+         "call_delta": 0.231349,
+         "put_delta": -0.222136,
+         "skew": 0.0710269,
+         "risk_reversal": -0.0710269
+        },
+        "put_call_oi_ratio": null,
+        "max_pain": null,
+        "oi_coins": null,
+        "strikes": 33,
+        "as_of": "2026-10-14T23:00:00Z",
+        "stale": false
+       }
+      ]
+     }
+    ],
+    "dvol": {
+     "venue": "deribit",
+     "value": 39.13,
+     "time": "2026-10-14T22:00:00Z",
+     "change_24h": 0.96,
+     "high_24h": 39.3,
+     "low_24h": 37.75,
+     "as_of": "2026-10-14T23:00:00Z"
+    },
+    "available_expiries": [
+     "2026-10-15",
+     "2026-10-16"
+    ],
+    "venues_missing": [],
+    "units": {
+     "iv": "implied volatility as a fraction (0.45 = 45 %), annualised",
+     "skew": "put IV - call IV at 25 delta (fraction)",
+     "put_call_oi_ratio": "put open interest / call open interest",
+     "max_pain": "strike (USD) where option holders' intrinsic value at expiry is smallest",
+     "oi_coins": "coins",
+     "underlying": "USD per coin (the venue's underlying / forward price)",
+     "dvol": "Deribit volatility index, annualised percent",
+     "greeks": "as published by the venue (Bybit, OKX); Deribit publishes none in bulk"
+    },
+    "as_of": "2026-10-14T23:00:00Z",
+    "colo": null,
+    "disclaimer": "Data only, not investment advice, not a benchmark; not affiliated with any exchange",
+    "see_also": {
+     "endpoint": "https://derivs.duoleads.com/v1/basis",
+     "params": [
+      "coin"
+     ],
+     "reason": "The futures term structure (annualised basis per expiry) next to the options' implied volatility."
+    },
+    "request_id": "01KEXAMPLE0000000000000000"
+   }
+  },
+  {
+   "path": "/v1/liquidations",
+   "method": "GET",
+   "tool": "liquidations",
+   "title": "Liquidations (one coin, last 1-24 h)",
+   "serviceName": "Crypto Liquidations Tracker",
+   "topPhrase": "liquidations",
+   "tags": [
+    "liquidations",
+    "liquidation",
+    "liquidation-data",
+    "perp",
+    "long-liquidations"
+   ],
+   "amount": "3000",
+   "priceUsd": "0.003",
+   "description": "Liquidations of one coin's perpetual futures: recent forced liquidations from the Gate, Bitfinex, dYdX, Deribit and OKX public feeds, long and short liquidations in USD per venue, the totals and the largest events over 1-24h. Liquidation data for BTC, ETH, SOL and more; Bybit, Hyperliquid and Kraken are listed as not covered (WebSocket only). Data only. Bad input is free; under 2 feeds not charged.",
+   "minVenues": 2,
+   "inputExample": {
+    "coin": "BTC",
+    "hours": "24"
+   },
+   "querySchema": {
+    "properties": {
+     "coin": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 32,
+      "description": "Coin symbol: BTC, ETH, SOL ... (also BTCUSDT, BTC-PERP, XBT)."
+     },
+     "hours": {
+      "type": "string",
+      "pattern": "^[0-9]{1,2}$",
+      "default": "24",
+      "description": "Look-back window in hours, 1-24. Default 24."
+     }
+    },
+    "required": [
+     "coin"
+    ]
+   },
+   "outputSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Recent liquidations",
+    "type": "object",
+    "properties": {
+     "coin": {
+      "type": "string"
+     },
+     "hours": {
+      "type": "integer",
+      "minimum": 0
+     },
+     "totals": {
+      "type": "object",
+      "properties": {
+       "long_usd": {
+        "type": [
+         "number",
+         "null"
+        ]
+       },
+       "short_usd": {
+        "type": [
+         "number",
+         "null"
+        ]
+       },
+       "total_usd": {
+        "type": [
+         "number",
+         "null"
+        ]
+       },
+       "count": {
+        "type": "integer",
+        "minimum": 0
+       },
+       "long_share_pct": {
+        "type": [
+         "number",
+         "null"
+        ]
+       },
+       "partial": {
+        "type": "boolean"
+       },
+       "partial_venues": {
+        "type": "array",
+        "items": {
+         "type": "string",
+         "enum": [
+          "bybit",
+          "hyperliquid",
+          "dydx",
+          "gate",
+          "kraken",
+          "bitfinex",
+          "deribit",
+          "okx"
+         ]
+        }
+       }
+      },
+      "required": [
+       "long_usd",
+       "short_usd",
+       "total_usd",
+       "count",
+       "long_share_pct",
+       "partial",
+       "partial_venues"
+      ],
+      "additionalProperties": false
+     },
+     "venues": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "venue": {
+         "type": "string",
+         "enum": [
+          "bybit",
+          "hyperliquid",
+          "dydx",
+          "gate",
+          "kraken",
+          "bitfinex",
+          "deribit",
+          "okx"
+         ]
+        },
+        "long_usd": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "short_usd": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "count": {
+         "type": "integer",
+         "minimum": 0
+        },
+        "window_start": {
+         "type": [
+          "string",
+          "null"
+         ],
+         "description": "ISO 8601 UTC"
+        },
+        "covered_hours": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "as_of": {
+         "type": [
+          "string",
+          "null"
+         ],
+         "description": "ISO 8601 UTC"
+        },
+        "stale": {
+         "type": "boolean"
+        }
+       },
+       "required": [
+        "venue",
+        "long_usd",
+        "short_usd",
+        "count",
+        "window_start",
+        "covered_hours",
+        "as_of",
+        "stale"
+       ],
+       "additionalProperties": false
+      }
+     },
+     "largest": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "venue": {
+         "type": "string",
+         "enum": [
+          "bybit",
+          "hyperliquid",
+          "dydx",
+          "gate",
+          "kraken",
+          "bitfinex",
+          "deribit",
+          "okx"
+         ]
+        },
+        "symbol": {
+         "type": "string"
+        },
+        "time": {
+         "type": [
+          "string",
+          "null"
+         ],
+         "description": "ISO 8601 UTC"
+        },
+        "side": {
+         "type": "string",
+         "enum": [
+          "long",
+          "short"
+         ]
+        },
+        "price": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "size_coins": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "size_usd": {
+         "type": [
+          "number",
+          "null"
+         ]
+        }
+       },
+       "required": [
+        "venue",
+        "symbol",
+        "time",
+        "side",
+        "price",
+        "size_coins",
+        "size_usd"
+       ],
+       "additionalProperties": false
+      }
+     },
+     "venues_missing": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "venue": {
+         "type": "string",
+         "enum": [
+          "bybit",
+          "hyperliquid",
+          "dydx",
+          "gate",
+          "kraken",
+          "bitfinex",
+          "deribit",
+          "okx"
+         ]
+        },
+        "reason": {
+         "type": "string",
+         "enum": [
+          "not_listed",
+          "timeout",
+          "blocked",
+          "error",
+          "unavailable",
+          "not_cached",
+          "symbol_mismatch",
+          "not_covered",
+          "stale"
+         ],
+         "description": "not_cached = not refreshed in this request (one large refresh per request); retry shortly."
+        },
+        "detail": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "venue",
+        "reason"
+       ],
+       "additionalProperties": false
+      }
+     },
+     "units": {
+      "type": "object",
+      "additionalProperties": {
+       "type": "string"
+      }
+     },
+     "as_of": {
+      "type": [
+       "string",
+       "null"
+      ],
+      "description": "ISO 8601 UTC"
+     },
+     "colo": {
+      "type": [
+       "string",
+       "null"
+      ],
+      "description": "Cloudflare location that fetched the data (venue reach differs by location)."
+     },
+     "disclaimer": {
+      "const": "Data only, not investment advice, not a benchmark; not affiliated with any exchange"
+     },
+     "see_also": {
+      "type": "object",
+      "properties": {
+       "endpoint": {
+        "type": "string"
+       },
+       "params": {
+        "type": "array",
+        "items": {
+         "type": "string"
+        }
+       },
+       "reason": {
+        "type": "string"
+       }
+      },
+      "required": [
+       "endpoint",
+       "params",
+       "reason"
+      ],
+      "additionalProperties": false
+     },
+     "request_id": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "coin",
+     "hours",
+     "totals",
+     "venues",
+     "largest",
+     "venues_missing",
+     "units",
+     "as_of",
+     "colo",
+     "disclaimer",
+     "see_also",
+     "request_id"
+    ],
+    "additionalProperties": false
+   },
+   "outputExample": {
+    "coin": "BTC",
+    "hours": 24,
+    "totals": {
+     "long_usd": 2039006.657,
+     "short_usd": 38256.80723,
+     "total_usd": 2077263.464,
+     "count": 141,
+     "long_share_pct": 98.1583,
+     "partial": true,
+     "partial_venues": [
+      "okx"
+     ]
+    },
+    "venues": [
+     {
+      "venue": "gate",
+      "long_usd": 305655.3674,
+      "short_usd": 34040.14805,
+      "count": 29,
+      "window_start": "2026-10-13T23:00:00Z",
+      "covered_hours": 24,
+      "as_of": "2026-10-14T23:00:00Z",
+      "stale": false
+     },
+     {
+      "venue": "bitfinex",
+      "long_usd": 469920.1238,
+      "short_usd": 0,
+      "count": 12,
+      "window_start": "2026-10-13T23:00:00Z",
+      "covered_hours": 24,
+      "as_of": "2026-10-14T23:00:00Z",
+      "stale": false
+     },
+     {
+      "venue": "dydx",
+      "long_usd": 0,
+      "short_usd": 0,
+      "count": 0,
+      "window_start": "2026-10-13T23:00:00Z",
+      "covered_hours": 24,
+      "as_of": "2026-10-14T23:00:00Z",
+      "stale": false
+     }
+    ],
+    "largest": [
+     {
+      "venue": "okx",
+      "symbol": "BTC-USDT-SWAP",
+      "time": "2026-10-14T21:03:30Z",
+      "side": "long",
+      "price": 81646.4,
+      "size_coins": 6,
+      "size_usd": 489878.4
+     },
+     {
+      "venue": "okx",
+      "symbol": "BTC-USDT-SWAP",
+      "time": "2026-10-14T21:03:34Z",
+      "side": "long",
+      "price": 81630.8,
+      "size_coins": 2.08,
+      "size_usd": 169792.064
+     }
+    ],
+    "venues_missing": [
+     {
+      "venue": "bybit",
+      "reason": "not_covered"
+     },
+     {
+      "venue": "hyperliquid",
+      "reason": "not_covered"
+     },
+     {
+      "venue": "kraken",
+      "reason": "not_covered"
+     }
+    ],
+    "units": {
+     "side": "the side of the position that was liquidated (long = forced sell)",
+     "price": "USD per coin (execution or bankruptcy price as the venue publishes)",
+     "size_coins": "coins",
+     "size_usd": "USD = size_coins x price",
+     "covered_hours": "hours back from as_of that the venue's feed reaches (<= hours)",
+     "times": "ISO 8601 UTC"
+    },
+    "as_of": "2026-10-14T23:00:00Z",
+    "colo": null,
+    "disclaimer": "Data only, not investment advice, not a benchmark; not affiliated with any exchange",
+    "see_also": {
+     "endpoint": "https://derivs.duoleads.com/v1/open-interest",
+     "params": [
+      "coin"
+     ],
+     "reason": "Open interest per venue with its 1 h / 4 h / 24 h change."
+    },
+    "request_id": "01KEXAMPLE0000000000000000"
+   }
+  },
+  {
+   "path": "/v1/orderbook",
+   "method": "GET",
+   "tool": "order_book_depth",
+   "title": "Order book depth and slippage (one coin, 8 venues)",
+   "serviceName": "Order Book Depth & Slippage",
+   "topPhrase": "order book depth",
+   "tags": [
+    "order-book-depth",
+    "orderbook",
+    "order-book",
+    "slippage",
+    "market-depth"
+   ],
+   "amount": "3000",
+   "priceUsd": "0.003",
+   "description": "Order book depth of one coin's perpetual on Bybit, Hyperliquid, dYdX, Gate, Kraken, Bitfinex, Deribit and OKX: best bid/ask, spread in bps, market depth in USD within 0.1/0.5/1/2% of mid, bid/ask imbalance, estimated slippage for your order size and the largest resting orders (walls). L2 orderbook liquidity for BTC, ETH, SOL and more. Data only. Bad input is free; under 2 venues not charged.",
+   "minVenues": 2,
+   "inputExample": {
+    "coin": "BTC",
+    "size_usd": "100000"
+   },
+   "querySchema": {
+    "properties": {
+     "coin": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 32,
+      "description": "Coin symbol: BTC, ETH, SOL, PEPE ... (also BTCUSDT, BTC-PERP, XBT, 1000PEPE, kPEPE)."
+     },
+     "size_usd": {
+      "type": "string",
+      "default": "100000",
+      "description": "Order size in USD for the slippage estimate (1-1e9). Default 100000."
+     },
+     "levels": {
+      "type": "string",
+      "pattern": "^[0-9]{1,2}$",
+      "default": "0",
+      "description": "Also return the top N price levels per side (0-20). Default 0."
+     }
+    },
+    "required": [
+     "coin"
+    ]
+   },
+   "outputSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Order book depth and slippage",
+    "type": "object",
+    "properties": {
+     "coin": {
+      "type": "string"
+     },
+     "size_usd": {
+      "type": "number"
+     },
+     "venues": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "venue": {
+         "type": "string",
+         "enum": [
+          "bybit",
+          "hyperliquid",
+          "dydx",
+          "gate",
+          "kraken",
+          "bitfinex",
+          "deribit",
+          "okx"
+         ]
+        },
+        "symbol": {
+         "type": "string"
+        },
+        "best_bid": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "best_ask": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "mid": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "spread_bps": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "depth": {
+         "type": "array",
+         "items": {
+          "type": "object",
+          "properties": {
+           "pct": {
+            "type": "number"
+           },
+           "bid_usd": {
+            "type": [
+             "number",
+             "null"
+            ]
+           },
+           "ask_usd": {
+            "type": [
+             "number",
+             "null"
+            ]
+           },
+           "imbalance": {
+            "type": [
+             "number",
+             "null"
+            ]
+           }
+          },
+          "required": [
+           "pct",
+           "bid_usd",
+           "ask_usd",
+           "imbalance"
+          ],
+          "additionalProperties": false
+         }
+        },
+        "slippage": {
+         "type": "object",
+         "properties": {
+          "size_usd": {
+           "type": "number"
+          },
+          "buy": {
+           "type": [
+            "object",
+            "null"
+           ],
+           "properties": {
+            "filled": {
+             "type": "boolean"
+            },
+            "filled_usd": {
+             "type": [
+              "number",
+              "null"
+             ]
+            },
+            "avg_price": {
+             "type": [
+              "number",
+              "null"
+             ]
+            },
+            "slippage_bps": {
+             "type": [
+              "number",
+              "null"
+             ]
+            }
+           },
+           "required": [
+            "filled",
+            "filled_usd",
+            "avg_price",
+            "slippage_bps"
+           ],
+           "additionalProperties": false
+          },
+          "sell": {
+           "type": [
+            "object",
+            "null"
+           ],
+           "properties": {
+            "filled": {
+             "type": "boolean"
+            },
+            "filled_usd": {
+             "type": [
+              "number",
+              "null"
+             ]
+            },
+            "avg_price": {
+             "type": [
+              "number",
+              "null"
+             ]
+            },
+            "slippage_bps": {
+             "type": [
+              "number",
+              "null"
+             ]
+            }
+           },
+           "required": [
+            "filled",
+            "filled_usd",
+            "avg_price",
+            "slippage_bps"
+           ],
+           "additionalProperties": false
+          }
+         },
+         "required": [
+          "size_usd",
+          "buy",
+          "sell"
+         ],
+         "additionalProperties": false
+        },
+        "walls": {
+         "type": "object",
+         "properties": {
+          "bids": {
+           "type": "array",
+           "items": {
+            "type": "object",
+            "properties": {
+             "price": {
+              "type": [
+               "number",
+               "null"
+              ]
+             },
+             "size_usd": {
+              "type": [
+               "number",
+               "null"
+              ]
+             }
+            },
+            "required": [
+             "price",
+             "size_usd"
+            ],
+            "additionalProperties": false
+           }
+          },
+          "asks": {
+           "type": "array",
+           "items": {
+            "type": "object",
+            "properties": {
+             "price": {
+              "type": [
+               "number",
+               "null"
+              ]
+             },
+             "size_usd": {
+              "type": [
+               "number",
+               "null"
+              ]
+             }
+            },
+            "required": [
+             "price",
+             "size_usd"
+            ],
+            "additionalProperties": false
+           }
+          }
+         },
+         "required": [
+          "bids",
+          "asks"
+         ],
+         "additionalProperties": false
+        },
+        "levels": {
+         "type": "object",
+         "properties": {
+          "bids": {
+           "type": "array",
+           "items": {
+            "type": "array",
+            "items": {
+             "type": [
+              "number",
+              "null"
+             ]
+            }
+           }
+          },
+          "asks": {
+           "type": "array",
+           "items": {
+            "type": "array",
+            "items": {
+             "type": [
+              "number",
+              "null"
+             ]
+            }
+           }
+          }
+         },
+         "required": [
+          "bids",
+          "asks"
+         ],
+         "additionalProperties": false
+        },
+        "levels_held": {
+         "type": "object",
+         "properties": {
+          "bids": {
+           "type": "integer",
+           "minimum": 0
+          },
+          "asks": {
+           "type": "integer",
+           "minimum": 0
+          }
+         },
+         "required": [
+          "bids",
+          "asks"
+         ],
+         "additionalProperties": false
+        },
+        "book_time": {
+         "type": [
+          "string",
+          "null"
+         ],
+         "description": "ISO 8601 UTC"
+        },
+        "as_of": {
+         "type": [
+          "string",
+          "null"
+         ],
+         "description": "ISO 8601 UTC"
+        },
+        "stale": {
+         "type": "boolean"
+        }
+       },
+       "required": [
+        "venue",
+        "symbol",
+        "best_bid",
+        "best_ask",
+        "mid",
+        "spread_bps",
+        "depth",
+        "slippage",
+        "walls",
+        "levels_held",
+        "book_time",
+        "as_of",
+        "stale"
+       ],
+       "additionalProperties": false
+      }
+     },
+     "aggregate": {
+      "type": "object",
+      "properties": {
+       "depth": {
+        "type": "array",
+        "items": {
+         "type": "object",
+         "properties": {
+          "pct": {
+           "type": "number"
+          },
+          "bid_usd": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "ask_usd": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "imbalance": {
+           "type": [
+            "number",
+            "null"
+           ]
+          }
+         },
+         "required": [
+          "pct",
+          "bid_usd",
+          "ask_usd",
+          "imbalance"
+         ],
+         "additionalProperties": false
+        }
+       },
+       "tightest_spread": {
+        "type": [
+         "object",
+         "null"
+        ],
+        "properties": {
+         "venue": {
+          "type": "string",
+          "enum": [
+           "bybit",
+           "hyperliquid",
+           "dydx",
+           "gate",
+           "kraken",
+           "bitfinex",
+           "deribit",
+           "okx"
+          ]
+         },
+         "value": {
+          "type": "number"
+         }
+        },
+        "required": [
+         "venue",
+         "value"
+        ],
+        "additionalProperties": false
+       },
+       "lowest_buy_slippage": {
+        "type": [
+         "object",
+         "null"
+        ],
+        "properties": {
+         "venue": {
+          "type": "string",
+          "enum": [
+           "bybit",
+           "hyperliquid",
+           "dydx",
+           "gate",
+           "kraken",
+           "bitfinex",
+           "deribit",
+           "okx"
+          ]
+         },
+         "value": {
+          "type": "number"
+         }
+        },
+        "required": [
+         "venue",
+         "value"
+        ],
+        "additionalProperties": false
+       },
+       "lowest_sell_slippage": {
+        "type": [
+         "object",
+         "null"
+        ],
+        "properties": {
+         "venue": {
+          "type": "string",
+          "enum": [
+           "bybit",
+           "hyperliquid",
+           "dydx",
+           "gate",
+           "kraken",
+           "bitfinex",
+           "deribit",
+           "okx"
+          ]
+         },
+         "value": {
+          "type": "number"
+         }
+        },
+        "required": [
+         "venue",
+         "value"
+        ],
+        "additionalProperties": false
+       }
+      },
+      "required": [
+       "depth",
+       "tightest_spread",
+       "lowest_buy_slippage",
+       "lowest_sell_slippage"
+      ],
+      "additionalProperties": false
+     },
+     "venues_missing": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "venue": {
+         "type": "string",
+         "enum": [
+          "bybit",
+          "hyperliquid",
+          "dydx",
+          "gate",
+          "kraken",
+          "bitfinex",
+          "deribit",
+          "okx"
+         ]
+        },
+        "reason": {
+         "type": "string",
+         "enum": [
+          "not_listed",
+          "timeout",
+          "blocked",
+          "error",
+          "unavailable",
+          "not_cached",
+          "symbol_mismatch",
+          "not_covered",
+          "stale"
+         ],
+         "description": "not_cached = not refreshed in this request (one large refresh per request); retry shortly."
+        },
+        "detail": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "venue",
+        "reason"
+       ],
+       "additionalProperties": false
+      }
+     },
+     "units": {
+      "type": "object",
+      "additionalProperties": {
+       "type": "string"
+      }
+     },
+     "as_of": {
+      "type": [
+       "string",
+       "null"
+      ],
+      "description": "ISO 8601 UTC"
+     },
+     "colo": {
+      "type": [
+       "string",
+       "null"
+      ],
+      "description": "Cloudflare location that fetched the data (venue reach differs by location)."
+     },
+     "disclaimer": {
+      "const": "Data only, not investment advice, not a benchmark; not affiliated with any exchange"
+     },
+     "see_also": {
+      "type": "object",
+      "properties": {
+       "endpoint": {
+        "type": "string"
+       },
+       "params": {
+        "type": "array",
+        "items": {
+         "type": "string"
+        }
+       },
+       "reason": {
+        "type": "string"
+       }
+      },
+      "required": [
+       "endpoint",
+       "params",
+       "reason"
+      ],
+      "additionalProperties": false
+     },
+     "request_id": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "coin",
+     "size_usd",
+     "venues",
+     "aggregate",
+     "venues_missing",
+     "units",
+     "as_of",
+     "colo",
+     "disclaimer",
+     "see_also",
+     "request_id"
+    ],
+    "additionalProperties": false
+   },
+   "outputExample": {
+    "coin": "BTC",
+    "size_usd": 100000,
+    "venues": [
+     {
+      "venue": "bybit",
+      "symbol": "BTCUSDT",
+      "best_bid": 81644.9,
+      "best_ask": 81645,
+      "mid": 81644.95,
+      "spread_bps": 0.0122482,
+      "depth": [
+       {
+        "pct": 0.1,
+        "bid_usd": 8009555.947,
+        "ask_usd": 7913202.056,
+        "imbalance": 0.00605133
+       },
+       {
+        "pct": 0.5,
+        "bid_usd": 8009555.947,
+        "ask_usd": 7913202.056,
+        "imbalance": 0.00605133
+       }
+      ],
+      "slippage": {
+       "size_usd": 100000,
+       "buy": {
+        "filled": true,
+        "filled_usd": 100000,
+        "avg_price": 81645,
+        "slippage_bps": 0.00612408
+       },
+       "sell": {
+        "filled": true,
+        "filled_usd": 100000,
+        "avg_price": 81644.9,
+        "slippage_bps": 0.00612408
+       }
+      },
+      "walls": {
+       "bids": [
+        {
+         "price": 81634.1,
+         "size_usd": 642378.7329
+        },
+        {
+         "price": 81644.9,
+         "size_usd": 483174.5182
+        }
+       ],
+       "asks": [
+        {
+         "price": 81672,
+         "size_usd": 510695.016
+        },
+        {
+         "price": 81669.3,
+         "size_usd": 452692.9299
+        }
+       ]
+      },
+      "levels_held": {
+       "bids": 200,
+       "asks": 200
+      },
+      "book_time": "2026-10-14T22:50:24Z",
+      "as_of": "2026-10-14T23:00:00Z",
+      "stale": false
+     },
+     {
+      "venue": "hyperliquid",
+      "symbol": "BTC",
+      "best_bid": 81648,
+      "best_ask": 81649,
+      "mid": 81648.5,
+      "spread_bps": 0.122476,
+      "depth": [
+       {
+        "pct": 0.1,
+        "bid_usd": 5932686.945,
+        "ask_usd": 5325002.521,
+        "imbalance": 0.0539795
+       },
+       {
+        "pct": 0.5,
+        "bid_usd": 5932686.945,
+        "ask_usd": 5325002.521,
+        "imbalance": 0.0539795
+       }
+      ],
+      "slippage": {
+       "size_usd": 100000,
+       "buy": {
+        "filled": true,
+        "filled_usd": 100000,
+        "avg_price": 81649,
+        "slippage_bps": 0.0612381
+       },
+       "sell": {
+        "filled": true,
+        "filled_usd": 100000,
+        "avg_price": 81648,
+        "slippage_bps": 0.0612381
+       }
+      },
+      "walls": {
+       "bids": [
+        {
+         "price": 81630,
+         "size_usd": 1456431.848
+        },
+        {
+         "price": 81631,
+         "size_usd": 1080598.526
+        }
+       ],
+       "asks": [
+        {
+         "price": 81649,
+         "size_usd": 735450.918
+        },
+        {
+         "price": 81665,
+         "size_usd": 702384.332
+        }
+       ]
+      },
+      "levels_held": {
+       "bids": 20,
+       "asks": 20
+      },
+      "book_time": "2026-10-14T22:50:37Z",
+      "as_of": "2026-10-14T23:00:00Z",
+      "stale": false
+     },
+     {
+      "venue": "dydx",
+      "symbol": "BTC-USD",
+      "best_bid": 81555,
+      "best_ask": 81558,
+      "mid": 81556.5,
+      "spread_bps": 0.367843,
+      "depth": [
+       {
+        "pct": 0.1,
+        "bid_usd": 432342.3352,
+        "ask_usd": 54982.3292,
+        "imbalance": 0.77435
+       },
+       {
+        "pct": 0.5,
+        "bid_usd": 14526180.35,
+        "ask_usd": 19370916.04,
+        "imbalance": -0.142925
+       }
+      ],
+      "slippage": {
+       "size_usd": 100000,
+       "buy": {
+        "filled": true,
+        "filled_usd": 100000,
+        "avg_price": 81629.85356,
+        "slippage_bps": 8.9942
+       },
+       "sell": {
+        "filled": true,
+        "filled_usd": 100000,
+        "avg_price": 81533.36734,
+        "slippage_bps": 2.8364
+       }
+      },
+      "walls": {
+       "bids": [
+        {
+         "price": 80967,
+         "size_usd": 8090263.124
+        },
+        {
+         "price": 80845,
+         "size_usd": 8078072.823
+        }
+       ],
+       "asks": [
+        {
+         "price": 83219,
+         "size_usd": 10000111
+        },
+        {
+         "price": 83178,
+         "size_usd": 10000083.37
+        }
+       ]
+      },
+      "levels_held": {
+       "bids": 100,
+       "asks": 100
+      },
+      "book_time": "2026-10-14T23:00:00Z",
+      "as_of": "2026-10-14T23:00:00Z",
+      "stale": false
+     }
+    ],
+    "aggregate": {
+     "depth": [
+      {
+       "pct": 0.1,
+       "bid_usd": 41381002.89,
+       "ask_usd": 42793969.58,
+       "imbalance": -0.0167861
+      },
+      {
+       "pct": 0.5,
+       "bid_usd": 109389514.7,
+       "ask_usd": 104580954.7,
+       "imbalance": 0.022473
+      }
+     ],
+     "tightest_spread": {
+      "venue": "bybit",
+      "value": 0.0122482
+     },
+     "lowest_buy_slippage": {
+      "venue": "bybit",
+      "value": 0.00612408
+     },
+     "lowest_sell_slippage": {
+      "venue": "bybit",
+      "value": 0.00612408
+     }
+    },
+    "venues_missing": [],
+    "units": {
+     "prices": "USD per coin",
+     "spread_bps": "(ask - bid) / mid x 10,000",
+     "depth_usd": "USD resting within +/- pct % of mid (price x size)",
+     "imbalance": "(bid_usd - ask_usd) / (bid_usd + ask_usd), -1..1",
+     "slippage_bps": "average fill vs mid in basis points (>= 0 is worse than mid)",
+     "levels": "[price USD, size coins]",
+     "times": "ISO 8601 UTC"
+    },
+    "as_of": "2026-10-14T23:00:00Z",
+    "colo": null,
+    "disclaimer": "Data only, not investment advice, not a benchmark; not affiliated with any exchange",
+    "see_also": {
+     "endpoint": "https://derivs.duoleads.com/v1/liquidations",
+     "params": [
+      "coin",
+      "hours"
+     ],
+     "reason": "Recent forced liquidations that hit these books."
+    },
+    "request_id": "01KEXAMPLE0000000000000000"
+   }
+  },
+  {
+   "path": "/v1/derivatives-snapshot",
+   "method": "GET",
+   "tool": "derivatives_snapshot",
+   "title": "Crypto derivatives snapshot (one coin, one call)",
+   "serviceName": "Crypto Derivatives Snapshot",
+   "topPhrase": "crypto derivatives",
+   "tags": [
+    "crypto-derivatives",
+    "derivatives",
+    "funding",
+    "oi",
+    "liquidations"
+   ],
+   "amount": "5000",
+   "priceUsd": "0.005",
+   "description": "Crypto derivatives snapshot of one coin in one call: perp funding rates per exchange with predicted funding, open interest (OI) per venue, perp premium and the nearest futures basis, 24h liquidations and the long/short ratio. Venues: Bybit, Hyperliquid, dYdX, Gate, Kraken, Bitfinex, Deribit, OKX. The derivatives data bundle for trading agents on BTC, ETH, SOL and more. Data only. Bad input is free; under 3 venues not charged.",
+   "minVenues": 3,
+   "inputExample": {
+    "coin": "BTC"
+   },
+   "querySchema": {
+    "properties": {
+     "coin": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 32,
+      "description": "Coin symbol: BTC, ETH, SOL, PEPE ... (also BTCUSDT, BTC-PERP, XBT, 1000PEPE, kPEPE)."
+     }
+    },
+    "required": [
+     "coin"
+    ]
+   },
+   "outputSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Crypto derivatives snapshot",
+    "type": "object",
+    "properties": {
+     "coin": {
+      "type": "string"
+     },
+     "price": {
+      "type": [
+       "number",
+       "null"
+      ]
+     },
+     "funding": {
+      "type": "object",
+      "properties": {
+       "venues": {
+        "type": "array",
+        "items": {
+         "type": "object",
+         "properties": {
+          "venue": {
+           "type": "string",
+           "enum": [
+            "bybit",
+            "hyperliquid",
+            "dydx",
+            "gate",
+            "kraken",
+            "bitfinex",
+            "deribit",
+            "okx"
+           ]
+          },
+          "symbol": {
+           "type": "string"
+          },
+          "rate": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "interval_h": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "rate_8h": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "apr_pct": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "next_funding_time": {
+           "type": [
+            "string",
+            "null"
+           ],
+           "description": "ISO 8601 UTC"
+          }
+         },
+         "required": [
+          "venue",
+          "symbol",
+          "rate",
+          "interval_h",
+          "rate_8h",
+          "apr_pct",
+          "next_funding_time"
+         ],
+         "additionalProperties": false
+        }
+       },
+       "summary": {
+        "type": [
+         "object",
+         "null"
+        ],
+        "properties": {
+         "venues": {
+          "type": "integer",
+          "minimum": 0
+         },
+         "avg_rate_8h": {
+          "type": [
+           "number",
+           "null"
+          ]
+         },
+         "avg_apr_pct": {
+          "type": [
+           "number",
+           "null"
+          ]
+         },
+         "min_apr": {
+          "type": "object",
+          "properties": {
+           "venue": {
+            "type": "string",
+            "enum": [
+             "bybit",
+             "hyperliquid",
+             "dydx",
+             "gate",
+             "kraken",
+             "bitfinex",
+             "deribit",
+             "okx"
+            ]
+           },
+           "apr_pct": {
+            "type": [
+             "number",
+             "null"
+            ]
+           }
+          },
+          "required": [
+           "venue",
+           "apr_pct"
+          ],
+          "additionalProperties": false
+         },
+         "max_apr": {
+          "type": "object",
+          "properties": {
+           "venue": {
+            "type": "string",
+            "enum": [
+             "bybit",
+             "hyperliquid",
+             "dydx",
+             "gate",
+             "kraken",
+             "bitfinex",
+             "deribit",
+             "okx"
+            ]
+           },
+           "apr_pct": {
+            "type": [
+             "number",
+             "null"
+            ]
+           }
+          },
+          "required": [
+           "venue",
+           "apr_pct"
+          ],
+          "additionalProperties": false
+         },
+         "spread_apr_pct": {
+          "type": [
+           "number",
+           "null"
+          ]
+         }
+        },
+        "required": [
+         "venues",
+         "avg_rate_8h",
+         "avg_apr_pct",
+         "min_apr",
+         "max_apr",
+         "spread_apr_pct"
+        ],
+        "additionalProperties": false
+       },
+       "predicted": {
+        "type": "array",
+        "items": {
+         "type": "object",
+         "properties": {
+          "source": {
+           "type": "string",
+           "enum": [
+            "hyperliquid",
+            "binance",
+            "bybit"
+           ]
+          },
+          "rate": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "interval_h": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "rate_8h": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "apr_pct": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "next_funding_time": {
+           "type": [
+            "string",
+            "null"
+           ],
+           "description": "ISO 8601 UTC"
+          }
+         },
+         "required": [
+          "source",
+          "rate",
+          "interval_h",
+          "rate_8h",
+          "apr_pct",
+          "next_funding_time"
+         ],
+         "additionalProperties": false
+        }
+       }
+      },
+      "required": [
+       "venues",
+       "summary",
+       "predicted"
+      ],
+      "additionalProperties": false
+     },
+     "open_interest": {
+      "type": "object",
+      "properties": {
+       "total_usd": {
+        "type": [
+         "number",
+         "null"
+        ]
+       },
+       "total_coins": {
+        "type": [
+         "number",
+         "null"
+        ]
+       },
+       "venues": {
+        "type": "array",
+        "items": {
+         "type": "object",
+         "properties": {
+          "venue": {
+           "type": "string",
+           "enum": [
+            "bybit",
+            "hyperliquid",
+            "dydx",
+            "gate",
+            "kraken",
+            "bitfinex",
+            "deribit",
+            "okx"
+           ]
+          },
+          "oi_coins": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "oi_usd": {
+           "type": [
+            "number",
+            "null"
+           ]
+          }
+         },
+         "required": [
+          "venue",
+          "oi_coins",
+          "oi_usd"
+         ],
+         "additionalProperties": false
+        }
+       }
+      },
+      "required": [
+       "total_usd",
+       "total_coins",
+       "venues"
+      ],
+      "additionalProperties": false
+     },
+     "basis": {
+      "type": "object",
+      "properties": {
+       "perp_premium": {
+        "type": "array",
+        "items": {
+         "type": "object",
+         "properties": {
+          "venue": {
+           "type": "string",
+           "enum": [
+            "bybit",
+            "hyperliquid",
+            "dydx",
+            "gate",
+            "kraken",
+            "bitfinex",
+            "deribit",
+            "okx"
+           ]
+          },
+          "premium_pct": {
+           "type": [
+            "number",
+            "null"
+           ]
+          }
+         },
+         "required": [
+          "venue",
+          "premium_pct"
+         ],
+         "additionalProperties": false
+        }
+       },
+       "nearest_future": {
+        "type": [
+         "object",
+         "null"
+        ],
+        "properties": {
+         "venue": {
+          "type": "string",
+          "enum": [
+           "bybit",
+           "hyperliquid",
+           "dydx",
+           "gate",
+           "kraken",
+           "bitfinex",
+           "deribit",
+           "okx"
+          ]
+         },
+         "symbol": {
+          "type": "string"
+         },
+         "expiry": {
+          "type": [
+           "string",
+           "null"
+          ],
+          "description": "ISO 8601 UTC"
+         },
+         "days_to_expiry": {
+          "type": [
+           "number",
+           "null"
+          ]
+         },
+         "basis_pct": {
+          "type": [
+           "number",
+           "null"
+          ]
+         },
+         "annualised_basis_pct": {
+          "type": [
+           "number",
+           "null"
+          ]
+         }
+        },
+        "required": [
+         "venue",
+         "symbol",
+         "expiry",
+         "days_to_expiry",
+         "basis_pct",
+         "annualised_basis_pct"
+        ],
+        "additionalProperties": false
+       }
+      },
+      "required": [
+       "perp_premium",
+       "nearest_future"
+      ],
+      "additionalProperties": false
+     },
+     "liquidations_24h": {
+      "type": "object",
+      "properties": {
+       "long_usd": {
+        "type": [
+         "number",
+         "null"
+        ]
+       },
+       "short_usd": {
+        "type": [
+         "number",
+         "null"
+        ]
+       },
+       "sources": {
+        "type": "array",
+        "items": {
+         "type": "object",
+         "properties": {
+          "venue": {
+           "type": "string",
+           "enum": [
+            "bybit",
+            "hyperliquid",
+            "dydx",
+            "gate",
+            "kraken",
+            "bitfinex",
+            "deribit",
+            "okx"
+           ]
+          },
+          "method": {
+           "type": "string",
+           "enum": [
+            "hourly sums",
+            "events"
+           ]
+          },
+          "hours": {
+           "type": "integer",
+           "minimum": 0
+          },
+          "count": {
+           "type": "integer",
+           "minimum": 0
+          },
+          "long_usd": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "short_usd": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "as_of": {
+           "type": [
+            "string",
+            "null"
+           ],
+           "description": "ISO 8601 UTC"
+          }
+         },
+         "required": [
+          "venue",
+          "method",
+          "long_usd",
+          "short_usd",
+          "as_of"
+         ],
+         "additionalProperties": false
+        }
+       }
+      },
+      "required": [
+       "long_usd",
+       "short_usd",
+       "sources"
+      ],
+      "additionalProperties": false
+     },
+     "long_short": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "venue": {
+         "type": "string",
+         "enum": [
+          "bybit",
+          "hyperliquid",
+          "dydx",
+          "gate",
+          "kraken",
+          "bitfinex",
+          "deribit",
+          "okx"
+         ]
+        },
+        "symbol": {
+         "type": "string"
+        },
+        "ratio": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "long_share": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "short_share": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "time": {
+         "type": [
+          "string",
+          "null"
+         ],
+         "description": "ISO 8601 UTC"
+        },
+        "ratio_24h_ago": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "as_of": {
+         "type": [
+          "string",
+          "null"
+         ],
+         "description": "ISO 8601 UTC"
+        }
+       },
+       "required": [
+        "venue",
+        "symbol",
+        "ratio",
+        "long_share",
+        "short_share",
+        "time",
+        "ratio_24h_ago",
+        "as_of"
+       ],
+       "additionalProperties": false
+      }
+     },
+     "venues": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "venue": {
+         "type": "string",
+         "enum": [
+          "bybit",
+          "hyperliquid",
+          "dydx",
+          "gate",
+          "kraken",
+          "bitfinex",
+          "deribit",
+          "okx"
+         ]
+        },
+        "as_of": {
+         "type": [
+          "string",
+          "null"
+         ],
+         "description": "ISO 8601 UTC"
+        },
+        "stale": {
+         "type": "boolean"
+        }
+       },
+       "required": [
+        "venue",
+        "as_of",
+        "stale"
+       ],
+       "additionalProperties": false
+      }
+     },
+     "venues_missing": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "venue": {
+         "type": "string",
+         "enum": [
+          "bybit",
+          "hyperliquid",
+          "dydx",
+          "gate",
+          "kraken",
+          "bitfinex",
+          "deribit",
+          "okx"
+         ]
+        },
+        "reason": {
+         "type": "string",
+         "enum": [
+          "not_listed",
+          "timeout",
+          "blocked",
+          "error",
+          "unavailable",
+          "not_cached",
+          "symbol_mismatch",
+          "not_covered",
+          "stale"
+         ],
+         "description": "not_cached = not refreshed in this request (one large refresh per request); retry shortly."
+        },
+        "detail": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "venue",
+        "reason"
+       ],
+       "additionalProperties": false
+      }
+     },
+     "units": {
+      "type": "object",
+      "additionalProperties": {
+       "type": "string"
+      }
+     },
+     "as_of": {
+      "type": [
+       "string",
+       "null"
+      ],
+      "description": "ISO 8601 UTC"
+     },
+     "colo": {
+      "type": [
+       "string",
+       "null"
+      ],
+      "description": "Cloudflare location that fetched the data (venue reach differs by location)."
+     },
+     "disclaimer": {
+      "const": "Data only, not investment advice, not a benchmark; not affiliated with any exchange"
+     },
+     "see_also": {
+      "type": "object",
+      "properties": {
+       "endpoint": {
+        "type": "string"
+       },
+       "params": {
+        "type": "array",
+        "items": {
+         "type": "string"
+        }
+       },
+       "reason": {
+        "type": "string"
+       }
+      },
+      "required": [
+       "endpoint",
+       "params",
+       "reason"
+      ],
+      "additionalProperties": false
+     },
+     "request_id": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "coin",
+     "price",
+     "funding",
+     "open_interest",
+     "basis",
+     "liquidations_24h",
+     "long_short",
+     "venues",
+     "venues_missing",
+     "units",
+     "as_of",
+     "colo",
+     "disclaimer",
+     "see_also",
+     "request_id"
+    ],
+    "additionalProperties": false
+   },
+   "outputExample": {
+    "coin": "BTC",
+    "price": 81626.2,
+    "funding": {
+     "venues": [
+      {
+       "venue": "bybit",
+       "symbol": "BTCUSDT",
+       "rate": 3.501e-05,
+       "interval_h": 8,
+       "rate_8h": 3.501e-05,
+       "apr_pct": 3.83359,
+       "next_funding_time": "2026-10-15T00:00:00Z"
+      },
+      {
+       "venue": "hyperliquid",
+       "symbol": "BTC",
+       "rate": 1.25e-05,
+       "interval_h": 1,
+       "rate_8h": 0.0001,
+       "apr_pct": 10.95,
+       "next_funding_time": "2026-10-15T00:00:00Z"
+      },
+      {
+       "venue": "dydx",
+       "symbol": "BTC-USD",
+       "rate": 0,
+       "interval_h": 1,
+       "rate_8h": 0,
+       "apr_pct": 0,
+       "next_funding_time": "2026-10-15T00:00:00Z"
+      }
+     ],
+     "summary": {
+      "venues": 8,
+      "avg_rate_8h": 4.8465931e-05,
+      "avg_apr_pct": 5.30702,
+      "min_apr": {
+       "venue": "dydx",
+       "apr_pct": 0
+      },
+      "max_apr": {
+       "venue": "kraken",
+       "apr_pct": 11.8121
+      },
+      "spread_apr_pct": 11.8121
+     },
+     "predicted": [
+      {
+       "source": "binance",
+       "rate": -4.729e-05,
+       "interval_h": 8,
+       "rate_8h": -4.729e-05,
+       "apr_pct": -5.17826,
+       "next_funding_time": "2026-10-15T00:00:00Z"
+      },
+      {
+       "source": "bybit",
+       "rate": 3.501e-05,
+       "interval_h": 8,
+       "rate_8h": 3.501e-05,
+       "apr_pct": 3.83359,
+       "next_funding_time": "2026-10-15T00:00:00Z"
+      }
+     ]
+    },
+    "open_interest": {
+     "total_usd": 15119084900,
+     "total_coins": 185224.8895,
+     "venues": [
+      {
+       "venue": "bybit",
+       "oi_coins": 30908.842,
+       "oi_usd": 2523081487
+      },
+      {
+       "venue": "hyperliquid",
+       "oi_coins": 40178.15264,
+       "oi_usd": 3279501531
+      },
+      {
+       "venue": "dydx",
+       "oi_coins": 201.605,
+       "oi_usd": 16438545.1
+      }
+     ]
+    },
+    "basis": {
+     "perp_premium": [
+      {
+       "venue": "bybit",
+       "premium_pct": -0.04998
+      },
+      {
+       "venue": "hyperliquid",
+       "premium_pct": -0.0416371
+      }
+     ],
+     "nearest_future": {
+      "venue": "deribit",
+      "symbol": "BTC-16OCT26",
+      "expiry": "2026-10-16T08:00:00Z",
+      "days_to_expiry": 1.375,
+      "basis_pct": 0.0231231,
+      "annualised_basis_pct": 6.13813
+     }
+    },
+    "liquidations_24h": {
+     "long_usd": 6839221.13,
+     "short_usd": 1348389.598,
+     "sources": [
+      {
+       "venue": "gate",
+       "method": "hourly sums",
+       "hours": 24,
+       "long_usd": 6369301.006,
+       "short_usd": 1348389.598,
+       "as_of": "2026-10-14T23:00:00Z"
+      },
+      {
+       "venue": "bitfinex",
+       "method": "events",
+       "count": 12,
+       "long_usd": 469920.1238,
+       "short_usd": 0,
+       "as_of": "2026-10-14T23:00:00Z"
+      }
+     ]
+    },
+    "long_short": [
+     {
+      "venue": "bybit",
+      "symbol": "BTCUSDT",
+      "ratio": 1.76243,
+      "long_share": 0.638,
+      "short_share": 0.362,
+      "time": "2026-10-14T22:00:00Z",
+      "ratio_24h_ago": 1.50627,
+      "as_of": "2026-10-14T23:00:00Z"
+     },
+     {
+      "venue": "gate",
+      "symbol": "BTC_USDT",
+      "ratio": 1.70965,
+      "long_share": 0.630949,
+      "short_share": 0.369051,
+      "time": "2026-10-14T22:00:00Z",
+      "ratio_24h_ago": 1.13719,
+      "as_of": "2026-10-14T23:00:00Z"
+     }
+    ],
+    "venues": [
+     {
+      "venue": "bybit",
+      "as_of": "2026-10-14T23:00:00Z",
+      "stale": false
+     },
+     {
+      "venue": "hyperliquid",
+      "as_of": "2026-10-14T23:00:00Z",
+      "stale": false
+     },
+     {
+      "venue": "dydx",
+      "as_of": "2026-10-14T23:00:00Z",
+      "stale": false
+     }
+    ],
+    "venues_missing": [],
+    "units": {
+     "rate": "fraction per funding interval",
+     "rate_8h": "fraction per 8 hours",
+     "apr_pct": "simple annualised percent",
+     "oi": "coins and USD",
+     "premium_pct": "(perp mark - index) / index * 100",
+     "basis_pct": "(future - index) / index * 100; annualised = * 365 / days",
+     "liquidations": "USD, side = the liquidated position",
+     "long_short_ratio": "accounts net long / accounts net short",
+     "times": "ISO 8601 UTC"
+    },
+    "as_of": "2026-10-14T23:00:00Z",
+    "colo": null,
+    "disclaimer": "Data only, not investment advice, not a benchmark; not affiliated with any exchange",
+    "see_also": {
+     "endpoint": "https://derivs.duoleads.com/v1/perp-screener",
+     "params": [
+      "sort",
+      "limit"
+     ],
+     "reason": "Every perpetual across venues at once, sorted by funding, open interest, volume or 24 h change."
+    },
+    "request_id": "01KEXAMPLE0000000000000000"
+   }
+  }
+ ]
+}

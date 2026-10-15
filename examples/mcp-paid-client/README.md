@@ -33,6 +33,18 @@ DUO_PAYER_KEY=0x... npx tsx mcp-agent.ts call vat_tax_id_validate '{"country":"D
 DUO_PAYER_KEY=0x... npx tsx mcp-agent.ts call iban_generate '{"country":"DE","bank":"37040044","account":"0532013000"}'
 ```
 
+## Crypto derivatives MCP server
+
+The same client pays the derivatives tools at `https://derivs.duoleads.com/mcp` (perp funding rates, funding arbitrage, open interest, futures basis, implied volatility, liquidations, order book depth). Set `DUO_MCP=derivs`: the URL switches and the cap drops to $0.005 per call. Each successful call costs $0.003 or $0.005.
+
+```sh
+DUO_MCP=derivs npx tsx mcp-agent.ts list                                                   # free
+DUO_MCP=derivs DUO_PAYER_KEY=0x... npx tsx mcp-agent.ts call perp_funding_rates '{"coin":"BTC"}'              # $0.003
+DUO_MCP=derivs DUO_PAYER_KEY=0x... npx tsx mcp-agent.ts call derivatives_snapshot '{"coin":"ETH"}'            # $0.005
+```
+
+In code: `createMcpClient({ signer, url: DERIVS_MCP_URL, maxAtomic: DERIVS_MAX_AMOUNT_ATOMIC })`.
+
 ## MCP host configuration
 
 `mcp.json` adds the server to MCP hosts that read an `mcpServers` map with HTTP servers (Claude Code project `.mcp.json`, Cursor `.cursor/mcp.json`). Listing tools works in any host. A paid call needs a host or wallet bridge that pays x402. For host-specific files see [mcp/README.md](../../mcp/README.md).

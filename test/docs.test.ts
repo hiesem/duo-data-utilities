@@ -19,7 +19,7 @@ describe("README", () => {
     for (const [path, method] of Object.entries(methods)) {
       expect(readme).toContain(`| \`${method.namespace}.${method.method}\` | \`${path}\` |`);
     }
-    expect(readme.split("\n").filter((line) => line.startsWith("| `"))).toHaveLength(33);
+    expect(readme.split("\n").filter((line) => /^\| `[a-zA-Z]+\.[a-zA-Z]+` \| `\/v1\/[a-z]+\/[a-z0-9-]+` \|/.test(line))).toHaveLength(33);
   });
 
   it("describes VAT and tax ID checks with the agreed wording", () => {
@@ -38,12 +38,49 @@ describe("README", () => {
   });
 });
 
+describe("README: derivs", () => {
+  const readme = read("README.md");
+  const derivs = JSON.parse(read("spec/derivs.json")).routes as Array<{ path: string; tool: string; amount: string }>;
+  const derivsMethods = JSON.parse(read("spec/derivs-methods.json")).routes as Record<string, { method: string }>;
+  const snake = (name: string) => name.replace(/(?<!^)(?=[A-Z])/g, "_").toLowerCase();
+
+  it("has a keyword-first derivatives section", () => {
+    expect(readme).toContain(
+      "## Crypto derivatives data: perp funding rates, open interest, futures basis, implied volatility, liquidations, order book depth",
+    );
+  });
+
+  it("has one row per derivs route with both method names, the route and the price", () => {
+    for (const route of derivs) {
+      const method = derivsMethods[route.path]?.method ?? "";
+      const price = route.amount === "5000" ? "$0.005" : "$0.003";
+      expect(readme, route.path).toContain(`| \`derivs.${method}\` | \`derivs.${snake(method)}\` | \`${route.path}\` | ${price} |`);
+    }
+  });
+
+  it("links the derivs pages and the MCP endpoint", () => {
+    for (const url of ["https://derivs.duoleads.com/docs", "https://derivs.duoleads.com/openapi.json", "https://derivs.duoleads.com/terms", "https://derivs.duoleads.com/privacy", "https://derivs.duoleads.com/mcp"]) {
+      expect(readme).toContain(url);
+    }
+  });
+});
+
 describe("MCP configuration", () => {
   const mcpReadme = read("mcp/README.md");
 
   it("lists all 33 tool names from the inventory", () => {
     for (const [path, route] of Object.entries(keywords)) {
       expect(mcpReadme, path).toContain(`| \`${route.tool}\` | \`${path}\` |`);
+    }
+  });
+
+  it("lists the 10 derivs tools with route and price, and has a config per client", () => {
+    const derivs = JSON.parse(read("spec/derivs.json")).routes as Array<{ path: string; tool: string; amount: string }>;
+    for (const route of derivs) {
+      expect(mcpReadme, route.path).toContain(`| \`${route.tool}\` | \`${route.path}\` | ${route.amount === "5000" ? "$0.005" : "$0.003"} |`);
+    }
+    for (const file of ["derivs.mcp.json", "derivs.claude-desktop.json", "derivs.cursor.mcp.json", "derivs.vscode.mcp.json"]) {
+      expect(read(`mcp/${file}`), file).toContain("https://derivs.duoleads.com/mcp");
     }
   });
 
@@ -76,6 +113,6 @@ describe("package metadata", () => {
   it("uses the MIT licence and the agreed package name and version", () => {
     expect(pkg.license).toBe("MIT");
     expect(pkg.name).toBe("duo-data-utilities");
-    expect(pkg.version).toBe("0.1.2");
+    expect(pkg.version).toBe("0.2.0");
   });
 });

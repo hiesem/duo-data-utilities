@@ -1,20 +1,25 @@
-import { decodePaymentResponseHeader, wrapFetchWithPaymentFromConfig } from "@x402/fetch";
-import { ExactEvmScheme } from "@x402/evm/exact/client";
 import { assertRoutePath, buildQuery, type CallRoute } from "./caller.js";
 import { checkCounterparty, type CounterpartyInput, type CounterpartyResult } from "./counterparty.js";
+import { createDerivsClient, type DerivsClient } from "./derivs.js";
 import { DuoApiError } from "./errors.js";
 import { createGeneratedClient, type GeneratedClient } from "./generated.js";
-import { BASE_NETWORK, DEFAULT_MAX_PRICE_USD, DEFAULT_PAY_TO, guardChallenges, guardPolicy, usdToAtomic } from "./price-guard.js";
+import { DEFAULT_MAX_PRICE_USD, DEFAULT_PAY_TO, usdToAtomic } from "./price-guard.js";
+import {
+  buildPayingFetch,
+  canSetUserAgent,
+  isRecord,
+  normaliseBaseUrl,
+  parseJson,
+  receiptOf,
+  type EvmSigner,
+  type FetchLike,
+  type SettlementReceipt,
+} from "./transport.js";
 import { SDK_USER_AGENT } from "./version.js";
 
+export type { EvmSigner, SettlementReceipt } from "./transport.js";
+
 export const DEFAULT_BASE_URL = "https://api.duoleads.com";
-
-/** Decoded PAYMENT-RESPONSE header: whether the payment settled, its transaction hash, network and payer. */
-export type SettlementReceipt = ReturnType<typeof decodePaymentResponseHeader>;
-/** A viem LocalAccount (from privateKeyToAccount) or any object implementing x402's ClientEvmSigner. */
-export type EvmSigner = ConstructorParameters<typeof ExactEvmScheme>[0];
-
-type FetchLike = (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
 
 export interface DuoClientOptions {
   /** Wallet that pays each call. Use this, or `fetch`, not both. */
@@ -36,11 +41,21 @@ export interface DuoClientOptions {
   payTo?: string | null;
   /**
    * The User-Agent sent with every request. Default: `SDK_USER_AGENT`, e.g.
-   * "duo-data-utilities-js/0.1.2 (+https://github.com/hiesem/duo-data-utilities)". To append your own
+   * "duo-data-utilities-js/0.2.0 (+https://github.com/hiesem/duo-data-utilities)". To append your own
    * product, pass `${SDK_USER_AGENT} my-agent/1.0`. Browsers do not let a page set User-Agent, so the
    * client sends none there.
    */
   userAgent?: string;
+  /**
+   * Settings for `client.derivs` (crypto derivatives data at https://derivs.duoleads.com). The wallet or
+   * fetch, `payTo` and `userAgent` are shared with the main client.
+   */
+  derivs?: {
+    /** Derivs API origin. Default https://derivs.duoleads.com. */
+    baseUrl?: string;
+    /** Largest price in USD that `client.derivs` signs for one call. Default 0.005. */
+    maxPriceUsd?: number;
+  };
 }
 
 /** A route's result with the response meta and the settlement receipt. */
@@ -58,58 +73,13 @@ export type DuoClient = GeneratedClient & {
   callWithReceipt<T = unknown>(path: string, params?: object): Promise<PaidResult<T>>;
   /** Runs IBAN, tax ID and country checks: three calls, $0.15. Structure and checksum only. */
   checkCounterparty(input: CounterpartyInput): Promise<CounterpartyResult>;
+  /**
+   * Crypto derivatives data from https://derivs.duoleads.com: perp funding rates, funding history and
+   * arbitrage, perp screener, open interest, futures basis, implied volatility, liquidations, order book
+   * depth and a one-call snapshot. $0.003 or $0.005 per call, capped by its own price guard (default $0.005).
+   */
+  derivs: DerivsClient;
 };
-
-/**
- * True outside browsers. In a browser (window or worker) the client sends no User-Agent: most browsers
- * drop it, and one that sends it would trigger a CORS preflight the API does not allow.
- */
-function canSetUserAgent(): boolean {
-  const scope = globalThis as Record<string, unknown>;
-  return typeof scope.document === "undefined" && typeof scope.WorkerGlobalScope === "undefined";
-}
-
-const LOOPBACK_HOSTS = new Set(["localhost", "127.0.0.1", "[::1]"]);
-
-function normaliseBaseUrl(raw: string): string {
-  const url = new URL(raw);
-  const plainLoopback = url.protocol === "http:" && LOOPBACK_HOSTS.has(url.hostname);
-  if (url.protocol !== "https:" && !plainLoopback) {
-    throw new TypeError(`baseUrl must use https (plain http is only allowed for localhost): ${raw}`);
-  }
-  if (url.search || url.hash) throw new TypeError("baseUrl must not contain a query or a fragment");
-  return `${url.origin}${url.pathname.replace(/\/+$/, "")}`;
-}
-
-function buildPayingFetch(account: EvmSigner, maxAtomic: bigint, maxPriceUsd: number, payTo: string | null): FetchLike {
-  return wrapFetchWithPaymentFromConfig(guardChallenges(globalThis.fetch, maxAtomic, maxPriceUsd, payTo), {
-    schemes: [{ network: BASE_NETWORK, client: new ExactEvmScheme(account) }],
-    policies: [guardPolicy(maxAtomic, payTo)],
-    // A second, independent cap in the payment layer, in USD for the default USDC asset.
-    spendControls: { maxAmountPerPayment: maxPriceUsd },
-  });
-}
-
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === "object" && value !== null && !Array.isArray(value);
-
-function parseJson(text: string): unknown {
-  try {
-    return JSON.parse(text);
-  } catch {
-    return undefined;
-  }
-}
-
-function receiptOf(response: Response): SettlementReceipt | null {
-  const header = response.headers.get("payment-response");
-  if (!header) return null;
-  try {
-    return decodePaymentResponseHeader(header);
-  } catch {
-    return null;
-  }
-}
 
 function apiError(path: string, status: number, ok: boolean, body: unknown): DuoApiError {
   const meta = isRecord(body) && isRecord(body.meta) ? body.meta : {};
@@ -184,5 +154,12 @@ export function createClient(options: DuoClientOptions = {}): DuoClient {
     call: <T = unknown>(path: string, params?: object) => callRoute<T>(path, params ?? {}),
     callWithReceipt: <T = unknown>(path: string, params?: object) => callPaid<T>(path, params ?? {}),
     checkCounterparty: (input: CounterpartyInput) => checkCounterparty(generated, input),
+    derivs: createDerivsClient({
+      ...(options.account !== undefined ? { account: options.account } : { fetch: options.fetch as FetchLike }),
+      ...(options.payTo !== undefined ? { payTo: options.payTo } : {}),
+      userAgent,
+      ...(options.derivs?.baseUrl !== undefined ? { baseUrl: options.derivs.baseUrl } : {}),
+      ...(options.derivs?.maxPriceUsd !== undefined ? { maxPriceUsd: options.derivs.maxPriceUsd } : {}),
+    }),
   };
 }

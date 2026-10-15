@@ -1,0 +1,1 @@
+duo-data-utilities @ git+https://github.com/hiesem/duo-data-utilities#subdirectory=python

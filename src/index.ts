@@ -6,3 +6,6 @@ export type { CheckStatus, CounterpartyCheck, CounterpartyInput, CounterpartyRes
 export { DuoApiError, PriceGuardError } from "./errors.js";
 export { BASE_NETWORK, BASE_USDC_ADDRESS, DEFAULT_MAX_PRICE_USD } from "./price-guard.js";
 export * from "./generated.js";
+export { createDerivsClient, DEFAULT_DERIVS_BASE_URL, DEFAULT_DERIVS_MAX_PRICE_USD, DERIVS_MCP_URL } from "./derivs.js";
+export type { DerivsClient, DerivsClientOptions, DerivsPaidResult } from "./derivs.js";
+export * from "./derivs-generated.js";

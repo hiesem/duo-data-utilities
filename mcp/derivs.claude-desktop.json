@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "duo-derivs": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "https://derivs.duoleads.com/mcp"]
+    }
+  }
+}

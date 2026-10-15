@@ -70,3 +70,31 @@ export function jsonResponse(body: unknown, init: ResponseInit = {}): Response {
   return new Response(JSON.stringify(body), { ...init, headers });
 }
 
+
+/** Derivs route catalogue snapshot (spec/derivs.json). */
+export interface DerivsSpecRoute {
+  path: string;
+  tool: string;
+  amount: string;
+  description: string;
+  inputExample: Record<string, string>;
+  querySchema: { properties: Record<string, unknown>; required: string[] };
+  outputExample: Record<string, unknown>;
+}
+export const derivsSpec = JSON.parse(readFileSync(new URL("../../spec/derivs.json", import.meta.url), "utf8")) as {
+  origin: string;
+  routes: DerivsSpecRoute[];
+};
+
+/**
+ * A derivs PAYMENT-REQUIRED challenge: the real captured challenge with the derivs price and resource.
+ * `amount` is in atomic USDC: 3000 ($0.003) or 5000 ($0.005).
+ */
+export function derivsChallengeHeader(path: string, amount: string, edit?: (challenge: Challenge) => void): string {
+  return challengeHeader((challenge) => {
+    (challenge.accepts[0] as Requirement).amount = amount;
+    challenge.resource = { url: `https://derivs.duoleads.com${path}`, mimeType: "application/json", serviceName: "Crypto Derivatives Data API" };
+    delete challenge.extensions;
+    edit?.(challenge);
+  });
+}

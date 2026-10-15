@@ -103,3 +103,89 @@ describe("examples/mcp-paid-client", () => {
     expect(server.calls.filter((c) => c.method === "tools/call")).toHaveLength(1);
   });
 });
+
+describe("examples/funding-arbitrage-watcher", () => {
+  it("states its cost upfront: 12 scans at $0.005 = $0.06 by default", async () => {
+    const { DEFAULTS, plan, parseArgs, PRICE_USD } = await import("../examples/funding-arbitrage-watcher/watcher.js");
+    expect(PRICE_USD).toBe(0.005);
+    expect(plan(DEFAULTS)).toEqual({ calls: 12, maxCostUsd: 0.06, durationMin: 55 });
+    expect(parseArgs(["--scans", "4", "--min-net-apr", "30", "--dry-run"])).toMatchObject({ scans: 4, minNetApr: 30, dryRun: true });
+    expect(() => parseArgs(["--scans", "0"])).toThrow();
+    expect(() => parseArgs(["--bogus", "1"])).toThrow();
+  });
+
+  it("scans once per interval, alerts each new opportunity once, and skips unpaid 503 scans", async () => {
+    const { runWatcher, DEFAULTS } = await import("../examples/funding-arbitrage-watcher/watcher.js");
+    const { createDerivsClient } = await import("../src/index.js");
+    const { derivsSpec } = await import("./helpers/challenge.js");
+    const recorded = derivsSpec.routes.find((r) => r.path === "/v1/funding-arbitrage")?.outputExample ?? {};
+    const seen: URL[] = [];
+    const client = createDerivsClient({
+      fetch: async (input) => {
+        const url = new URL(String(input));
+        seen.push(url);
+        if (seen.length === 2) return jsonResponse({ error: { status: 503, code: "UPSTREAM_UNAVAILABLE", message: "Only 2 of 8 venues answered; nothing was charged." } }, { status: 503 });
+        return jsonResponse(recorded);
+      },
+    });
+    const sleeps: number[] = [];
+    const lines: string[] = [];
+    const result = await runWatcher(client, { ...DEFAULTS, scans: 3, intervalMin: 5, minNetApr: 50 }, { sleep: async (ms) => void sleeps.push(ms), log: (l) => lines.push(l) });
+    expect(seen.map((u) => u.pathname)).toEqual(["/v1/funding-arbitrage", "/v1/funding-arbitrage", "/v1/funding-arbitrage"]);
+    expect(Object.fromEntries(seen[0]?.searchParams ?? [])).toEqual({ min_apr: "50", min_volume_usd: "1000000", fee_pct: "0.05", holding_days: "30", limit: "50" });
+    expect(sleeps).toEqual([300_000, 300_000]);
+    expect(result.paidScans).toBe(2);
+    expect(result.spentUsd).toBeCloseTo(0.01);
+    const expected = (recorded as { opportunities: Array<{ coin: string; net_apr_pct: number | null }> }).opportunities.filter((o) => (o.net_apr_pct ?? 0) >= 50);
+    expect(expected.length).toBeGreaterThan(0);
+    expect(result.alerts.map((a) => a.coin)).toEqual(expected.map((o) => o.coin)); // the third scan repeats them: no new alerts
+    expect(result.alerts.every((a) => a.scan === 1)).toBe(true);
+    expect(lines.some((l) => l.includes("skipped") && l.includes("nothing was charged"))).toBe(true);
+  });
+});
+
+describe("examples/mcp-paid-client against the derivs MCP server (mocked)", () => {
+  type Rpc = { id: number; method: string; params?: { name?: string; _meta?: Record<string, unknown> } };
+
+  function fakeDerivsMcp(amount: string) {
+    const calls: Rpc[] = [];
+    const urls: string[] = [];
+    const fetchImpl = async (url: string, init: RequestInit): Promise<Response> => {
+      const rpc = JSON.parse(String(init.body)) as Rpc;
+      calls.push(rpc);
+      urls.push(url);
+      const reply = (result: unknown) => jsonResponse({ jsonrpc: "2.0", id: rpc.id, result });
+      if (rpc.method !== "tools/call") return reply({ tools: [] });
+      if (!rpc.params?._meta?.["x402/payment"]) {
+        const challenge = fixtureChallenge();
+        for (const option of challenge.accepts) option.amount = amount;
+        challenge.resource = { url: "mcp://tool/perp_funding_rates", mimeType: "application/json" };
+        delete challenge.extensions;
+        return reply({ isError: true, structuredContent: challenge, content: [] });
+      }
+      return reply({ structuredContent: { coin: "BTC" }, content: [], _meta: { "x402/payment-response": { success: true } } });
+    };
+    return { calls, urls, fetchImpl };
+  }
+
+  it("pays a $0.003 tool call with the $0.005 derivs cap", async () => {
+    const { DERIVS_MCP_URL, DERIVS_MAX_AMOUNT_ATOMIC } = await import("../examples/mcp-paid-client/mcp-agent.js");
+    expect(DERIVS_MCP_URL).toBe("https://derivs.duoleads.com/mcp");
+    const server = fakeDerivsMcp("3000");
+    const client = createMcpClient({ signer: privateKeyToAccount(generatePrivateKey()), fetch: server.fetchImpl, url: DERIVS_MCP_URL, maxAtomic: DERIVS_MAX_AMOUNT_ATOMIC });
+    const { result } = await client.callTool("perp_funding_rates", { coin: "BTC" });
+    expect(result.structuredContent).toEqual({ coin: "BTC" });
+    expect(server.urls.every((u) => u === "https://derivs.duoleads.com/mcp")).toBe(true);
+    const paid = server.calls.at(-1)?.params?._meta?.["x402/payment"] as { payload: { authorization: { to: string; value: string } } };
+    expect(paid.payload.authorization.value).toBe("3000");
+    expect(paid.payload.authorization.to.toLowerCase()).toBe(PAY_TO.toLowerCase());
+  });
+
+  it("refuses $0.006 under the derivs cap and signs nothing", async () => {
+    const { DERIVS_MCP_URL, DERIVS_MAX_AMOUNT_ATOMIC } = await import("../examples/mcp-paid-client/mcp-agent.js");
+    const server = fakeDerivsMcp("6000");
+    const client = createMcpClient({ signer: privateKeyToAccount(generatePrivateKey()), fetch: server.fetchImpl, url: DERIVS_MCP_URL, maxAtomic: DERIVS_MAX_AMOUNT_ATOMIC });
+    await expect(client.callTool("perp_funding_rates", { coin: "BTC" })).rejects.toThrow(/at most \$0\.005/);
+    expect(server.calls.filter((c) => c.method === "tools/call")).toHaveLength(1);
+  });
+});

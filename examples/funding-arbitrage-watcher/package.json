@@ -1,0 +1,18 @@
+{
+  "name": "funding-arbitrage-watcher",
+  "private": true,
+  "type": "module",
+  "description": "Funding rate arbitrage watcher for perpetual futures across 8 exchanges (x402, $0.005 per scan)",
+  "scripts": {
+    "plan": "tsx watcher.ts --dry-run",
+    "start": "tsx watcher.ts"
+  },
+  "dependencies": {
+    "duo-data-utilities": "^0.2.0",
+    "viem": "^2.48.11"
+  },
+  "devDependencies": {
+    "tsx": "^4.20.0",
+    "typescript": "^5.9.3"
+  }
+}

@@ -78,3 +78,52 @@ def test_kyb_tools_are_strict_and_match_handlers() -> None:
         schema = tool["input_schema"]
         assert tool["strict"] is True and schema["additionalProperties"] is False
         assert schema["required"] == list(schema["properties"])
+
+
+SNAPSHOT_LOOP = EXAMPLES / "derivs-snapshot-loop-python"
+
+
+def load_snapshot_loop() -> ModuleType:
+    spec = importlib.util.spec_from_file_location("snapshot_loop", SNAPSHOT_LOOP / "snapshot_loop.py")
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    sys.modules["snapshot_loop"] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+def test_snapshot_loop_states_its_cost_and_dry_run_spends_nothing(capsys: Any) -> None:
+    loop = load_snapshot_loop()
+    assert loop.PRICE_USD == 0.005
+    assert loop.plan(["BTC", "ETH", "SOL"], 4) == (12, 0.06)
+    assert loop.main(["--dry-run"]) == 0
+    out = capsys.readouterr().out
+    assert "12 calls" in out and "$0.060" in out and "nothing was sent or paid" in out
+
+
+def test_snapshot_loop_runs_offline_and_skips_unpaid_errors(mock_server: Any) -> None:
+    from helpers import derivs_example
+
+    from duo_data_utilities import DerivsClient
+
+    loop = load_snapshot_loop()
+
+    def reply(request: Recorded) -> Reply:
+        coin = request.query["coin"][0]
+        if coin == "NOPE":
+            return Reply(status=404, body={"error": {"status": 404, "code": "NOT_FOUND", "message": "NOPE is not listed. Nothing was charged.", "param": "coin"}})
+        return Reply(status=200, body={**derivs_example("/v1/derivatives-snapshot"), "coin": coin})
+
+    server = mock_server(reply)
+    derivs = DerivsClient(session=requests.Session(), base_url=server.base_url)
+    sleeps: list[float] = []
+    logged: list[str] = []
+    lines, paid = loop.run_loop(derivs, ["BTC", "NOPE"], 2, 15, sleep=sleeps.append, log=logged.append)
+    assert [r.path for r in server.requests] == ["/v1/derivatives-snapshot"] * 4
+    assert paid == 2
+    assert sleeps == [900]
+    assert [line.coin for line in lines] == ["BTC", "BTC"]
+    assert round(lines[0].avg_funding_apr, 2) == 5.31
+    assert lines[0].long_short is not None and 1.7 < lines[0].long_short < 1.8
+    assert any("skipped, not charged: NOT_FOUND" in text for text in logged)
+    assert "BTC  price 81,626.20" in loop.format_line(lines[0])

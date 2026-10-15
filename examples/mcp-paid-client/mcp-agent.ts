@@ -7,6 +7,11 @@
 //
 //   npx tsx mcp-agent.ts list                                                   # free
 //   DUO_PAYER_KEY=0x... npx tsx mcp-agent.ts call iban_validate '{"iban":"NL91 ABNA 0417 1643 00"}'   # $0.05
+//
+// The same client works for the crypto derivatives MCP server https://derivs.duoleads.com/mcp ($0.003 or
+// $0.005 per call; the cap drops to $0.005 there). Set DUO_MCP=derivs:
+//   DUO_MCP=derivs npx tsx mcp-agent.ts list                                    # free
+//   DUO_MCP=derivs DUO_PAYER_KEY=0x... npx tsx mcp-agent.ts call perp_funding_rates '{"coin":"BTC"}'   # $0.003
 import { pathToFileURL } from "node:url";
 import { x402Client, type PaymentPayload, type PaymentRequired } from "@x402/fetch";
 import { ExactEvmScheme } from "@x402/evm/exact/client";
@@ -19,6 +24,10 @@ export const BASE_NETWORK = "eip155:8453";
 export const BASE_USDC = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
 /** $0.05 in USDC atomic units (6 decimals). */
 export const MAX_AMOUNT_ATOMIC = 50_000n;
+/** The crypto derivatives MCP server (perp funding, open interest, basis, IV, liquidations, order book). */
+export const DERIVS_MCP_URL = "https://derivs.duoleads.com/mcp";
+/** $0.005 in USDC atomic units: the most expensive derivs tool. */
+export const DERIVS_MAX_AMOUNT_ATOMIC = 5_000n;
 
 type FetchLike = (input: string, init: RequestInit) => Promise<Response>;
 type Signer = ConstructorParameters<typeof ExactEvmScheme>[0];
@@ -53,8 +62,10 @@ export function acceptableOptions(required: PaymentRequired, maxAtomic = MAX_AMO
   );
 }
 
-export function createMcpClient(options: { signer?: Signer; url?: string; fetch?: FetchLike; userAgent?: string } = {}) {
+export function createMcpClient(options: { signer?: Signer; url?: string; fetch?: FetchLike; userAgent?: string; maxAtomic?: bigint } = {}) {
   const url = options.url ?? MCP_URL;
+  const maxAtomic = options.maxAtomic ?? MAX_AMOUNT_ATOMIC;
+  const maxUsd = `$${Number(maxAtomic) / 1e6}`;
   const doFetch: FetchLike = options.fetch ?? ((input, init) => fetch(input, init));
   const payer = options.signer ? new x402Client().register(BASE_NETWORK, new ExactEvmScheme(options.signer)) : null;
   let nextId = 1;
@@ -80,15 +91,15 @@ export function createMcpClient(options: { signer?: Signer; url?: string; fetch?
     /** Free. */
     listTools: async () => (await rpc<{ tools: McpTool[] }>("tools/list")).tools,
 
-    /** $0.05 when the call succeeds. An unpaid or malformed call charges nothing. */
+    /** The tool's price (at most `maxAtomic`, default $0.05) when the call succeeds. An unpaid or malformed call charges nothing. */
     async callTool(name: string, args: Record<string, unknown>): Promise<{ result: ToolResult; receipt: unknown }> {
       const first = await rpc<ToolResult>("tools/call", { name, arguments: args });
       if (!first.isError || !isPaymentRequired(first.structuredContent)) return { result: first, receipt: null };
-      if (!payer) throw new Error(`${name} costs $0.05: pass a signer (DUO_PAYER_KEY) to pay`);
+      if (!payer) throw new Error(`${name} is a paid tool: pass a signer (DUO_PAYER_KEY) to pay`);
 
       const required = first.structuredContent;
-      const accepts = acceptableOptions(required);
-      if (accepts.length === 0) throw new Error(`refused to pay: no option is $0.05 USDC on Base to ${PAY_TO}`);
+      const accepts = acceptableOptions(required, maxAtomic);
+      if (accepts.length === 0) throw new Error(`refused to pay: no option is at most ${maxUsd} USDC on Base to ${PAY_TO}`);
       const payment: PaymentPayload = await payer.createPaymentPayload({ ...required, accepts });
 
       const paid = await rpc<ToolResult>("tools/call", { name, arguments: args, _meta: { "x402/payment": payment } });
@@ -100,7 +111,9 @@ export function createMcpClient(options: { signer?: Signer; url?: string; fetch?
 async function main(): Promise<void> {
   const [command = "list", tool, argsJson = "{}"] = process.argv.slice(2);
   const key = process.env.DUO_PAYER_KEY;
+  const derivs = process.env.DUO_MCP === "derivs";
   const client = createMcpClient({
+    ...(derivs ? { url: DERIVS_MCP_URL, maxAtomic: DERIVS_MAX_AMOUNT_ATOMIC } : {}),
     signer: key?.startsWith("0x") ? privateKeyToAccount(key as `0x${string}`) : undefined,
     userAgent: "duo-mcp-paid-client-example/1.0 (+https://github.com/hiesem/duo-data-utilities)",
   });

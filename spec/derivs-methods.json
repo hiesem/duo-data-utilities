@@ -1,0 +1,15 @@
+{
+  "_comment": "Method naming for the derivs client (hand-written for this package). integers / numbers: query parameters the client takes as numbers (the API reads them from the query string as plain decimals).",
+  "routes": {
+    "/v1/funding-rates": { "method": "fundingRates", "integers": [], "numbers": [] },
+    "/v1/funding-history": { "method": "fundingHistory", "integers": ["days"], "numbers": [] },
+    "/v1/funding-arbitrage": { "method": "fundingArbitrage", "integers": ["holding_days", "limit"], "numbers": ["min_apr", "min_volume_usd", "fee_pct"] },
+    "/v1/perp-screener": { "method": "perpScreener", "integers": ["limit"], "numbers": ["min_volume_usd"] },
+    "/v1/open-interest": { "method": "openInterest", "integers": [], "numbers": [] },
+    "/v1/basis": { "method": "basis", "integers": [], "numbers": [] },
+    "/v1/options": { "method": "options", "integers": [], "numbers": [] },
+    "/v1/liquidations": { "method": "liquidations", "integers": ["hours"], "numbers": [] },
+    "/v1/orderbook": { "method": "orderbook", "integers": ["levels"], "numbers": ["size_usd"] },
+    "/v1/derivatives-snapshot": { "method": "derivativesSnapshot", "integers": [], "numbers": [] }
+  }
+}
