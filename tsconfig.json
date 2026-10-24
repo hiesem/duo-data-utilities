@@ -32,6 +32,7 @@
     "examples/supplier-onboarding-agent/*.ts",
     "examples/mcp-paid-client/*.ts",
     "examples/funding-arbitrage-watcher/*.ts",
+    "examples/keyword-research-agent/*.ts",
     "tsup.config.ts",
     "vitest.config.ts"
   ]

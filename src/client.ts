@@ -1,6 +1,7 @@
 import { assertRoutePath, buildQuery, type CallRoute } from "./caller.js";
 import { checkCounterparty, type CounterpartyInput, type CounterpartyResult } from "./counterparty.js";
 import { createDerivsClient, type DerivsClient } from "./derivs.js";
+import { createKeywordsClient, type KeywordsClient } from "./keywords.js";
 import { DuoApiError } from "./errors.js";
 import { createGeneratedClient, type GeneratedClient } from "./generated.js";
 import { DEFAULT_MAX_PRICE_USD, DEFAULT_PAY_TO, usdToAtomic } from "./price-guard.js";
@@ -56,6 +57,16 @@ export interface DuoClientOptions {
     /** Largest price in USD that `client.derivs` signs for one call. Default 0.005. */
     maxPriceUsd?: number;
   };
+  /**
+   * Settings for `client.keywords` (SEO keyword data at https://keywords.duoleads.com). The wallet or fetch,
+   * `payTo` and `userAgent` are shared with the main client.
+   */
+  keywords?: {
+    /** Keyword API origin. Default https://keywords.duoleads.com. */
+    baseUrl?: string;
+    /** Largest price in USD that `client.keywords` signs for one call. Default 0.045. */
+    maxPriceUsd?: number;
+  };
 }
 
 /** A route's result with the response meta and the settlement receipt. */
@@ -79,6 +90,12 @@ export type DuoClient = GeneratedClient & {
    * depth and a one-call snapshot. $0.003 or $0.005 per call, capped by its own price guard (default $0.005).
    */
   derivs: DerivsClient;
+  /**
+   * SEO keyword data from https://keywords.duoleads.com: Google search volume, CPC, competition, keyword
+   * difficulty and intent, keyword ideas, and Google Trends (interest over time, related queries, interest by
+   * region). $0.03 to $0.045 per call, capped by its own price guard (default $0.045).
+   */
+  keywords: KeywordsClient;
 };
 
 function apiError(path: string, status: number, ok: boolean, body: unknown): DuoApiError {
@@ -160,6 +177,13 @@ export function createClient(options: DuoClientOptions = {}): DuoClient {
       userAgent,
       ...(options.derivs?.baseUrl !== undefined ? { baseUrl: options.derivs.baseUrl } : {}),
       ...(options.derivs?.maxPriceUsd !== undefined ? { maxPriceUsd: options.derivs.maxPriceUsd } : {}),
+    }),
+    keywords: createKeywordsClient({
+      ...(options.account !== undefined ? { account: options.account } : { fetch: options.fetch as FetchLike }),
+      ...(options.payTo !== undefined ? { payTo: options.payTo } : {}),
+      userAgent,
+      ...(options.keywords?.baseUrl !== undefined ? { baseUrl: options.keywords.baseUrl } : {}),
+      ...(options.keywords?.maxPriceUsd !== undefined ? { maxPriceUsd: options.keywords.maxPriceUsd } : {}),
     }),
   };
 }

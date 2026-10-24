@@ -107,6 +107,36 @@ derivs = DerivsClient(Account.from_key(os.environ["DUO_PAYER_KEY"]))  # derivs o
 
 Derivs docs: https://derivs.duoleads.com/docs · OpenAPI: https://derivs.duoleads.com/openapi.json · Index: https://derivs.duoleads.com/llms.txt · Terms: https://derivs.duoleads.com/terms · Privacy: https://derivs.duoleads.com/privacy
 
+## SEO keyword data: search volume, CPC, keyword difficulty, keyword ideas, Google Trends
+
+`client.keywords` calls https://keywords.duoleads.com. It returns Google keyword search volume, CPC, competition, keyword difficulty and search intent (Google Ads data), keyword ideas for a seed, and Google Trends (interest over time, related queries, interest by region). Calls cost **$0.03 to $0.045** each and use the same wallet and the same x402 payment, with no API key.
+
+```ts
+const volume = await client.keywords.searchVolume({ keywords: ["phone", "watch"], country: "us" }); // $0.04, up to 20 keywords
+const overview = await client.keywords.keywordOverview({ keywords: myList });                        // $0.04, up to 100 keywords (POST)
+const ideas = await client.keywords.keywordIdeas({ keyword: "seo api", limit: 50 });                 // $0.04 (POST)
+const trend = await client.keywords.trend({ keyword: "seo tools", timeframe: "past_12_months" });    // $0.045
+
+// Or a keywords-only client:
+const keywords = createKeywordsClient({ account });
+await keywords.relatedQueries({ keyword: "seo api", country: "us" }); // $0.03
+```
+
+- **Price guard:** `client.keywords` has its own cap, $0.045 per call by default. `createClient({ account, keywords: { maxPriceUsd: 0.04 } })` refuses the $0.045 trend route. The other rules are the same: Base USDC only, only to `0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39`, and nothing is signed before the check.
+- **Errors:** a bad input is a free 400. An upstream failure is a 503 with "nothing was charged". Both throw `DuoApiError`.
+- **MCP:** the same 6 tools are at `https://keywords.duoleads.com/mcp`.
+
+| Method | Route | Price | What it returns |
+|---|---|---|---|
+| `keywords.keywordOverview` | `POST /v1/keyword-overview` | $0.04 | Search volume, CPC, competition, keyword difficulty and intent for 1-100 keywords |
+| `keywords.searchVolume` | `GET /v1/search-volume` | $0.04 | The same metrics for 1-20 keywords in one country |
+| `keywords.keywordIdeas` | `POST /v1/keyword-ideas` | $0.04 | Up to 100 related keyword ideas for one seed, each with the same metrics |
+| `keywords.trend` | `GET /v1/trend` | $0.045 | Google Trends interest over time (0-100), 7 days to 5 years |
+| `keywords.relatedQueries` | `GET /v1/related-queries` | $0.03 | Google Trends top and rising related queries |
+| `keywords.interestByRegion` | `GET /v1/interest-by-region` | $0.03 | Google Trends interest per region of a country |
+
+Keyword docs: https://keywords.duoleads.com/docs · OpenAPI: https://keywords.duoleads.com/openapi.json · Index: https://keywords.duoleads.com/llms.txt
+
 ## Methods
 
 Every method costs $0.05 per call. Each method's JSDoc gives the route and the parameters. `client.call(path, params)` calls any route, and `client.callWithReceipt(path, params)` also returns the settlement receipt.
@@ -190,12 +220,13 @@ Runnable agents in [`examples/`](examples/). Each folder has a README with setup
 | [mcp-paid-client](examples/mcp-paid-client/) | TypeScript | MCP client for `https://api.duoleads.com/mcp` that pays each `tools/call` with x402, plus an MCP host config. |
 | [funding-arbitrage-watcher](examples/funding-arbitrage-watcher/) | TypeScript | Funding rate arbitrage watcher: scans perp funding spreads across 8 exchanges every few minutes and alerts on new fee-adjusted opportunities. $0.005 per scan; the default run costs $0.06. |
 | [derivs-snapshot-loop-python](examples/derivs-snapshot-loop-python/) | Python | Per-coin derivatives snapshot loop: funding, open interest, basis, liquidations and long/short for each coin; flags crowded positioning. $0.005 per coin per round; the default run costs $0.06. |
+| [keyword-research-agent](examples/keyword-research-agent/) | TypeScript | SEO keyword research agent: keyword ideas with search volume, CPC and difficulty, ranked by opportunity, plus a Google Trends check on the best pick. The default run (1 seed) costs $0.085. |
 | [node-basic.ts](examples/node-basic.ts) | TypeScript | IBAN, time zone, counterparty check and a settlement receipt in one script. |
 | [vercel-ai-sdk-tool.ts](examples/vercel-ai-sdk-tool.ts) | TypeScript | IBAN and counterparty checks as Vercel AI SDK tools. |
 | [langchain_tool.py](examples/langchain_tool.py) | Python | IBAN and counterparty checks as LangChain tools. |
 | [claude-mcp.md](examples/claude-mcp.md) | | Adding the MCP server to Claude Code. |
 
-Main API calls cost $0.05 and derivs calls $0.003 or $0.005, in USDC on Base, paid by the wallet you configure. The examples' tests run offline with mocked responses; nothing in CI pays.
+Main API calls cost $0.05, derivs calls $0.003 or $0.005 and keyword calls $0.03 to $0.045, in USDC on Base, paid by the wallet you configure. The examples' tests run offline with mocked responses; nothing in CI pays.
 
 ## User-Agent and privacy
 

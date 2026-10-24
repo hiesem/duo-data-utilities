@@ -9,6 +9,10 @@ export interface RecordedRequest {
   paymentSignature: string | null;
   /** The User-Agent header as received. */
   userAgent: string | null;
+  /** The request body as text ("" when there is none). */
+  body: string;
+  /** The Content-Type header as received. */
+  contentType: string | null;
 }
 
 export interface MockReply {
@@ -27,19 +31,25 @@ export interface MockServer {
 export async function startMockServer(reply: (request: RecordedRequest) => MockReply): Promise<MockServer> {
   const requests: RecordedRequest[] = [];
   const server: Server = createServer((req: IncomingMessage, res) => {
-    const url = new URL(req.url ?? "/", "http://127.0.0.1");
-    const signature = req.headers["payment-signature"];
-    const recorded: RecordedRequest = {
-      method: req.method ?? "GET",
-      path: url.pathname,
-      search: url.search,
-      paymentSignature: typeof signature === "string" ? signature : null,
-      userAgent: req.headers["user-agent"] ?? null,
-    };
-    requests.push(recorded);
-    const answer = reply(recorded);
-    res.writeHead(answer.status, { "content-type": "application/json; charset=utf-8", ...answer.headers });
-    res.end(answer.body === undefined ? "" : JSON.stringify(answer.body));
+    const chunks: Buffer[] = [];
+    req.on("data", (chunk: Buffer) => chunks.push(chunk));
+    req.on("end", () => {
+      const url = new URL(req.url ?? "/", "http://127.0.0.1");
+      const signature = req.headers["payment-signature"];
+      const recorded: RecordedRequest = {
+        method: req.method ?? "GET",
+        path: url.pathname,
+        search: url.search,
+        paymentSignature: typeof signature === "string" ? signature : null,
+        userAgent: req.headers["user-agent"] ?? null,
+        body: Buffer.concat(chunks).toString("utf8"),
+        contentType: req.headers["content-type"] ?? null,
+      };
+      requests.push(recorded);
+      const answer = reply(recorded);
+      res.writeHead(answer.status, { "content-type": "application/json; charset=utf-8", ...answer.headers });
+      res.end(answer.body === undefined ? "" : JSON.stringify(answer.body));
+    });
   });
   await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", resolve));
   const { port } = server.address() as AddressInfo;

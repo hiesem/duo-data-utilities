@@ -1,7 +1,7 @@
 {
   "name": "duo-data-utilities",
   "version": "0.2.0",
-  "description": "IBAN, ISIN, VAT/tax ID and GTIN barcode validation plus 29 more pay-per-call utilities, and crypto derivatives data (perp funding rates, open interest, futures basis, implied volatility, liquidations, order book depth) for AI agents (x402, no API key)",
+  "description": "IBAN, ISIN, VAT/tax ID and GTIN barcode validation plus 29 more pay-per-call utilities, SEO keyword data (search volume, CPC, keyword difficulty, keyword ideas, Google Trends), and crypto derivatives data (perp funding rates, open interest, futures basis, implied volatility, liquidations, order book depth) for AI agents (x402, no API key)",
   "keywords": [
     "iban",
     "iban-validator",
@@ -79,6 +79,13 @@
     "number-to-words",
     "statistics",
     "base-conversion",
+    "seo",
+    "keyword-research",
+    "search-volume",
+    "keyword-difficulty",
+    "cpc",
+    "keyword-ideas",
+    "google-trends",
     "crypto-derivatives",
     "perp",
     "perpetual-futures",

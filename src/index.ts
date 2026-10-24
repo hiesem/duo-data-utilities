@@ -9,3 +9,30 @@ export * from "./generated.js";
 export { createDerivsClient, DEFAULT_DERIVS_BASE_URL, DEFAULT_DERIVS_MAX_PRICE_USD, DERIVS_MCP_URL } from "./derivs.js";
 export type { DerivsClient, DerivsClientOptions, DerivsPaidResult } from "./derivs.js";
 export * from "./derivs-generated.js";
+export {
+  assertKeywordsPath,
+  buildKeywordsQuery,
+  createKeywordsClient,
+  DEFAULT_KEYWORDS_BASE_URL,
+  DEFAULT_KEYWORDS_MAX_PRICE_USD,
+  KEYWORDS_MCP_URL,
+  KEYWORDS_ROUTES,
+} from "./keywords.js";
+export type {
+  InterestByRegionData,
+  KeywordIdeasData,
+  KeywordIdeasParams,
+  KeywordMarket,
+  KeywordMetrics,
+  KeywordOverviewData,
+  KeywordOverviewParams,
+  KeywordsClient,
+  KeywordsClientOptions,
+  KeywordsPaidResult,
+  KeywordsRoute,
+  RelatedQueriesData,
+  SearchVolumeParams,
+  TrendData,
+  TrendsParams,
+  TrendsTimeframe,
+} from "./keywords.js";
