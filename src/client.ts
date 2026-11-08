@@ -2,6 +2,7 @@ import { assertRoutePath, buildQuery, type CallRoute } from "./caller.js";
 import { checkCounterparty, type CounterpartyInput, type CounterpartyResult } from "./counterparty.js";
 import { createDerivsClient, type DerivsClient } from "./derivs.js";
 import { createKeywordsClient, type KeywordsClient } from "./keywords.js";
+import { createSocialClient, type SocialClient } from "./social.js";
 import { DuoApiError } from "./errors.js";
 import { createGeneratedClient, type GeneratedClient } from "./generated.js";
 import { DEFAULT_MAX_PRICE_USD, DEFAULT_PAY_TO, usdToAtomic } from "./price-guard.js";
@@ -64,7 +65,17 @@ export interface DuoClientOptions {
   keywords?: {
     /** Keyword API origin. Default https://keywords.duoleads.com. */
     baseUrl?: string;
-    /** Largest price in USD that `client.keywords` signs for one call. Default 0.045. */
+    /** Largest price in USD that `client.keywords` signs for one call. Default 0.045 on the six original routes, each other route's own price. */
+    maxPriceUsd?: number;
+  };
+  /**
+   * Settings for `client.social` (social media data at https://social.duoleads.com). The wallet or fetch,
+   * `payTo` and `userAgent` are shared with the main client.
+   */
+  social?: {
+    /** Social API origin. Default https://social.duoleads.com. */
+    baseUrl?: string;
+    /** Largest price in USD that `client.social` signs for one call. Default: each route's own price (up to 0.025). */
     maxPriceUsd?: number;
   };
 }
@@ -91,11 +102,18 @@ export type DuoClient = GeneratedClient & {
    */
   derivs: DerivsClient;
   /**
-   * SEO keyword data from https://keywords.duoleads.com: Google search volume, CPC, competition, keyword
-   * difficulty and intent, keyword ideas, and Google Trends (interest over time, related queries, interest by
-   * region). $0.03 to $0.045 per call, capped by its own price guard (default $0.045).
+   * SEO and keyword data from https://keywords.duoleads.com (44 routes): Google search volume, CPC, competition,
+   * keyword difficulty and intent, keyword ideas, Google Trends, domain and ranking data, backlinks, SERP, Maps,
+   * on-page and PageSpeed audits, Amazon, brand and AI-answer visibility, tech stack and WHOIS. $0.012 to $0.25
+   * per call, capped by its own price guard (default $0.045 on the six original routes, each other route's price).
    */
   keywords: KeywordsClient;
+  /**
+   * Social media data from https://social.duoleads.com (26 routes): public posts, profiles, comments and search
+   * on X (Twitter), Reddit, TikTok, Instagram, YouTube, Threads, Facebook ads, LinkedIn, Bluesky and Hacker News.
+   * $0.01 to $0.025 per call, capped by its own price guard (default: each route's own price).
+   */
+  social: SocialClient;
 };
 
 function apiError(path: string, status: number, ok: boolean, body: unknown): DuoApiError {
@@ -184,6 +202,13 @@ export function createClient(options: DuoClientOptions = {}): DuoClient {
       userAgent,
       ...(options.keywords?.baseUrl !== undefined ? { baseUrl: options.keywords.baseUrl } : {}),
       ...(options.keywords?.maxPriceUsd !== undefined ? { maxPriceUsd: options.keywords.maxPriceUsd } : {}),
+    }),
+    social: createSocialClient({
+      ...(options.account !== undefined ? { account: options.account } : { fetch: options.fetch as FetchLike }),
+      ...(options.payTo !== undefined ? { payTo: options.payTo } : {}),
+      userAgent,
+      ...(options.social?.baseUrl !== undefined ? { baseUrl: options.social.baseUrl } : {}),
+      ...(options.social?.maxPriceUsd !== undefined ? { maxPriceUsd: options.social.maxPriceUsd } : {}),
     }),
   };
 }

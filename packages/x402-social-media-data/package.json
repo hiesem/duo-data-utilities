@@ -1,0 +1,93 @@
+{
+  "name": "x402-social-media-data",
+  "version": "0.3.0",
+  "description": "Social media data API client for AI agents: social listening across X (Twitter), Reddit, TikTok, Instagram, YouTube, Threads, LinkedIn, Bluesky and Hacker News. Public posts, profiles, comments, transcripts and search; 26 routes, pay per call with x402 (USDC on Base), no API key.",
+  "keywords": [
+    "social-media-data",
+    "social-media-api",
+    "social-listening",
+    "twitter-api",
+    "x-api",
+    "twitter",
+    "reddit",
+    "reddit-api",
+    "tiktok",
+    "tiktok-api",
+    "instagram",
+    "youtube",
+    "youtube-transcript",
+    "threads",
+    "linkedin",
+    "linkedin-company",
+    "bluesky",
+    "hacker-news",
+    "facebook-ads",
+    "brand-monitoring",
+    "mentions",
+    "social-search",
+    "x402",
+    "usdc",
+    "base",
+    "mcp",
+    "ai-agents",
+    "agent-tools",
+    "pay-per-call",
+    "no-api-key",
+    "api-client",
+    "typescript"
+  ],
+  "author": "Duo Data Utilities",
+  "license": "MIT",
+  "homepage": "https://github.com/hiesem/duo-data-utilities/tree/main/packages/x402-social-media-data#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hiesem/duo-data-utilities.git",
+    "directory": "packages/x402-social-media-data"
+  },
+  "bugs": {
+    "url": "https://github.com/hiesem/duo-data-utilities/issues"
+  },
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "build": "tsup",
+    "prepack": "npm run build",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@x402/evm": "^2.27.0",
+    "@x402/fetch": "^2.27.0",
+    "viem": "^2.48.11"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.43",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.11"
+  }
+}

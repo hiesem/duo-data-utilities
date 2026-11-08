@@ -1,7 +1,7 @@
 {
   "name": "duo-data-utilities",
-  "version": "0.2.0",
-  "description": "IBAN, ISIN, VAT/tax ID and GTIN barcode validation plus 29 more pay-per-call utilities, SEO keyword data (search volume, CPC, keyword difficulty, keyword ideas, Google Trends), and crypto derivatives data (perp funding rates, open interest, futures basis, implied volatility, liquidations, order book depth) for AI agents (x402, no API key)",
+  "version": "0.3.0",
+  "description": "Pay-per-call data APIs for AI agents (x402, USDC on Base, no API key): IBAN, VAT/tax ID, ISIN and GTIN validation plus 29 utilities; SEO and keyword data (search volume, CPC, keyword difficulty, Google Trends, SERP, backlinks); social media data (X/Twitter, Reddit, TikTok, YouTube, LinkedIn); crypto derivatives data (funding rates, open interest, liquidations)",
   "keywords": [
     "iban",
     "iban-validator",
@@ -116,7 +116,25 @@
     "mcp",
     "ai-agents",
     "pay-per-call",
-    "no-api-key"
+    "no-api-key",
+    "seo-api",
+    "serp",
+    "serp-api",
+    "backlinks",
+    "domain-overview",
+    "keyword-gap",
+    "social-media-data",
+    "social-media-api",
+    "social-listening",
+    "twitter-api",
+    "x-api",
+    "reddit-api",
+    "tiktok-api",
+    "youtube-transcript",
+    "linkedin",
+    "bluesky",
+    "hacker-news",
+    "brand-monitoring"
   ],
   "author": "Duo Data Utilities",
   "license": "MIT",
@@ -151,8 +169,8 @@
     "node": ">=20"
   },
   "scripts": {
-    "generate": "node scripts/generate.mjs",
-    "check:generated": "node scripts/generate.mjs --check",
+    "generate": "node scripts/generate.mjs && node scripts/readme-tables.mjs",
+    "check:generated": "node scripts/generate.mjs --check && node scripts/readme-tables.mjs --check",
     "typecheck": "tsc --noEmit",
     "build": "tsup",
     "prepack": "npm run build",

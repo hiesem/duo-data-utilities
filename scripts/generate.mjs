@@ -52,9 +52,18 @@ const unionOf = (parts) => {
 const wrapForArray = (t) => (t.includes(" | ") ? `(${t})` : t);
 
 // JSON Schema (draft 2020-12 subset used by output_schema) to TypeScript.
+let refPrefix = null; // set while emitting an OpenAPI service: #/components/schemas/X -> <prefix>X
+const refName = (ref) => {
+  const name = String(ref).replace(/^#\/components\/schemas\//, "");
+  return name.startsWith(refPrefix) ? name : `${refPrefix}${name}`;
+};
 function tsType(schema, depth = 0) {
   if (schema === undefined || schema === null || schema === true) return "unknown";
   if (schema === false) return "never";
+  if (typeof schema.$ref === "string") {
+    if (refPrefix === null) return "unknown";
+    return refName(schema.$ref);
+  }
   if ("const" in schema) return literal(schema.const);
   if (Array.isArray(schema.enum)) return unionOf(schema.enum.map(literal));
   if (Array.isArray(schema.anyOf)) return unionOf(schema.anyOf.map((s) => tsType(s, depth)));
@@ -223,7 +232,42 @@ out.push("}");
 out.push("");
 
 // ---------------------------------------------------------------- derivs.duoleads.com
-const derivs = readJson("spec/derivs.json");
+// The derivs catalogue comes from the service's published OpenAPI (spec/derivs-openapi.json); spec/derivs.json
+// (the older export the Python generator reads) is only cross-checked against it: same paths, tools and prices.
+const derivsLegacy = readJson("spec/derivs.json");
+const derivs = derivsFromOpenApi(readJson("spec/derivs-openapi.json"));
+{
+  const key = (r) => `${r.path} ${r.tool} ${r.amount}`;
+  sameSet(new Set(derivsLegacy.routes.map(key)), new Set(derivs.routes.map(key)), "spec/derivs.json vs spec/derivs-openapi.json (path, tool, amount)");
+}
+function derivsFromOpenApi(spec) {
+  const schemas = spec.components?.schemas ?? {};
+  const inline = (v) => {
+    if (Array.isArray(v)) return v.map(inline);
+    if (!v || typeof v !== "object") return v;
+    if (typeof v.$ref === "string") return inline(schemas[v.$ref.replace(/^#\/components\/schemas\//, "")]);
+    return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, inline(x)]));
+  };
+  return {
+    origin: spec.servers?.[0]?.url,
+    routes: Object.entries(spec.paths).map(([path, ops]) => {
+      const op = ops.get;
+      if (!op) throw new Error(`derivs ${path}: not GET`);
+      const query = (op.parameters ?? []).filter((p) => p.in === "query");
+      return {
+        path,
+        tool: op["x-mcp-tool"],
+        amount: String(Math.round(Number(op["x-payment-info"].price.amount) * 1e6)),
+        description: op.description,
+        querySchema: {
+          properties: Object.fromEntries(query.map((p) => [p.name, { ...p.schema, description: p.description }])),
+          required: query.filter((p) => p.required).map((p) => p.name),
+        },
+        outputSchema: inline(op.responses["200"].content["application/json"].schema),
+      };
+    }),
+  };
+}
 const derivsMethods = readJson("spec/derivs-methods.json").routes;
 if (derivs.origin !== "https://derivs.duoleads.com") throw new Error("spec/derivs.json: unexpected origin");
 if (derivs.routes.length !== 10) throw new Error(`spec/derivs.json has ${derivs.routes.length} routes, expected 10`);
@@ -306,10 +350,203 @@ dout.push("  };");
 dout.push("}");
 dout.push("");
 
+// ---------------------------------------------------------------- OpenAPI services (keywords.duoleads.com, social.duoleads.com)
+// Input: the free, published /openapi.json of each service (spec/<service>-openapi.json, fetched by
+// scripts/refresh-specs.mjs). Every route's path, HTTP method, MCP tool, price, parameters and answer schema
+// come from it; method names are the path in camelCase (/v1/keyword-gap -> keywordGap, /v1/x/search -> xSearch).
+const camelPath = (path) =>
+  path
+    .replace(/^\/v1\//, "")
+    .split(/[/-]/)
+    .map((w, i) => (i === 0 ? w : cap(w)))
+    .join("");
+
+function openApiModel(spec, { origin, count, amounts }) {
+  if (spec.servers?.[0]?.url !== origin) throw new Error(`${origin}: unexpected servers[0].url ${spec.servers?.[0]?.url}`);
+  const entries = Object.entries(spec.paths);
+  if (entries.length !== count) throw new Error(`${origin}: ${entries.length} paths, expected ${count}`);
+  const schemas = spec.components?.schemas ?? {};
+  const deref = (s) => (s && typeof s.$ref === "string" ? schemas[s.$ref.replace(/^#\/components\/schemas\//, "")] : s);
+  const model = entries.map(([path, ops]) => {
+    if (!/^\/v1\/[a-z0-9]+(\/[a-z0-9-]+|-[a-z0-9-]+)*$/.test(path)) throw new Error(`${origin}${path}: unexpected path shape`);
+    const httpMethod = ops.get ? "GET" : ops.post ? "POST" : null;
+    if (!httpMethod) throw new Error(`${origin}${path}: neither GET nor POST`);
+    const op = ops[httpMethod.toLowerCase()];
+    const priceUsd = op["x-payment-info"]?.price?.amount;
+    if (typeof priceUsd !== "string" || !/^\d+(\.\d+)?$/.test(priceUsd)) throw new Error(`${origin}${path}: no fixed price`);
+    const amount = String(Math.round(Number(priceUsd) * 1e6));
+    if (!amounts.includes(amount)) throw new Error(`${origin}${path}: unexpected amount ${amount}`);
+    if (typeof op["x-mcp-tool"] !== "string") throw new Error(`${origin}${path}: no x-mcp-tool`);
+    let params;
+    if (httpMethod === "GET") {
+      params = (op.parameters ?? [])
+        .filter((p) => p.in === "query")
+        .map((p) => {
+          const sch = p.schema ?? {};
+          let type = "string";
+          if (Array.isArray(sch.enum) && sch.enum.length) type = sch.enum.map((v) => JSON.stringify(String(v))).join(" | ");
+          else if (sch.type === "integer" || sch.type === "number") type = "number";
+          else if (sch.type === "boolean") type = "boolean";
+          else if (typeof sch.pattern === "string" && /^\^0\*\(/.test(sch.pattern)) type = "number | string";
+          return { name: p.name, required: p.required === true, description: p.description ?? "", default: sch.default, type };
+        });
+    } else {
+      const body = deref(op.requestBody?.content?.["application/json"]?.schema) ?? { properties: {} };
+      const required = new Set(body.required ?? []);
+      params = Object.entries(body.properties ?? {}).map(([name, sch]) => ({
+        name,
+        required: required.has(name),
+        description: sch.description ?? "",
+        default: sch.default,
+        type: tsType({ ...sch, description: undefined }),
+      }));
+    }
+    const ok = op.responses?.["200"]?.content?.["application/json"]?.schema;
+    if (!ok) throw new Error(`${origin}${path}: no 200 schema`);
+    return { path, httpMethod, tool: op["x-mcp-tool"], summary: op.summary ?? "", description: op.description ?? "", priceUsd, amount, method: camelPath(path), Base: cap(camelPath(path)), params, ok };
+  });
+  const names = model.map((m) => m.method);
+  if (new Set(names).size !== names.length) throw new Error(`${origin}: method names collide`);
+  return { model, schemas };
+}
+
+/** Emits one service file. `skip`: paths that get route-table entries but no generated method (hand-written ones). */
+function emitService({ spec, origin, count, amounts, prefix, routesConst, routesDoc, iface, factory, file, skip = new Set(), host }) {
+  refPrefix = prefix;
+  const { model, schemas } = openApiModel(spec, { origin, count, amounts });
+  const gen = model.filter((m) => !skip.has(m.path));
+  const o = [];
+  o.push(`// Generated by scripts/generate.mjs from ${file}. Do not edit by hand.`);
+  o.push("// Refresh the snapshot (`node scripts/refresh-specs.mjs`), review the diff, then run `npm run generate`.");
+  o.push("");
+  o.push('import type { CallRoute } from "./caller.js";');
+  o.push("");
+  o.push(`/** ${routesDoc} */`);
+  o.push(`export const ${routesConst} = [`);
+  for (const m of model) {
+    o.push(`  { path: ${JSON.stringify(m.path)}, httpMethod: ${JSON.stringify(m.httpMethod)}, tool: ${JSON.stringify(m.tool)}, method: ${JSON.stringify(m.method)}, priceUsd: ${JSON.stringify(m.priceUsd)}, amount: ${JSON.stringify(m.amount)} },`);
+  }
+  o.push("] as const;");
+  o.push("");
+  // Named answer types: every component schema a generated route's answer refers to (transitively).
+  const used = new Set();
+  const visit = (v) => {
+    if (Array.isArray(v)) return v.forEach(visit);
+    if (!v || typeof v !== "object") return;
+    if (typeof v.$ref === "string") {
+      const n = v.$ref.replace(/^#\/components\/schemas\//, "");
+      if (!used.has(n)) {
+        used.add(n);
+        visit(schemas[n]);
+      }
+    }
+    for (const x of Object.values(v)) visit(x);
+  };
+  gen.forEach((m) => visit(m.ok));
+  for (const n of [...used].sort()) {
+    const sch = schemas[n];
+    if (!sch) throw new Error(`${origin}: missing component ${n}`);
+    if (sch.description) o.push(`/** ${sanitize(sch.description)} */`);
+    o.push(`export type ${refName(`#/components/schemas/${n}`)} = ${tsType({ ...sch, description: undefined, title: undefined })};`);
+    o.push("");
+  }
+  for (const m of gen) {
+    const where = m.httpMethod === "GET" ? "Query parameters" : "JSON body";
+    o.push(`/** ${where} for \`${m.httpMethod} ${m.path}\` on ${host}. */`);
+    if (m.params.length === 0) o.push(`export type ${prefix}${m.Base}Params = Record<string, never>;`);
+    else {
+      o.push(`export interface ${prefix}${m.Base}Params {`);
+      for (const p of m.params) {
+        const def = p.default !== undefined && !/Default/.test(p.description) ? ` Default: ${JSON.stringify(p.default)}.` : "";
+        if (p.description || def) o.push(`  /** ${sanitize(p.description)}${def} */`);
+        o.push(`  ${propKey(p.name)}${p.required ? "" : "?"}: ${p.type};`);
+      }
+      o.push("}");
+    }
+    o.push("");
+    o.push(`/** The JSON body returned by \`${m.httpMethod} ${m.path}\` (from the route's response schema). */`);
+    o.push(`export type ${prefix}${m.Base}Data = ${tsType(m.ok)};`);
+    o.push("");
+  }
+  o.push(`/** Typed methods for the ${host} routes. Each one is paid per call over x402 (USDC on Base). */`);
+  o.push(`export interface ${iface} {`);
+  for (const m of gen) {
+    o.push("  /**");
+    o.push(`   * ${sentence(m.description)}`);
+    o.push("   *");
+    o.push(`   * Route: \`${m.httpMethod} ${m.path}\`. Costs $${m.priceUsd} per call (${m.amount} atomic USDC). MCP tool: \`${m.tool}\`.`);
+    o.push("   */");
+    const optional = m.params.every((p) => !p.required);
+    o.push(`  ${m.method}(params${optional ? "?" : ""}: ${prefix}${m.Base}Params): Promise<${prefix}${m.Base}Data>;`);
+  }
+  o.push("}");
+  o.push("");
+  o.push(`/** Binds every generated ${host} method to one route caller. */`);
+  o.push(`export function ${factory}(call: CallRoute): ${iface} {`);
+  o.push("  return {");
+  for (const m of gen) {
+    const optional = m.params.every((p) => !p.required);
+    o.push(`    ${m.method}: (params${optional ? "?" : ""}: ${prefix}${m.Base}Params) => call<${prefix}${m.Base}Data>(${JSON.stringify(m.path)}, params ?? {}),`);
+  }
+  o.push("  };");
+  o.push("}");
+  o.push("");
+  refPrefix = null;
+  return { text: o.join("\n"), model, gen };
+}
+
+const KW_V1 = new Set(["/v1/keyword-overview", "/v1/search-volume", "/v1/keyword-ideas", "/v1/trend", "/v1/related-queries", "/v1/interest-by-region"]);
+const seo = emitService({
+  spec: readJson("spec/keywords-openapi.json"),
+  origin: "https://keywords.duoleads.com",
+  count: 44,
+  amounts: ["12000", "18000", "24000", "30000", "40000", "45000", "48000", "80000", "160000", "210000", "250000"],
+  prefix: "Seo",
+  routesConst: "SEO_KEYWORD_ROUTES",
+  routesDoc: "Every route of https://keywords.duoleads.com (44), with HTTP method, MCP tool, client method and price (USD and atomic USDC).",
+  iface: "SeoKeywordGeneratedClient",
+  factory: "createSeoKeywordGeneratedClient",
+  file: "spec/keywords-openapi.json",
+  skip: KW_V1,
+  host: "keywords.duoleads.com",
+});
+const social = emitService({
+  spec: readJson("spec/social-openapi.json"),
+  origin: "https://social.duoleads.com",
+  count: 26,
+  amounts: ["10000", "20000", "25000"],
+  prefix: "Social",
+  routesConst: "SOCIAL_ROUTES",
+  routesDoc: "Every route of https://social.duoleads.com (26), with HTTP method, MCP tool, client method and price (USD and atomic USDC).",
+  iface: "SocialGeneratedClient",
+  factory: "createSocialGeneratedClient",
+  file: "spec/social-openapi.json",
+  host: "social.duoleads.com",
+});
+for (const m of seo.model) if (KW_V1.has(m.path) !== true && m.httpMethod === "GET" && !["/v1/serp", "/v1/maps-search", "/v1/autocomplete", "/v1/bing-serp", "/v1/youtube-search"].includes(m.path)) throw new Error(`unexpected GET route ${m.path}`);
+for (const m of social.model) if (m.httpMethod !== "GET") throw new Error(`social ${m.path} is not GET`);
+
+// The same model, as data for the README route tables (scripts/readme-tables.mjs reads it).
+const routeTables = {
+  keywords: seo.model.map(({ path, httpMethod, tool, method, priceUsd, summary }) => ({ path, httpMethod, tool, method, priceUsd, summary })),
+  social: social.model.map(({ path, httpMethod, tool, method, priceUsd, summary }) => ({ path, httpMethod, tool, method, priceUsd, summary })),
+  derivs: Object.entries(readJson("spec/derivs-openapi.json").paths).map(([path, ops]) => ({
+    path,
+    httpMethod: "GET",
+    tool: ops.get["x-mcp-tool"],
+    method: derivsMethods[path].method,
+    priceUsd: ops.get["x-payment-info"].price.amount,
+    summary: ops.get.summary ?? "",
+  })),
+};
+
 // ---------------------------------------------------------------- write or check
 const targets = [
   ["src/generated.ts", out.join("\n"), `${model.length} routes, ${byNs.size} namespaces`],
   ["src/derivs-generated.ts", dout.join("\n"), `${dmodel.length} derivs routes`],
+  ["src/seo-generated.ts", seo.text, `${seo.model.length} keyword routes, ${seo.gen.length} generated methods`],
+  ["src/social-generated.ts", social.text, `${social.model.length} social routes`],
+  ["spec/route-tables.json", `${JSON.stringify(routeTables, null, 1)}\n`, "README route tables"],
 ];
 let stale = false;
 for (const [rel, text, what] of targets) {

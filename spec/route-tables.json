@@ -1,0 +1,648 @@
+{
+ "keywords": [
+  {
+   "path": "/v1/keyword-overview",
+   "httpMethod": "POST",
+   "tool": "keyword_overview",
+   "method": "keywordOverview",
+   "priceUsd": "0.04",
+   "summary": "Keyword overview (up to 100 keywords)"
+  },
+  {
+   "path": "/v1/search-volume",
+   "httpMethod": "GET",
+   "tool": "keyword_search_volume",
+   "method": "searchVolume",
+   "priceUsd": "0.04",
+   "summary": "Search volume (GET, up to 20 keywords)"
+  },
+  {
+   "path": "/v1/keyword-ideas",
+   "httpMethod": "POST",
+   "tool": "keyword_ideas",
+   "method": "keywordIdeas",
+   "priceUsd": "0.04",
+   "summary": "Keyword ideas (up to 100 per seed)"
+  },
+  {
+   "path": "/v1/trend",
+   "httpMethod": "GET",
+   "tool": "google_trends",
+   "method": "trend",
+   "priceUsd": "0.045",
+   "summary": "Google Trends interest over time"
+  },
+  {
+   "path": "/v1/related-queries",
+   "httpMethod": "GET",
+   "tool": "google_trends_related_queries",
+   "method": "relatedQueries",
+   "priceUsd": "0.03",
+   "summary": "Google Trends related queries"
+  },
+  {
+   "path": "/v1/interest-by-region",
+   "httpMethod": "GET",
+   "tool": "google_trends_by_region",
+   "method": "interestByRegion",
+   "priceUsd": "0.03",
+   "summary": "Google Trends interest by region"
+  },
+  {
+   "path": "/v1/related-keywords",
+   "httpMethod": "POST",
+   "tool": "related_keywords",
+   "method": "relatedKeywords",
+   "priceUsd": "0.04",
+   "summary": "Related keywords (up to 100, depth 0-4)"
+  },
+  {
+   "path": "/v1/keyword-variations",
+   "httpMethod": "POST",
+   "tool": "keyword_variations",
+   "method": "keywordVariations",
+   "priceUsd": "0.04",
+   "summary": "Keyword variations containing a phrase (up to 100)"
+  },
+  {
+   "path": "/v1/keyword-difficulty",
+   "httpMethod": "POST",
+   "tool": "keyword_difficulty",
+   "method": "keywordDifficulty",
+   "priceUsd": "0.04",
+   "summary": "Keyword difficulty (up to 100 keywords)"
+  },
+  {
+   "path": "/v1/search-intent",
+   "httpMethod": "POST",
+   "tool": "search_intent",
+   "method": "searchIntent",
+   "priceUsd": "0.04",
+   "summary": "Search intent (up to 100 keywords)"
+  },
+  {
+   "path": "/v1/keyword-volume-history",
+   "httpMethod": "POST",
+   "tool": "keyword_volume_history",
+   "method": "keywordVolumeHistory",
+   "priceUsd": "0.048",
+   "summary": "Monthly search volume history (up to 20 keywords)"
+  },
+  {
+   "path": "/v1/keyword-suggestions",
+   "httpMethod": "POST",
+   "tool": "keywords_for_site",
+   "method": "keywordSuggestions",
+   "priceUsd": "0.04",
+   "summary": "Keywords for a site or page (up to 100)"
+  },
+  {
+   "path": "/v1/trends",
+   "httpMethod": "POST",
+   "tool": "google_trends_compare",
+   "method": "trends",
+   "priceUsd": "0.045",
+   "summary": "Google Trends comparison (up to 5 keywords)"
+  },
+  {
+   "path": "/v1/domain-overview",
+   "httpMethod": "POST",
+   "tool": "domain_overview",
+   "method": "domainOverview",
+   "priceUsd": "0.04",
+   "summary": "Domain overview (organic and paid visibility)"
+  },
+  {
+   "path": "/v1/traffic-estimate",
+   "httpMethod": "POST",
+   "tool": "traffic_estimate",
+   "method": "trafficEstimate",
+   "priceUsd": "0.04",
+   "summary": "Traffic estimate (up to 100 domains)"
+  },
+  {
+   "path": "/v1/ranked-keywords",
+   "httpMethod": "POST",
+   "tool": "ranked_keywords",
+   "method": "rankedKeywords",
+   "priceUsd": "0.048",
+   "summary": "Ranked keywords of a domain (up to 100)"
+  },
+  {
+   "path": "/v1/competitors",
+   "httpMethod": "POST",
+   "tool": "competitor_domains",
+   "method": "competitors",
+   "priceUsd": "0.048",
+   "summary": "Competitor domains (up to 100)"
+  },
+  {
+   "path": "/v1/keyword-gap",
+   "httpMethod": "POST",
+   "tool": "keyword_gap",
+   "method": "keywordGap",
+   "priceUsd": "0.048",
+   "summary": "Keyword gap: competitor-only keywords (up to 100)"
+  },
+  {
+   "path": "/v1/serp-competitors",
+   "httpMethod": "POST",
+   "tool": "serp_competitors",
+   "method": "serpCompetitors",
+   "priceUsd": "0.048",
+   "summary": "Domains ranking for a keyword set (up to 100)"
+  },
+  {
+   "path": "/v1/relevant-pages",
+   "httpMethod": "POST",
+   "tool": "relevant_pages",
+   "method": "relevantPages",
+   "priceUsd": "0.048",
+   "summary": "Top pages of a domain (up to 100)"
+  },
+  {
+   "path": "/v1/historical-rank",
+   "httpMethod": "POST",
+   "tool": "historical_rank",
+   "method": "historicalRank",
+   "priceUsd": "0.25",
+   "summary": "Monthly rank history of a domain (24 months)"
+  },
+  {
+   "path": "/v1/page-intersection",
+   "httpMethod": "POST",
+   "tool": "page_intersection",
+   "method": "pageIntersection",
+   "priceUsd": "0.048",
+   "summary": "Keywords shared by pages (up to 20 pages)"
+  },
+  {
+   "path": "/v1/backlinks",
+   "httpMethod": "POST",
+   "tool": "backlinks_summary",
+   "method": "backlinks",
+   "priceUsd": "0.048",
+   "summary": "Backlink profile summary"
+  },
+  {
+   "path": "/v1/backlinks-list",
+   "httpMethod": "POST",
+   "tool": "backlinks_list",
+   "method": "backlinksList",
+   "priceUsd": "0.048",
+   "summary": "Backlinks list (up to 100)"
+  },
+  {
+   "path": "/v1/referring-domains",
+   "httpMethod": "POST",
+   "tool": "referring_domains",
+   "method": "referringDomains",
+   "priceUsd": "0.048",
+   "summary": "Referring domains (up to 100)"
+  },
+  {
+   "path": "/v1/backlink-anchors",
+   "httpMethod": "POST",
+   "tool": "backlink_anchors",
+   "method": "backlinkAnchors",
+   "priceUsd": "0.048",
+   "summary": "Backlink anchor texts (up to 100)"
+  },
+  {
+   "path": "/v1/backlinks-history",
+   "httpMethod": "POST",
+   "tool": "backlinks_history",
+   "method": "backlinksHistory",
+   "priceUsd": "0.048",
+   "summary": "Backlink profile history (up to 24 months)"
+  },
+  {
+   "path": "/v1/on-page",
+   "httpMethod": "POST",
+   "tool": "on_page_audit",
+   "method": "onPage",
+   "priceUsd": "0.012",
+   "summary": "On-page SEO audit of a URL"
+  },
+  {
+   "path": "/v1/pagespeed",
+   "httpMethod": "POST",
+   "tool": "pagespeed",
+   "method": "pagespeed",
+   "priceUsd": "0.018",
+   "summary": "Page speed (Lighthouse Core Web Vitals)"
+  },
+  {
+   "path": "/v1/amazon-keywords",
+   "httpMethod": "POST",
+   "tool": "amazon_keywords",
+   "method": "amazonKeywords",
+   "priceUsd": "0.04",
+   "summary": "Amazon keyword ideas and volume"
+  },
+  {
+   "path": "/v1/amazon-search",
+   "httpMethod": "POST",
+   "tool": "amazon_search",
+   "method": "amazonSearch",
+   "priceUsd": "0.012",
+   "summary": "Amazon search results (products)"
+  },
+  {
+   "path": "/v1/serp",
+   "httpMethod": "GET",
+   "tool": "google_search",
+   "method": "serp",
+   "priceUsd": "0.018",
+   "summary": "Google search results (10, 20 or 50)"
+  },
+  {
+   "path": "/v1/maps-search",
+   "httpMethod": "GET",
+   "tool": "google_maps_search",
+   "method": "mapsSearch",
+   "priceUsd": "0.018",
+   "summary": "Google Maps places (up to 100)"
+  },
+  {
+   "path": "/v1/serp-history",
+   "httpMethod": "POST",
+   "tool": "serp_history",
+   "method": "serpHistory",
+   "priceUsd": "0.018",
+   "summary": "Google results-page history (one past snapshot)"
+  },
+  {
+   "path": "/v1/business-listings",
+   "httpMethod": "POST",
+   "tool": "business_listings",
+   "method": "businessListings",
+   "priceUsd": "0.08",
+   "summary": "Business listings by name or category (up to 50)"
+  },
+  {
+   "path": "/v1/autocomplete",
+   "httpMethod": "GET",
+   "tool": "google_autocomplete",
+   "method": "autocomplete",
+   "priceUsd": "0.012",
+   "summary": "Google autocomplete suggestions"
+  },
+  {
+   "path": "/v1/bing-serp",
+   "httpMethod": "GET",
+   "tool": "bing_search",
+   "method": "bingSerp",
+   "priceUsd": "0.018",
+   "summary": "Bing search results (10, 20 or 50)"
+  },
+  {
+   "path": "/v1/youtube-search",
+   "httpMethod": "GET",
+   "tool": "youtube_search",
+   "method": "youtubeSearch",
+   "priceUsd": "0.012",
+   "summary": "YouTube search results (20 or 40)"
+  },
+  {
+   "path": "/v1/google-ads-keywords",
+   "httpMethod": "POST",
+   "tool": "google_ads_keywords",
+   "method": "googleAdsKeywords",
+   "priceUsd": "0.16",
+   "summary": "Google Ads keyword ideas (up to 100)"
+  },
+  {
+   "path": "/v1/clickstream-search-volume",
+   "httpMethod": "POST",
+   "tool": "clickstream_search_volume",
+   "method": "clickstreamSearchVolume",
+   "priceUsd": "0.04",
+   "summary": "Clickstream search volume (up to 100 keywords)"
+  },
+  {
+   "path": "/v1/brand-mentions",
+   "httpMethod": "POST",
+   "tool": "brand_mentions",
+   "method": "brandMentions",
+   "priceUsd": "0.048",
+   "summary": "Brand mentions on the web (up to 100)"
+  },
+  {
+   "path": "/v1/tech-stack",
+   "httpMethod": "POST",
+   "tool": "tech_stack",
+   "method": "techStack",
+   "priceUsd": "0.024",
+   "summary": "Website technology stack"
+  },
+  {
+   "path": "/v1/whois",
+   "httpMethod": "POST",
+   "tool": "whois_overview",
+   "method": "whois",
+   "priceUsd": "0.21",
+   "summary": "WHOIS overview of a domain"
+  },
+  {
+   "path": "/v1/llm-mentions",
+   "httpMethod": "POST",
+   "tool": "llm_mentions",
+   "method": "llmMentions",
+   "priceUsd": "0.21",
+   "summary": "AI answers mentioning a keyword (up to 20)"
+  }
+ ],
+ "social": [
+  {
+   "path": "/v1/bluesky/search",
+   "httpMethod": "GET",
+   "tool": "bluesky_search",
+   "method": "blueskySearch",
+   "priceUsd": "0.01",
+   "summary": "Bluesky post search"
+  },
+  {
+   "path": "/v1/bluesky/posts",
+   "httpMethod": "GET",
+   "tool": "bluesky_posts",
+   "method": "blueskyPosts",
+   "priceUsd": "0.01",
+   "summary": "Bluesky account feed"
+  },
+  {
+   "path": "/v1/bluesky/profile",
+   "httpMethod": "GET",
+   "tool": "bluesky_profile",
+   "method": "blueskyProfile",
+   "priceUsd": "0.01",
+   "summary": "Bluesky profile"
+  },
+  {
+   "path": "/v1/hackernews/search",
+   "httpMethod": "GET",
+   "tool": "hackernews_search",
+   "method": "hackernewsSearch",
+   "priceUsd": "0.01",
+   "summary": "Hacker News search"
+  },
+  {
+   "path": "/v1/hackernews/thread",
+   "httpMethod": "GET",
+   "tool": "hackernews_thread",
+   "method": "hackernewsThread",
+   "priceUsd": "0.01",
+   "summary": "Hacker News thread"
+  },
+  {
+   "path": "/v1/social/mentions",
+   "httpMethod": "GET",
+   "tool": "social_mentions",
+   "method": "socialMentions",
+   "priceUsd": "0.01",
+   "summary": "Social mentions and sentiment (aggregate)"
+  },
+  {
+   "path": "/v1/x/search",
+   "httpMethod": "GET",
+   "tool": "x_search",
+   "method": "xSearch",
+   "priceUsd": "0.02",
+   "summary": "X (Twitter) post search"
+  },
+  {
+   "path": "/v1/x/posts",
+   "httpMethod": "GET",
+   "tool": "x_posts",
+   "method": "xPosts",
+   "priceUsd": "0.02",
+   "summary": "X (Twitter) user timeline"
+  },
+  {
+   "path": "/v1/x/profile",
+   "httpMethod": "GET",
+   "tool": "x_profile",
+   "method": "xProfile",
+   "priceUsd": "0.02",
+   "summary": "X (Twitter) profile"
+  },
+  {
+   "path": "/v1/reddit/search",
+   "httpMethod": "GET",
+   "tool": "reddit_search",
+   "method": "redditSearch",
+   "priceUsd": "0.02",
+   "summary": "Reddit post search"
+  },
+  {
+   "path": "/v1/reddit/comments",
+   "httpMethod": "GET",
+   "tool": "reddit_comments",
+   "method": "redditComments",
+   "priceUsd": "0.02",
+   "summary": "Reddit post comments"
+  },
+  {
+   "path": "/v1/tiktok/videos",
+   "httpMethod": "GET",
+   "tool": "tiktok_videos",
+   "method": "tiktokVideos",
+   "priceUsd": "0.02",
+   "summary": "TikTok account videos"
+  },
+  {
+   "path": "/v1/tiktok/search",
+   "httpMethod": "GET",
+   "tool": "tiktok_search",
+   "method": "tiktokSearch",
+   "priceUsd": "0.02",
+   "summary": "TikTok video search"
+  },
+  {
+   "path": "/v1/instagram/profile",
+   "httpMethod": "GET",
+   "tool": "instagram_profile",
+   "method": "instagramProfile",
+   "priceUsd": "0.02",
+   "summary": "Instagram profile and posts"
+  },
+  {
+   "path": "/v1/youtube/transcript",
+   "httpMethod": "GET",
+   "tool": "youtube_transcript",
+   "method": "youtubeTranscript",
+   "priceUsd": "0.02",
+   "summary": "YouTube transcript"
+  },
+  {
+   "path": "/v1/youtube/comments",
+   "httpMethod": "GET",
+   "tool": "youtube_comments",
+   "method": "youtubeComments",
+   "priceUsd": "0.02",
+   "summary": "YouTube video comments"
+  },
+  {
+   "path": "/v1/threads/posts",
+   "httpMethod": "GET",
+   "tool": "threads_posts",
+   "method": "threadsPosts",
+   "priceUsd": "0.02",
+   "summary": "Threads account posts"
+  },
+  {
+   "path": "/v1/facebook/ads",
+   "httpMethod": "GET",
+   "tool": "facebook_ads",
+   "method": "facebookAds",
+   "priceUsd": "0.02",
+   "summary": "Meta Ad Library search"
+  },
+  {
+   "path": "/v1/social/search",
+   "httpMethod": "GET",
+   "tool": "social_search",
+   "method": "socialSearch",
+   "priceUsd": "0.025",
+   "summary": "Social search on X, Reddit and TikTok"
+  },
+  {
+   "path": "/v1/social/audience",
+   "httpMethod": "GET",
+   "tool": "social_audience",
+   "method": "socialAudience",
+   "priceUsd": "0.02",
+   "summary": "Audience and engagement stats"
+  },
+  {
+   "path": "/v1/social/accounts",
+   "httpMethod": "GET",
+   "tool": "social_accounts",
+   "method": "socialAccounts",
+   "priceUsd": "0.02",
+   "summary": "Creator and brand account search"
+  },
+  {
+   "path": "/v1/linkedin/company",
+   "httpMethod": "GET",
+   "tool": "linkedin_company",
+   "method": "linkedinCompany",
+   "priceUsd": "0.02",
+   "summary": "LinkedIn company page"
+  },
+  {
+   "path": "/v1/social/people",
+   "httpMethod": "GET",
+   "tool": "people_search",
+   "method": "socialPeople",
+   "priceUsd": "0.02",
+   "summary": "Profile search (TikTok, Instagram, Threads)"
+  },
+  {
+   "path": "/v1/tiktok/followers",
+   "httpMethod": "GET",
+   "tool": "tiktok_followers",
+   "method": "tiktokFollowers",
+   "priceUsd": "0.02",
+   "summary": "TikTok followers list"
+  },
+  {
+   "path": "/v1/tiktok/following",
+   "httpMethod": "GET",
+   "tool": "tiktok_following",
+   "method": "tiktokFollowing",
+   "priceUsd": "0.02",
+   "summary": "TikTok following list"
+  },
+  {
+   "path": "/v1/linkedin/profile",
+   "httpMethod": "GET",
+   "tool": "linkedin_profile",
+   "method": "linkedinProfile",
+   "priceUsd": "0.02",
+   "summary": "LinkedIn profile"
+  }
+ ],
+ "derivs": [
+  {
+   "path": "/v1/funding-rates",
+   "httpMethod": "GET",
+   "tool": "perp_funding_rates",
+   "method": "fundingRates",
+   "priceUsd": "0.003",
+   "summary": "Perp funding rates by exchange (one coin)"
+  },
+  {
+   "path": "/v1/funding-history",
+   "httpMethod": "GET",
+   "tool": "funding_rate_history",
+   "method": "fundingHistory",
+   "priceUsd": "0.003",
+   "summary": "Funding rate history (one coin, one venue, up to 30 days)"
+  },
+  {
+   "path": "/v1/funding-arbitrage",
+   "httpMethod": "GET",
+   "tool": "funding_arbitrage_scan",
+   "method": "fundingArbitrage",
+   "priceUsd": "0.005",
+   "summary": "Funding arbitrage scanner (all coins)"
+  },
+  {
+   "path": "/v1/perp-screener",
+   "httpMethod": "GET",
+   "tool": "perp_screener",
+   "method": "perpScreener",
+   "priceUsd": "0.005",
+   "summary": "Perp screener (every perpetual, sorted)"
+  },
+  {
+   "path": "/v1/open-interest",
+   "httpMethod": "GET",
+   "tool": "open_interest",
+   "method": "openInterest",
+   "priceUsd": "0.003",
+   "summary": "Open interest by exchange (one coin)"
+  },
+  {
+   "path": "/v1/basis",
+   "httpMethod": "GET",
+   "tool": "futures_basis",
+   "method": "basis",
+   "priceUsd": "0.003",
+   "summary": "Futures basis, term structure and perp premium (one coin)"
+  },
+  {
+   "path": "/v1/options",
+   "httpMethod": "GET",
+   "tool": "implied_volatility",
+   "method": "options",
+   "priceUsd": "0.003",
+   "summary": "Implied volatility, skew and max pain (crypto options)"
+  },
+  {
+   "path": "/v1/liquidations",
+   "httpMethod": "GET",
+   "tool": "liquidations",
+   "method": "liquidations",
+   "priceUsd": "0.003",
+   "summary": "Liquidations (one coin, last 1-24 h)"
+  },
+  {
+   "path": "/v1/orderbook",
+   "httpMethod": "GET",
+   "tool": "order_book_depth",
+   "method": "orderbook",
+   "priceUsd": "0.003",
+   "summary": "Order book depth and slippage (one coin, 8 venues)"
+  },
+  {
+   "path": "/v1/derivatives-snapshot",
+   "httpMethod": "GET",
+   "tool": "derivatives_snapshot",
+   "method": "derivativesSnapshot",
+   "priceUsd": "0.005",
+   "summary": "Crypto derivatives snapshot (one coin, one call)"
+  }
+ ]
+}

@@ -118,8 +118,8 @@ export type DerivsFundingRatesData = {
 export interface DerivsFundingHistoryParams {
   /** Coin symbol: BTC, ETH, SOL ... (also BTCUSDT, BTC-PERP, XBT, 1000PEPE). */
   coin: string;
-  /** The exchange whose funding history to return. */
-  venue: "bybit" | "hyperliquid" | "dydx" | "gate" | "kraken" | "deribit" | "okx";
+  /** The exchange whose funding history to return. Default hyperliquid. Bybit refuses some US locations (a free 503); hyperliquid always answers. */
+  venue?: "bybit" | "hyperliquid" | "dydx" | "gate" | "kraken" | "deribit" | "okx";
   /** Days back, 1-30. Default 7. */
   days?: number | string;
 }
@@ -183,7 +183,7 @@ export type DerivsFundingHistoryData = {
 export interface DerivsFundingArbitrageParams {
   /** Minimum gross spread, in APR percent (0-10000). Default 10. */
   min_apr?: number | string;
-  /** Liquidity filter: both legs need at least this 24 h volume in USD (0-1e12). Venues that publish no volume are excluded when > 0. Default 0. */
+  /** Liquidity filter: both legs need at least this 24 h volume in USD (a plain decimal number from 0 to 1000000000000). Venues that publish no volume are excluded when > 0. Default 0. */
   min_volume_usd?: number | string;
   /** Taker fee per fill in percent of notional (0-1); 4 fills per round trip. Default 0.05. */
   fee_pct?: number | string;
@@ -271,7 +271,7 @@ export interface DerivsPerpScreenerParams {
   order?: "desc" | "asc";
   /** Coins returned, 1-200. Default 50. */
   limit?: number | string;
-  /** Only coins whose total 24 h volume is at least this (USD, 0-1e12). Default 0. */
+  /** Only coins whose total 24 h volume is at least this (USD), a plain decimal number from 0 to 1000000000000. Default 0. */
   min_volume_usd?: number | string;
 }
 
@@ -346,6 +346,8 @@ export interface DerivsOpenInterestParams {
 /** The JSON body returned by `GET /v1/open-interest` (from the route's response schema). */
 export type DerivsOpenInterestData = {
   coin: string;
+  venues_used: number;
+  venues_listed: number;
   total_oi_usd: number | null;
   total_oi_coins: number | null;
   venues: ({
@@ -614,7 +616,7 @@ export type DerivsLiquidationsData = {
 export interface DerivsOrderbookParams {
   /** Coin symbol: BTC, ETH, SOL, PEPE ... (also BTCUSDT, BTC-PERP, XBT, 1000PEPE, kPEPE). */
   coin: string;
-  /** Order size in USD for the slippage estimate (1-1e9). Default 100000. */
+  /** Order size in USD for the slippage estimate, a plain decimal number from 1 to 1000000000. Default 100000. */
   size_usd?: number | string;
   /** Also return the top N price levels per side (0-20). Default 0. */
   levels?: number | string;
@@ -840,61 +842,61 @@ export type DerivsDerivativesSnapshotData = {
 /** Typed methods for the derivs.duoleads.com routes. Each one is paid per call over x402 (USDC on Base). */
 export interface DerivsGeneratedClient {
   /**
-   * Funding rates for perpetual futures (perp funding) of one coin across 8 exchanges: Bybit, Hyperliquid, dYdX, Gate, Kraken, Bitfinex, Deribit, OKX. Per venue the current funding rate, interval, 8h rate, APR, next funding time, mark and index; predicted funding incl. Binance and Bybit (via Hyperliquid); the last 24 hourly prints with avg/min/max/% positive. Perpetual swap funding for BTC, ETH, SOL and more. Data only. Bad input is free; under 3 venues not charged.
+   * Funding rates for perpetual futures (perp funding) of one coin across 8 exchanges: Bybit, Hyperliquid, dYdX, Gate, Kraken, Bitfinex, Deribit, OKX. Per venue the current funding rate, interval, 8h rate, APR, next funding time, mark and index; predicted funding incl. Binance and Bybit (via Hyperliquid); the last 24 hourly prints with avg/min/max/% positive. Perpetual swap funding for BTC, ETH, SOL and more. Data only. Bad input is free; under 3 venues not charged. Also accepts POST with the same parameters as a JSON object body (numbers may be JSON numbers), or the same query string with an empty body.
    *
    * Route: `GET /v1/funding-rates`. Costs $0.003 per call (3000 atomic USDC). MCP tool: `perp_funding_rates`.
    */
   fundingRates(params: DerivsFundingRatesParams): Promise<DerivsFundingRatesData>;
   /**
-   * Funding rate history of one coin on one exchange (Bybit, Hyperliquid, dYdX, Gate, Kraken, Deribit or OKX), up to 30 days: every past funding print with interval, 8h rate and APR, plus avg/min/max/% positive and the window covered. Historical perpetual swap funding for backtests and carry studies on BTC, ETH, SOL and more. Data only. Bad input is free; a venue that fails is not charged.
+   * Funding rate history of one coin on one exchange (default Hyperliquid; or Bybit, dYdX, Gate, Kraken, Deribit, OKX), up to 30 days: every past funding print with interval, 8h rate and APR, plus avg/min/max/% positive and the window covered. Historical perpetual swap funding for backtests and carry studies on BTC, ETH, SOL and more. Data only. Bad input is free; a venue that fails is not charged. Also accepts POST with the same parameters as a JSON object body (numbers may be JSON numbers), or the same query string with an empty body.
    *
    * Route: `GET /v1/funding-history`. Costs $0.003 per call (3000 atomic USDC). MCP tool: `funding_rate_history`.
    */
   fundingHistory(params: DerivsFundingHistoryParams): Promise<DerivsFundingHistoryData>;
   /**
-   * Funding arbitrage scanner across 8 exchanges (Bybit, Hyperliquid, dYdX, Gate, Kraken, Bitfinex, Deribit, OKX): for every coin the widest cross-venue perp funding spread, the long and short venue, both funding rates, gross and fee-adjusted net APR and breakeven days, with a 24h volume liquidity filter. Funding rate arbitrage, basis trade and carry screening of perpetual swaps. Data only, no advice. Bad input is free; under 3 venues not charged.
+   * Funding arbitrage scanner across 8 exchanges (Bybit, Hyperliquid, dYdX, Gate, Kraken, Bitfinex, Deribit, OKX): for every coin the widest cross-venue perp funding spread, the long and short venue, both funding rates, gross and fee-adjusted net APR and breakeven days, with a 24h volume liquidity filter. Funding rate arbitrage, basis trade and carry screening of perpetual swaps. Data only, no advice. Bad input is free; under 3 venues not charged. Empty filter results are still charged. Also accepts POST with the same parameters as a JSON object body (numbers may be JSON numbers), or the same query string with an empty body.
    *
    * Route: `GET /v1/funding-arbitrage`. Costs $0.005 per call (5000 atomic USDC). MCP tool: `funding_arbitrage_scan`.
    */
   fundingArbitrage(params?: DerivsFundingArbitrageParams): Promise<DerivsFundingArbitrageData>;
   /**
-   * Perp screener for all coins: every perpetual future on Bybit, Hyperliquid, dYdX, Gate, Kraken, Bitfinex, Deribit and OKX in one call, sorted by funding rate (APR), open interest (OI), 24h volume or 24h change, with the highest and lowest funding views. A funding screener and perpetuals market ranking for BTC, ETH, SOL and hundreds of altcoins. Data only. Bad input is free; under 3 venues not charged.
+   * Perp screener for all coins: every perpetual future on Bybit, Hyperliquid, dYdX, Gate, Kraken, Bitfinex, Deribit and OKX in one call, sorted by funding rate (APR), open interest (OI), 24h volume or 24h change, with the highest and lowest funding views. A funding screener and perpetuals market ranking for BTC, ETH, SOL and hundreds of altcoins. Data only. Bad input is free; under 3 venues not charged. Empty filter results are still charged. Also accepts POST with the same parameters as a JSON object body (numbers may be JSON numbers), or the same query string with an empty body.
    *
    * Route: `GET /v1/perp-screener`. Costs $0.005 per call (5000 atomic USDC). MCP tool: `perp_screener`.
    */
   perpScreener(params?: DerivsPerpScreenerParams): Promise<DerivsPerpScreenerData>;
   /**
-   * Open interest (OI) of one coin's perpetual futures by exchange: Bybit, Hyperliquid, dYdX, Gate, Kraken, Bitfinex, Deribit, OKX. Per venue OI in coins and USD and its share, the total, and the OI change over 1h, 4h and 24h from the venues' own history. Perp open interest and futures open interest for BTC, ETH, SOL and more. Data only. Bad input is free; under 3 venues not charged.
+   * Open interest (OI) of one coin's perpetual futures by exchange: Bybit, Hyperliquid, dYdX, Gate, Kraken, Bitfinex, Deribit, OKX. Per venue OI in coins and USD and its share, the total, and the OI change over 1h, 4h and 24h from the venues' own history. Perp open interest and futures open interest for BTC, ETH, SOL and more. Data only. Bad input is free; under 2 venues (3 for a coin listed on 3+) not charged. Also accepts POST with the same parameters as a JSON object body (numbers may be JSON numbers), or the same query string with an empty body.
    *
    * Route: `GET /v1/open-interest`. Costs $0.003 per call (3000 atomic USDC). MCP tool: `open_interest`.
    */
   openInterest(params: DerivsOpenInterestParams): Promise<DerivsOpenInterestData>;
   /**
-   * Futures basis and term structure of one coin: dated futures on Bybit, Deribit, Kraken, Gate and OKX with days to expiry, basis vs index and annualised basis (contango or backwardation, the carry), the perp premium (mark vs index/oracle) on Hyperliquid, dYdX, Bitfinex and the others, and predicted funding. Crypto futures basis for BTC, ETH and more. Data only. Bad input is free; under 2 venues not charged.
+   * Futures basis and term structure of one coin: dated futures on Bybit, Deribit, Kraken, Gate and OKX with days to expiry, basis vs index and annualised basis (contango or backwardation, the carry), the perp premium (mark vs index/oracle) on Hyperliquid, dYdX, Bitfinex and the others, and predicted funding. Crypto futures basis for BTC, ETH and more. Data only. Bad input is free; under 2 venues not charged. Also accepts POST with the same parameters as a JSON object body (numbers may be JSON numbers), or the same query string with an empty body.
    *
    * Route: `GET /v1/basis`. Costs $0.003 per call (3000 atomic USDC). MCP tool: `futures_basis`.
    */
   basis(params: DerivsBasisParams): Promise<DerivsBasisData>;
   /**
-   * Implied volatility (IV) of crypto options per expiry from Deribit, Bybit and OKX: ATM IV, 25-delta skew, put/call open interest ratio, max pain and Deribit's DVOL index; with an expiry, the options chain per strike with the greeks as each venue publishes them. Volatility surface inputs for BTC and ETH options. Data only. Bad input is free; nothing is charged when no venue answers.
+   * Implied volatility (IV) of crypto options per expiry from Deribit (always; Bybit and OKX when their cached chains are fresh): ATM IV, 25-delta skew, put/call open interest ratio, max pain and Deribit's DVOL index; with an expiry, the options chain per strike with the greeks as each venue publishes them. Volatility surface inputs for BTC and ETH options. Data only. Bad input is free; nothing is charged when no venue answers. Also accepts POST with the same parameters as a JSON object body (numbers may be JSON numbers), or the same query string with an empty body.
    *
    * Route: `GET /v1/options`. Costs $0.003 per call (3000 atomic USDC). MCP tool: `implied_volatility`.
    */
   options(params: DerivsOptionsParams): Promise<DerivsOptionsData>;
   /**
-   * Liquidations of one coin's perpetual futures: recent forced liquidations from the Gate, Bitfinex, dYdX, Deribit and OKX public feeds, long and short liquidations in USD per venue, the totals and the largest events over 1-24h. Liquidation data for BTC, ETH, SOL and more; Bybit, Hyperliquid and Kraken are listed as not covered (WebSocket only). Data only. Bad input is free; under 2 feeds not charged.
+   * Liquidations of one coin's perpetual futures: recent forced liquidations from the Gate, Bitfinex, dYdX, Deribit and OKX public feeds, long and short liquidations in USD per venue, the totals and the largest events over 1-24h. Liquidation data for BTC, ETH, SOL and more; Bybit, Hyperliquid and Kraken are listed as not covered (WebSocket only). Data only. Bad input is free; under 2 feeds not charged. Also accepts POST with the same parameters as a JSON object body (numbers may be JSON numbers), or the same query string with an empty body.
    *
    * Route: `GET /v1/liquidations`. Costs $0.003 per call (3000 atomic USDC). MCP tool: `liquidations`.
    */
   liquidations(params: DerivsLiquidationsParams): Promise<DerivsLiquidationsData>;
   /**
-   * Order book depth of one coin's perpetual on Bybit, Hyperliquid, dYdX, Gate, Kraken, Bitfinex, Deribit and OKX: best bid/ask, spread in bps, market depth in USD within 0.1/0.5/1/2% of mid, bid/ask imbalance, estimated slippage for your order size and the largest resting orders (walls). L2 orderbook liquidity for BTC, ETH, SOL and more. Data only. Bad input is free; under 2 venues not charged.
+   * Order book depth of one coin's perpetual on Bybit, Hyperliquid, dYdX, Gate, Kraken, Bitfinex, Deribit and OKX: best bid/ask, spread in bps, market depth in USD within 0.1/0.5/1/2% of mid, bid/ask imbalance, estimated slippage for your order size and the largest resting orders (walls). L2 orderbook liquidity for BTC, ETH, SOL and more. Data only. Bad input is free; under 2 venues not charged. Also accepts POST with the same parameters as a JSON object body (numbers may be JSON numbers), or the same query string with an empty body.
    *
    * Route: `GET /v1/orderbook`. Costs $0.003 per call (3000 atomic USDC). MCP tool: `order_book_depth`.
    */
   orderbook(params: DerivsOrderbookParams): Promise<DerivsOrderbookData>;
   /**
-   * Crypto derivatives snapshot of one coin in one call: perp funding rates per exchange with predicted funding, open interest (OI) per venue, perp premium and the nearest futures basis, 24h liquidations and the long/short ratio. Venues: Bybit, Hyperliquid, dYdX, Gate, Kraken, Bitfinex, Deribit, OKX. The derivatives data bundle for trading agents on BTC, ETH, SOL and more. Data only. Bad input is free; under 3 venues not charged.
+   * Crypto derivatives snapshot of one coin in one call: perp funding rates per exchange with predicted funding, open interest (OI) per venue, perp premium and the nearest futures basis, 24h liquidations and the long/short ratio. Venues: Bybit, Hyperliquid, dYdX, Gate, Kraken, Bitfinex, Deribit, OKX. The derivatives data bundle for trading agents on BTC, ETH, SOL and more. Data only. Bad input is free; under 3 venues not charged. Also accepts POST with the same parameters as a JSON object body (numbers may be JSON numbers), or the same query string with an empty body.
    *
    * Route: `GET /v1/derivatives-snapshot`. Costs $0.005 per call (5000 atomic USDC). MCP tool: `derivatives_snapshot`.
    */

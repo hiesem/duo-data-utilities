@@ -1,14 +1,16 @@
-// Client for https://keywords.duoleads.com: SEO keyword data. It covers Google search volume, CPC, competition,
-// keyword difficulty and intent (Google Ads data), keyword ideas, and Google Trends (interest over time, related
-// queries, interest by region). $0.03 to $0.045 per call, paid with x402 v2 (USDC on Base).
+// Client for https://keywords.duoleads.com: SEO and keyword data. 44 routes: Google search volume, CPC, competition,
+// keyword difficulty and intent (Google Ads data), keyword ideas, Google Trends, domain and ranking data, backlinks,
+// on-page and PageSpeed audits, Amazon keywords, Google / Bing / YouTube / Maps results, brand and AI-answer
+// visibility, tech stack and WHOIS. $0.012 to $0.25 per call, paid with x402 v2 (USDC on Base).
 //
 // Differences from the main API that this file handles:
 //   - paths are /v1/<name> (one segment), e.g. /v1/search-volume;
-//   - keyword-overview and keyword-ideas are POST with a JSON body; the other four routes are GET;
+//   - each route has one HTTP method (SEO_KEYWORD_ROUTES): most are POST with a JSON body, the others GET;
 //   - a 200 answer is the data object itself (no {ok, data, meta} envelope);
 //   - an error answer is {error: {status, code, message, param?, expected?}, request_id?}.
 import { DuoApiError } from "./errors.js";
 import { DEFAULT_PAY_TO, usdToAtomic } from "./price-guard.js";
+import { createSeoKeywordGeneratedClient, SEO_KEYWORD_ROUTES, type SeoKeywordGeneratedClient } from "./seo-generated.js";
 import {
   buildPayingFetch,
   canSetUserAgent,
@@ -23,8 +25,14 @@ import {
 import { SDK_USER_AGENT } from "./version.js";
 
 export const DEFAULT_KEYWORDS_BASE_URL = "https://keywords.duoleads.com";
-/** Largest price `client.keywords` signs for one call by default, in USD: the most expensive route (trend) costs $0.045. */
+/**
+ * Largest price `client.keywords` signs by default for one call to one of the six original routes (KEYWORDS_ROUTES) or
+ * to a path it does not know, in USD: the most expensive original route (trend) costs $0.045. Every other route
+ * (SEO_KEYWORD_ROUTES) is capped by default at its own listed price, so a challenge above that price is refused.
+ */
 export const DEFAULT_KEYWORDS_MAX_PRICE_USD = 0.045;
+/** The most expensive keyword route (historical-rank), in USD. */
+export const KEYWORDS_MAX_ROUTE_PRICE_USD = 0.25;
 /** The paid MCP endpoint of the keyword service (Streamable HTTP; payment in `_meta["x402/payment"]`). */
 export const KEYWORDS_MCP_URL = "https://keywords.duoleads.com/mcp";
 
@@ -38,7 +46,7 @@ export interface KeywordsRoute {
   priceUsd: string;
 }
 
-/** The six routes of https://keywords.duoleads.com (prices: growth/PLAN-keyword-service.md, FINAL v1 SCOPE). */
+/** The six original routes of https://keywords.duoleads.com, with hand-written methods. All 44 routes: SEO_KEYWORD_ROUTES. */
 export const KEYWORDS_ROUTES: readonly KeywordsRoute[] = [
   { method: "keywordOverview", httpMethod: "POST", path: "/v1/keyword-overview", tool: "keyword_overview", amount: "40000", priceUsd: "0.04" },
   { method: "searchVolume", httpMethod: "GET", path: "/v1/search-volume", tool: "keyword_search_volume", amount: "40000", priceUsd: "0.04" },
@@ -171,7 +179,10 @@ export interface KeywordsClientOptions {
   fetch?: FetchLike;
   /** API origin. Default https://keywords.duoleads.com. Plain http is only accepted for localhost. */
   baseUrl?: string;
-  /** Largest price in USD signed for one call. Default 0.045. Set 0.04 to refuse trend, 0.03 for the cheapest only. */
+  /**
+   * Largest price in USD signed for one call, on every route. Default: 0.045 for the six original routes and unknown
+   * paths, and each other route's own listed price (up to 0.25). Set 0.04 to refuse trend and every route above $0.04.
+   */
   maxPriceUsd?: number;
   /** The only payee signed for. Default 0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39; null accepts any. */
   payTo?: string | null;
@@ -186,7 +197,7 @@ export interface KeywordsPaidResult<T> {
   receipt: SettlementReceipt | null;
 }
 
-export interface KeywordsClient {
+export interface KeywordsClient extends SeoKeywordGeneratedClient {
   /** POST /v1/keyword-overview ($0.04): volume, CPC, competition, difficulty and intent for 1-100 keywords. */
   keywordOverview(params: KeywordOverviewParams): Promise<KeywordOverviewData>;
   /** GET /v1/search-volume ($0.04): the same metrics for 1-20 keywords in a country. */
@@ -199,7 +210,7 @@ export interface KeywordsClient {
   relatedQueries(params: TrendsParams): Promise<RelatedQueriesData>;
   /** GET /v1/interest-by-region ($0.03): Google Trends interest per region. */
   interestByRegion(params: TrendsParams): Promise<InterestByRegionData>;
-  /** Calls any keyword route by path: POST with a JSON body for keyword-overview and keyword-ideas, else GET. */
+  /** Calls any keyword route by path, with the route's own HTTP method (POST with a JSON body, or GET). */
   call<T = unknown>(path: string, params?: object): Promise<T>;
   /** Like `call`, and also returns the settlement receipt. */
   callWithReceipt<T = unknown>(path: string, params?: object): Promise<KeywordsPaidResult<T>>;
@@ -253,7 +264,10 @@ function keywordsError(path: string, status: number, ok: boolean, body: unknown)
   return new DuoApiError({ code: `HTTP_${status}`, message: `${path} failed with HTTP ${status}`, status, route: path, requestId });
 }
 
-const POST_PATHS = new Set(KEYWORDS_ROUTES.filter((r) => r.httpMethod === "POST").map((r) => r.path));
+const POST_PATHS = new Set<string>(SEO_KEYWORD_ROUTES.filter((r) => r.httpMethod === "POST").map((r) => r.path));
+const V1_PATHS = new Set<string>(KEYWORDS_ROUTES.map((r) => r.path));
+/** Default cap per path when the caller set no maxPriceUsd: a v2 route's own price, else the v1 default. */
+const ROUTE_CAP_USD = new Map<string, number>(SEO_KEYWORD_ROUTES.filter((r) => !V1_PATHS.has(r.path)).map((r) => [r.path, Number(r.priceUsd)]));
 
 /** Drops null and undefined members: the JSON body of a POST route. */
 function bodyOf(params: object): string {
@@ -264,7 +278,8 @@ function bodyOf(params: object): string {
 
 /**
  * Creates a client for https://keywords.duoleads.com. Pass `account` to pay with your own wallet (USDC on Base
- * via x402). The client refuses any price above `maxPriceUsd` (default $0.045) before it signs.
+ * via x402). Before it signs, the client refuses any price above `maxPriceUsd` (default: $0.045 on the six original
+ * routes, each other route's own listed price).
  * `createClient(...).keywords` is the same client, sharing the wallet with the main API.
  */
 export function createKeywordsClient(options: KeywordsClientOptions = {}): KeywordsClient {
@@ -272,19 +287,28 @@ export function createKeywordsClient(options: KeywordsClientOptions = {}): Keywo
     throw new TypeError("createKeywordsClient needs exactly one of `account` (pays with your wallet) or `fetch` (a fetch that already pays)");
   }
   const baseUrl = normaliseBaseUrl(options.baseUrl ?? DEFAULT_KEYWORDS_BASE_URL);
-  const maxPriceUsd = options.maxPriceUsd ?? DEFAULT_KEYWORDS_MAX_PRICE_USD;
   const userAgent = options.userAgent ?? SDK_USER_AGENT;
   if (/[\r\n]/.test(userAgent)) throw new TypeError("userAgent must not contain line breaks");
-  const maxAtomic = usdToAtomic(maxPriceUsd);
+  const capFor = (path: string): number => options.maxPriceUsd ?? ROUTE_CAP_USD.get(path) ?? DEFAULT_KEYWORDS_MAX_PRICE_USD;
+  usdToAtomic(capFor("")); // validates maxPriceUsd at construction, as before
   const payTo = options.payTo === undefined ? DEFAULT_PAY_TO : options.payTo;
-  const payingFetch: FetchLike =
-    options.account !== undefined ? buildPayingFetch(options.account, maxAtomic, maxPriceUsd, payTo) : (options.fetch as FetchLike);
+  const account = options.account;
+  // One paying fetch per price cap (at most one per distinct route price), built on first use.
+  const byCap = new Map<number, FetchLike>();
+  const payingFetchFor = (path: string): FetchLike => {
+    if (account === undefined) return options.fetch as FetchLike;
+    const cap = capFor(path);
+    let f = byCap.get(cap);
+    if (!f) byCap.set(cap, (f = buildPayingFetch(account, usdToAtomic(cap), cap, payTo)));
+    return f;
+  };
 
   const callPaid = async <T>(path: string, params: object = {}): Promise<KeywordsPaidResult<T>> => {
     assertKeywordsPath(path);
     const headers: Record<string, string> = { accept: "application/json" };
     if (canSetUserAgent() && userAgent) headers["user-agent"] = userAgent;
     let response: Response;
+    const payingFetch = payingFetchFor(path);
     if (POST_PATHS.has(path)) {
       headers["content-type"] = "application/json";
       response = await payingFetch(`${baseUrl}${path}`, { method: "POST", headers, body: bodyOf(params) });
@@ -299,6 +323,7 @@ export function createKeywordsClient(options: KeywordsClientOptions = {}): Keywo
   const call = async <T>(path: string, params: object): Promise<T> => (await callPaid<T>(path, params)).data;
 
   return {
+    ...createSeoKeywordGeneratedClient(call),
     keywordOverview: (p) => call<KeywordOverviewData>("/v1/keyword-overview", p),
     searchVolume: (p) => call<KeywordOverviewData>("/v1/search-volume", p),
     keywordIdeas: (p) => call<KeywordIdeasData>("/v1/keyword-ideas", p),

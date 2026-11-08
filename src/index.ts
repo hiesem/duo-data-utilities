@@ -16,6 +16,7 @@ export {
   DEFAULT_KEYWORDS_BASE_URL,
   DEFAULT_KEYWORDS_MAX_PRICE_USD,
   KEYWORDS_MCP_URL,
+  KEYWORDS_MAX_ROUTE_PRICE_USD,
   KEYWORDS_ROUTES,
 } from "./keywords.js";
 export type {
@@ -36,3 +37,14 @@ export type {
   TrendsParams,
   TrendsTimeframe,
 } from "./keywords.js";
+export * from "./seo-generated.js";
+export {
+  assertSocialPath,
+  buildSocialQuery,
+  createSocialClient,
+  DEFAULT_SOCIAL_BASE_URL,
+  DEFAULT_SOCIAL_MAX_PRICE_USD,
+  SOCIAL_MCP_URL,
+} from "./social.js";
+export type { SocialClient, SocialClientOptions, SocialPaidResult } from "./social.js";
+export * from "./social-generated.js";

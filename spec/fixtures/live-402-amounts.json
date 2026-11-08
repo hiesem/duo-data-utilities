@@ -1,0 +1,486 @@
+{
+ "fetched_at": "2026-11-08T00:55:57.834Z",
+ "note": "Amounts from each route's unpaid 402 PAYMENT-REQUIRED challenge (no payment made).",
+ "routes": {
+  "https://keywords.duoleads.com/v1/keyword-overview": {
+   "method": "POST",
+   "status": 402,
+   "amount": "40000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://keywords.duoleads.com/v1/search-volume": {
+   "method": "GET",
+   "status": 402,
+   "amount": "40000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://keywords.duoleads.com/v1/keyword-ideas": {
+   "method": "POST",
+   "status": 402,
+   "amount": "40000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://keywords.duoleads.com/v1/trend": {
+   "method": "GET",
+   "status": 402,
+   "amount": "45000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://keywords.duoleads.com/v1/related-queries": {
+   "method": "GET",
+   "status": 402,
+   "amount": "30000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://keywords.duoleads.com/v1/interest-by-region": {
+   "method": "GET",
+   "status": 402,
+   "amount": "30000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://keywords.duoleads.com/v1/related-keywords": {
+   "method": "POST",
+   "status": 402,
+   "amount": "40000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://keywords.duoleads.com/v1/keyword-variations": {
+   "method": "POST",
+   "status": 402,
+   "amount": "40000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://keywords.duoleads.com/v1/keyword-difficulty": {
+   "method": "POST",
+   "status": 402,
+   "amount": "40000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://keywords.duoleads.com/v1/search-intent": {
+   "method": "POST",
+   "status": 402,
+   "amount": "40000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://keywords.duoleads.com/v1/keyword-volume-history": {
+   "method": "POST",
+   "status": 402,
+   "amount": "48000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://keywords.duoleads.com/v1/keyword-suggestions": {
+   "method": "POST",
+   "status": 402,
+   "amount": "40000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://keywords.duoleads.com/v1/trends": {
+   "method": "POST",
+   "status": 402,
+   "amount": "45000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://keywords.duoleads.com/v1/domain-overview": {
+   "method": "POST",
+   "status": 402,
+   "amount": "40000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://keywords.duoleads.com/v1/traffic-estimate": {
+   "method": "POST",
+   "status": 402,
+   "amount": "40000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://keywords.duoleads.com/v1/ranked-keywords": {
+   "method": "POST",
+   "status": 402,
+   "amount": "48000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://keywords.duoleads.com/v1/competitors": {
+   "method": "POST",
+   "status": 402,
+   "amount": "48000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://keywords.duoleads.com/v1/keyword-gap": {
+   "method": "POST",
+   "status": 402,
+   "amount": "48000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://keywords.duoleads.com/v1/serp-competitors": {
+   "method": "POST",
+   "status": 402,
+   "amount": "48000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://keywords.duoleads.com/v1/relevant-pages": {
+   "method": "POST",
+   "status": 402,
+   "amount": "48000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://keywords.duoleads.com/v1/historical-rank": {
+   "method": "POST",
+   "status": 402,
+   "amount": "250000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://keywords.duoleads.com/v1/page-intersection": {
+   "method": "POST",
+   "status": 402,
+   "amount": "48000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://keywords.duoleads.com/v1/backlinks": {
+   "method": "POST",
+   "status": 402,
+   "amount": "48000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://keywords.duoleads.com/v1/backlinks-list": {
+   "method": "POST",
+   "status": 402,
+   "amount": "48000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://keywords.duoleads.com/v1/referring-domains": {
+   "method": "POST",
+   "status": 402,
+   "amount": "48000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://keywords.duoleads.com/v1/backlink-anchors": {
+   "method": "POST",
+   "status": 402,
+   "amount": "48000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://keywords.duoleads.com/v1/backlinks-history": {
+   "method": "POST",
+   "status": 402,
+   "amount": "48000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://keywords.duoleads.com/v1/on-page": {
+   "method": "POST",
+   "status": 402,
+   "amount": "12000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://keywords.duoleads.com/v1/pagespeed": {
+   "method": "POST",
+   "status": 402,
+   "amount": "18000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://keywords.duoleads.com/v1/amazon-keywords": {
+   "method": "POST",
+   "status": 402,
+   "amount": "40000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://keywords.duoleads.com/v1/amazon-search": {
+   "method": "POST",
+   "status": 402,
+   "amount": "12000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://keywords.duoleads.com/v1/serp": {
+   "method": "GET",
+   "status": 402,
+   "amount": "18000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://keywords.duoleads.com/v1/maps-search": {
+   "method": "GET",
+   "status": 402,
+   "amount": "18000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://keywords.duoleads.com/v1/serp-history": {
+   "method": "POST",
+   "status": 402,
+   "amount": "18000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://keywords.duoleads.com/v1/business-listings": {
+   "method": "POST",
+   "status": 402,
+   "amount": "80000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://keywords.duoleads.com/v1/autocomplete": {
+   "method": "GET",
+   "status": 402,
+   "amount": "12000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://keywords.duoleads.com/v1/bing-serp": {
+   "method": "GET",
+   "status": 402,
+   "amount": "18000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://keywords.duoleads.com/v1/youtube-search": {
+   "method": "GET",
+   "status": 402,
+   "amount": "12000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://keywords.duoleads.com/v1/google-ads-keywords": {
+   "method": "POST",
+   "status": 402,
+   "amount": "160000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://keywords.duoleads.com/v1/clickstream-search-volume": {
+   "method": "POST",
+   "status": 402,
+   "amount": "40000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://keywords.duoleads.com/v1/brand-mentions": {
+   "method": "POST",
+   "status": 402,
+   "amount": "48000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://keywords.duoleads.com/v1/tech-stack": {
+   "method": "POST",
+   "status": 402,
+   "amount": "24000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://keywords.duoleads.com/v1/whois": {
+   "method": "POST",
+   "status": 402,
+   "amount": "210000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://keywords.duoleads.com/v1/llm-mentions": {
+   "method": "POST",
+   "status": 402,
+   "amount": "210000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://social.duoleads.com/v1/bluesky/search": {
+   "method": "GET",
+   "status": 402,
+   "amount": "10000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://social.duoleads.com/v1/bluesky/posts": {
+   "method": "GET",
+   "status": 402,
+   "amount": "10000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://social.duoleads.com/v1/bluesky/profile": {
+   "method": "GET",
+   "status": 402,
+   "amount": "10000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://social.duoleads.com/v1/hackernews/search": {
+   "method": "GET",
+   "status": 402,
+   "amount": "10000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://social.duoleads.com/v1/hackernews/thread": {
+   "method": "GET",
+   "status": 402,
+   "amount": "10000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://social.duoleads.com/v1/social/mentions": {
+   "method": "GET",
+   "status": 402,
+   "amount": "10000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://social.duoleads.com/v1/x/search": {
+   "method": "GET",
+   "status": 402,
+   "amount": "20000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://social.duoleads.com/v1/x/posts": {
+   "method": "GET",
+   "status": 402,
+   "amount": "20000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://social.duoleads.com/v1/x/profile": {
+   "method": "GET",
+   "status": 402,
+   "amount": "20000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://social.duoleads.com/v1/reddit/search": {
+   "method": "GET",
+   "status": 402,
+   "amount": "20000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://social.duoleads.com/v1/reddit/comments": {
+   "method": "GET",
+   "status": 402,
+   "amount": "20000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://social.duoleads.com/v1/tiktok/videos": {
+   "method": "GET",
+   "status": 402,
+   "amount": "20000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://social.duoleads.com/v1/tiktok/search": {
+   "method": "GET",
+   "status": 402,
+   "amount": "20000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://social.duoleads.com/v1/instagram/profile": {
+   "method": "GET",
+   "status": 402,
+   "amount": "20000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://social.duoleads.com/v1/youtube/transcript": {
+   "method": "GET",
+   "status": 402,
+   "amount": "20000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://social.duoleads.com/v1/youtube/comments": {
+   "method": "GET",
+   "status": 402,
+   "amount": "20000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://social.duoleads.com/v1/threads/posts": {
+   "method": "GET",
+   "status": 402,
+   "amount": "20000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://social.duoleads.com/v1/facebook/ads": {
+   "method": "GET",
+   "status": 402,
+   "amount": "20000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://social.duoleads.com/v1/social/search": {
+   "method": "GET",
+   "status": 402,
+   "amount": "25000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://social.duoleads.com/v1/social/audience": {
+   "method": "GET",
+   "status": 402,
+   "amount": "20000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://social.duoleads.com/v1/social/accounts": {
+   "method": "GET",
+   "status": 402,
+   "amount": "20000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://social.duoleads.com/v1/linkedin/company": {
+   "method": "GET",
+   "status": 402,
+   "amount": "20000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://social.duoleads.com/v1/social/people": {
+   "method": "GET",
+   "status": 402,
+   "amount": "20000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://social.duoleads.com/v1/tiktok/followers": {
+   "method": "GET",
+   "status": 402,
+   "amount": "20000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://social.duoleads.com/v1/tiktok/following": {
+   "method": "GET",
+   "status": 402,
+   "amount": "20000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://social.duoleads.com/v1/linkedin/profile": {
+   "method": "GET",
+   "status": 402,
+   "amount": "20000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://derivs.duoleads.com/v1/funding-rates": {
+   "method": "GET",
+   "status": 402,
+   "amount": "3000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://derivs.duoleads.com/v1/funding-history": {
+   "method": "GET",
+   "status": 402,
+   "amount": "3000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://derivs.duoleads.com/v1/funding-arbitrage": {
+   "method": "GET",
+   "status": 402,
+   "amount": "5000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://derivs.duoleads.com/v1/perp-screener": {
+   "method": "GET",
+   "status": 402,
+   "amount": "5000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://derivs.duoleads.com/v1/open-interest": {
+   "method": "GET",
+   "status": 402,
+   "amount": "3000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://derivs.duoleads.com/v1/basis": {
+   "method": "GET",
+   "status": 402,
+   "amount": "3000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://derivs.duoleads.com/v1/options": {
+   "method": "GET",
+   "status": 402,
+   "amount": "3000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://derivs.duoleads.com/v1/liquidations": {
+   "method": "GET",
+   "status": 402,
+   "amount": "3000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://derivs.duoleads.com/v1/orderbook": {
+   "method": "GET",
+   "status": 402,
+   "amount": "3000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  },
+  "https://derivs.duoleads.com/v1/derivatives-snapshot": {
+   "method": "GET",
+   "status": 402,
+   "amount": "5000",
+   "payTo": "0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39"
+  }
+ }
+}
