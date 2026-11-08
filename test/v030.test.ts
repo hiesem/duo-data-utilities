@@ -209,17 +209,19 @@ describe("the four published packages", () => {
   // Upstream data providers are never named in package text (fragments, so this file does not contain them).
   const vendors = [new RegExp("data" + "for" + "seo", "i"), new RegExp("scrape" + "creators", "i"), new RegExp("twitter" + "api\\.io", "i"), /\bKVK\b/];
 
-  it("each standalone package is 0.3.0, self-contained, publishes only dist + README + LICENSE", () => {
+  it("each standalone package is 0.3.x, self-contained, publishes only dist + README + LICENSE, links its own mirror repo", () => {
     const root = JSON.parse(read("package.json")) as { version: string; dependencies: Record<string, string> };
     for (const name of PACKAGES) {
       const pkg = JSON.parse(read(`packages/${name}/package.json`)) as Record<string, any>;
       expect(pkg.name).toBe(name);
-      expect(pkg.version).toBe(root.version);
+      expect(pkg.version).toMatch(/^0\.3\.\d+$/);
       expect(pkg.license).toBe("MIT");
       expect(pkg.files).toEqual(["dist", "README.md", "LICENSE"]);
       expect(pkg.dependencies).toEqual(root.dependencies);
       expect(Object.keys(pkg.dependencies)).not.toContain("duo-data-utilities");
-      expect(pkg.repository.directory).toBe(`packages/${name}`);
+      expect(pkg.repository).toEqual({ type: "git", url: `git+https://github.com/hiesem/${name}.git` });
+      expect(pkg.homepage).toBe(`https://github.com/hiesem/${name}#readme`);
+      expect(read(`packages/${name}/README.md`)).toContain(`https://github.com/hiesem/${name}`);
       expect(read(`packages/${name}/LICENSE`)).toBe(read("LICENSE"));
     }
   });
@@ -235,5 +237,14 @@ describe("the four published packages", () => {
       const readme = read(`packages/${name}/README.md`);
       for (const page of ["docs", "openapi.json", "llms.txt", "terms", "privacy"]) expect(readme, `${name} ${page}`).toContain(`https://${host[name]}.duoleads.com/${page}`);
     }
+  });
+});
+
+describe("GitHub mirrors (scripts/sync-mirrors.mjs)", () => {
+  it("each per-service mirror is generated with every import resolving inside its own tree", async () => {
+    const { execFileSync } = await import("node:child_process");
+    const out = execFileSync(process.execPath, [new URL("../scripts/sync-mirrors.mjs", import.meta.url).pathname, "--check"], { encoding: "utf8" });
+    expect(out).toContain("sync-mirrors --check: OK");
+    for (const name of ["x402-seo-keyword-data", "x402-crypto-derivatives-data", "x402-social-media-data"]) expect(out).toMatch(new RegExp(`${name}: \\d+ files`));
   });
 });

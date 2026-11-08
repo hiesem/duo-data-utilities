@@ -1,6 +1,6 @@
 {
   "name": "x402-social-media-data",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Social media data API client for AI agents: social listening across X (Twitter), Reddit, TikTok, Instagram, YouTube, Threads, LinkedIn, Bluesky and Hacker News. Public posts, profiles, comments, transcripts and search; 26 routes, pay per call with x402 (USDC on Base), no API key.",
   "keywords": [
     "social-media-data",
@@ -38,14 +38,13 @@
   ],
   "author": "Duo Data Utilities",
   "license": "MIT",
-  "homepage": "https://github.com/hiesem/duo-data-utilities/tree/main/packages/x402-social-media-data#readme",
+  "homepage": "https://github.com/hiesem/x402-social-media-data#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/hiesem/duo-data-utilities.git",
-    "directory": "packages/x402-social-media-data"
+    "url": "git+https://github.com/hiesem/x402-social-media-data.git"
   },
   "bugs": {
-    "url": "https://github.com/hiesem/duo-data-utilities/issues"
+    "url": "https://github.com/hiesem/x402-social-media-data/issues"
   },
   "type": "module",
   "main": "./dist/index.cjs",

@@ -1,6 +1,6 @@
 {
   "name": "x402-seo-keyword-data",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "SEO and keyword data API client for AI agents: Google search volume, CPC, keyword difficulty, keyword ideas, Google Trends, SERP results, backlinks, domain rankings, keyword gap, on-page audits. 44 routes, pay per call with x402 (USDC on Base), no API key.",
   "keywords": [
     "seo",
@@ -50,14 +50,13 @@
   ],
   "author": "Duo Data Utilities",
   "license": "MIT",
-  "homepage": "https://github.com/hiesem/duo-data-utilities/tree/main/packages/x402-seo-keyword-data#readme",
+  "homepage": "https://github.com/hiesem/x402-seo-keyword-data#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/hiesem/duo-data-utilities.git",
-    "directory": "packages/x402-seo-keyword-data"
+    "url": "git+https://github.com/hiesem/x402-seo-keyword-data.git"
   },
   "bugs": {
-    "url": "https://github.com/hiesem/duo-data-utilities/issues"
+    "url": "https://github.com/hiesem/x402-seo-keyword-data/issues"
   },
   "type": "module",
   "main": "./dist/index.cjs",

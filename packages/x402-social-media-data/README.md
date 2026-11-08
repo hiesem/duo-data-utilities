@@ -88,6 +88,10 @@ The same 26 tools are a paid MCP server at `https://social.duoleads.com/mcp` (St
 - Terms: https://social.duoleads.com/terms
 - Privacy: https://social.duoleads.com/privacy
 
+## Source
+
+Source: [github.com/hiesem/x402-social-media-data](https://github.com/hiesem/x402-social-media-data) is a generated mirror of this package from the [duo-data-utilities](https://github.com/hiesem/duo-data-utilities) monorepo (`packages/x402-social-media-data`); issues are welcome in either repository.
+
 ## License
 
 MIT. See [LICENSE](LICENSE).

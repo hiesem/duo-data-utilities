@@ -70,6 +70,10 @@ The same 10 tools are a paid MCP server at `https://derivs.duoleads.com/mcp` (St
 
 Data only: not investment advice, not a benchmark, not affiliated with any exchange.
 
+## Source
+
+Source: [github.com/hiesem/x402-crypto-derivatives-data](https://github.com/hiesem/x402-crypto-derivatives-data) is a generated mirror of this package from the [duo-data-utilities](https://github.com/hiesem/duo-data-utilities) monorepo (`packages/x402-crypto-derivatives-data`); issues are welcome in either repository.
+
 ## License
 
 MIT. See [LICENSE](LICENSE).

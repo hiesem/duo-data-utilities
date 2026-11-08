@@ -106,6 +106,10 @@ The same 44 tools are a paid MCP server at `https://keywords.duoleads.com/mcp` (
 
 Data only: search volumes, CPC and rankings are estimates from third-party providers and public sources; not affiliated with or endorsed by Google, Bing, YouTube or Amazon.
 
+## Source
+
+Source: [github.com/hiesem/x402-seo-keyword-data](https://github.com/hiesem/x402-seo-keyword-data) is a generated mirror of this package from the [duo-data-utilities](https://github.com/hiesem/duo-data-utilities) monorepo (`packages/x402-seo-keyword-data`); issues are welcome in either repository.
+
 ## License
 
 MIT. See [LICENSE](LICENSE).

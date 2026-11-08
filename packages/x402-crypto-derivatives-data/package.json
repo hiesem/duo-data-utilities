@@ -1,6 +1,6 @@
 {
   "name": "x402-crypto-derivatives-data",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Crypto derivatives data API client for AI agents and trading bots: perp funding rates, funding history and arbitrage, perp screener, open interest, futures basis, implied volatility, liquidations, order book depth across 8 exchanges. Pay per call with x402 (USDC on Base), no API key.",
   "keywords": [
     "crypto",
@@ -43,14 +43,13 @@
   ],
   "author": "Duo Data Utilities",
   "license": "MIT",
-  "homepage": "https://github.com/hiesem/duo-data-utilities/tree/main/packages/x402-crypto-derivatives-data#readme",
+  "homepage": "https://github.com/hiesem/x402-crypto-derivatives-data#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/hiesem/duo-data-utilities.git",
-    "directory": "packages/x402-crypto-derivatives-data"
+    "url": "git+https://github.com/hiesem/x402-crypto-derivatives-data.git"
   },
   "bugs": {
-    "url": "https://github.com/hiesem/duo-data-utilities/issues"
+    "url": "https://github.com/hiesem/x402-crypto-derivatives-data/issues"
   },
   "type": "module",
   "main": "./dist/index.cjs",
