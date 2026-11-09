@@ -263,7 +263,8 @@ function verifyNpm() {
     if (!existsSync(file)) throw new Error(`${file} not found`);
     return file;
   };
-  const packed = (json, dest) => join(dest, JSON.parse(json)[0].filename);
+  // A prepack build (tsup) prints to stdout before npm's JSON, so parse from the JSON array's first line.
+  const packed = (out, dest) => join(dest, JSON.parse(out.slice(out.search(/^\[/m)))[0].filename);
   const unpack = (tgz, dest) => {
     mkdirSync(dest, { recursive: true });
     run("tar", ["-xzf", tgz, "-C", dest]);
