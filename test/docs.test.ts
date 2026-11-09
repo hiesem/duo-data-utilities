@@ -1,6 +1,9 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
+// Newest mcp-remote release at least 14 days old with no advisory (0.15.2, 2026-10-20; checked 2026-11-09 with
+// `npm view mcp-remote time --json` and the GitHub advisory database). Update deliberately.
+const MCP_REMOTE_VERSION = "0.15.2";
 const read = (relative: string): string => readFileSync(new URL(`../${relative}`, import.meta.url), "utf8");
 const keywords = JSON.parse(read("spec/keywords.json")).routes as Record<string, { tool: string; summary: string }>;
 const methods = JSON.parse(read("spec/methods.json")).routes as Record<string, { namespace: string; method: string }>;
@@ -88,6 +91,19 @@ describe("MCP configuration", () => {
     const files = readdirSync(new URL("../mcp/", import.meta.url)).filter((name) => name.endsWith(".json"));
     expect(files.length).toBeGreaterThan(0);
     for (const file of files) expect(() => JSON.parse(read(`mcp/${file}`)), file).not.toThrow();
+  });
+
+  it("pins the mcp-remote bridge to an exact version in every config and README block (R64-PA-06)", () => {
+    const configs = readdirSync(new URL("../mcp/", import.meta.url)).filter((name) => name.endsWith(".json"));
+    const texts = [...configs.map((file) => [file, read(`mcp/${file}`)]), ["mcp/README.md", mcpReadme], ["README.md", read("README.md")]];
+    let pinned = 0;
+    for (const [file, text] of texts) {
+      for (const match of text!.matchAll(/"mcp-remote(@[^"]*)?"/g)) {
+        expect(match[1], file).toBe(`@${MCP_REMOTE_VERSION}`);
+        pinned++;
+      }
+    }
+    expect(pinned).toBeGreaterThanOrEqual(2);
   });
 
   it("parses every fenced json block in mcp/README.md", () => {

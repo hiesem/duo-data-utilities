@@ -13,7 +13,7 @@ We could not confirm from first-party documentation that any of the clients belo
 | Client | How to add the server | Payment |
 |---|---|---|
 | Claude Code | `claude mcp add --transport http duo-data-utilities https://api.duoleads.com/mcp` | Check your client |
-| Claude Desktop | `mcp/claude-desktop.json` (uses the `mcp-remote` bridge, npm `mcp-remote`) | Check your client. The bridge only carries the connection. |
+| Claude Desktop | `mcp/claude-desktop.json` (uses the `mcp-remote` bridge, npm `mcp-remote`, pinned to an exact release) | Check your client. The bridge only carries the connection. |
 | Cursor | Copy `mcp/cursor.mcp.json` to `.cursor/mcp.json` | Check your client |
 | VS Code | Copy `mcp/vscode.mcp.json` to `.vscode/mcp.json` | Check your client |
 | AgentCash | No snippet. A third-party directory describes it as a stdio MCP server that pays x402 APIs for the agent. Its setup is not verified here. | Check AgentCash's documentation |

@@ -2,7 +2,7 @@
   "mcpServers": {
     "duo-data-utilities": {
       "command": "npx",
-      "args": ["-y", "mcp-remote", "https://api.duoleads.com/mcp"]
+      "args": ["-y", "mcp-remote@0.15.2", "https://api.duoleads.com/mcp"]
     }
   }
 }
