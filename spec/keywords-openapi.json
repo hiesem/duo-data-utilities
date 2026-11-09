@@ -17,7 +17,46 @@
  },
  "servers": [
   {
-   "url": "https://keywords.duoleads.com"
+   "url": "https://keywords.duoleads.com",
+   "description": "Production"
+  }
+ ],
+ "tags": [
+  {
+   "name": "Keyword research",
+   "description": "Search volume, CPC, competition, difficulty and intent for up to 100 keywords a call (GET /v1/search-volume: up to 20), keyword ideas, related keywords and variations (up to 100 rows), keyword difficulty and search intent (up to 100 keywords), monthly volume history (up to 20 keywords), keywords for a site or page, Google Ads keyword ideas (up to 20 seeds, 100 ideas) and clickstream volumes (up to 100 keywords)."
+  },
+  {
+   "name": "Google Trends",
+   "description": "Interest over time, related queries and interest by region for one keyword, and one comparison series for up to 5 keywords (web, news or YouTube search); a live call takes up to about 30 s."
+  },
+  {
+   "name": "Domains and rankings",
+   "description": "Domain overview, traffic estimates (up to 100 domains), ranked keywords, competitor domains, keyword gap, SERP competitors and top pages (up to 100 rows each), monthly rank history over the last 24 months, and the keywords up to 20 pages share (at most 200 / pages rows)."
+  },
+  {
+   "name": "Backlinks",
+   "description": "From a web link index: backlink profile summary, backlinks, referring domains and anchor texts (up to 100 rows each), and the monthly profile history (up to 24 months, from 2019)."
+  },
+  {
+   "name": "Site tools",
+   "description": "On-page SEO audit and Lighthouse page speed of one URL, from a page crawl; a page that answers with an error, blocks the crawler or times out is a charged answer giving its status."
+  },
+  {
+   "name": "Amazon",
+   "description": "Amazon keyword ideas and search volume (up to 100 rows; US, SA, AE, EG) and Amazon search results (up to 100 products; 18 stores)."
+  },
+  {
+   "name": "Search results, Maps and listings",
+   "description": "Google and Bing results (10, 20 or 50), YouTube results (20 or 40), Google autocomplete (up to 20), Google Maps places (up to 100), Google business listings (up to 50), and one past monthly snapshot of a Google results page (top 10, a window of up to 31 days within the last year). Search operators are a free 400."
+  },
+  {
+   "name": "Brand and AI visibility",
+   "description": "Web pages that mention a brand or keyword (up to 100; no snippets or authors) and questions answered by Google AI Overviews or ChatGPT that mention it (up to 20; the cited pages, no answer text)."
+  },
+  {
+   "name": "Tech stack and WHOIS",
+   "description": "The technology stack of a website and the WHOIS overview of a domain (registration dates, registrar, status; no registrant personal data), for a registrable domain."
   }
  ],
  "paths": {
@@ -27,7 +66,7 @@
     "summary": "Keyword overview (up to 100 keywords)",
     "description": "Search volume, CPC, competition, keyword difficulty and search intent for up to 100 keywords in one $0.04 call (Google Ads data). Use when you already have a keyword list to prioritise. volume = avg monthly searches, cpc in USD, competition 0-1, difficulty 0-100. Keywords without data are left out of results and listed in missing (still charged). Bad input is free; upstream errors are not charged.",
     "tags": [
-     "Keywords"
+     "Keyword research"
     ],
     "x-payment-info": {
      "price": {
@@ -246,7 +285,7 @@
     "summary": "Search volume (GET, up to 20 keywords)",
     "description": "Google search volume, CPC, competition, keyword difficulty and intent for up to 20 comma-separated keywords in one $0.04 GET (Google Ads data). Use when you need monthly search volume for a few keywords in a country. volume = avg monthly searches, cpc in USD, competition 0-1, difficulty 0-100. Up to 100 keywords for the same $0.04: POST /v1/keyword-overview. Keywords without data are listed in missing (still charged). Bad input is free; upstream errors are not charged. Also accepts POST with the same parameters as a JSON object body (keywords may be an array), or the same query string with an empty body.",
     "tags": [
-     "Keywords"
+     "Keyword research"
     ],
     "x-payment-info": {
      "price": {
@@ -466,7 +505,7 @@
     "summary": "Keyword ideas (up to 100 per seed)",
     "description": "Keyword ideas for a seed keyword, each with Google search volume, CPC, competition, keyword difficulty and search intent; up to 100 ideas in one $0.04 call (Google Ads data). Use when you need related keywords to target. volume = avg monthly searches, cpc in USD, competition 0-1, difficulty 0-100. No ideas returns empty results (still charged). Bad input is free; upstream errors are not charged.",
     "tags": [
-     "Keywords"
+     "Keyword research"
     ],
     "x-payment-info": {
      "price": {
@@ -1310,7 +1349,7 @@
     "summary": "Related keywords (up to 100, depth 0-4)",
     "description": "Related keywords for a seed from Google's 'searches related to' graph, to a depth of 0-4, each with search volume, CPC, competition, keyword difficulty and search intent; up to 100 in one $0.04 call (Google Ads data). Use when you need topic clusters around a keyword. Each row has its depth and the further related searches. No matches returns empty results (still charged). Bad input is free; upstream errors are not charged.",
     "tags": [
-     "Keywords"
+     "Keyword research"
     ],
     "x-payment-info": {
      "price": {
@@ -1535,7 +1574,7 @@
     "summary": "Keyword variations containing a phrase (up to 100)",
     "description": "Keyword variations: long-tail Google searches that contain a seed phrase, each with search volume, CPC, competition, keyword difficulty and search intent; up to 100 in one $0.04 call (Google Ads data). Use when you need phrase-match ideas for a keyword, sorted by volume. No matches returns empty results (still charged). Bad input is free; upstream errors are not charged.",
     "tags": [
-     "Keywords"
+     "Keyword research"
     ],
     "x-payment-info": {
      "price": {
@@ -1743,7 +1782,7 @@
     "summary": "Keyword difficulty (up to 100 keywords)",
     "description": "Keyword difficulty (0-100: how hard it is to rank in Google's top 10) for up to 100 keywords in one $0.04 call. Use when you need to prioritise keywords by ranking difficulty. Keywords are normalised to lower case; over 100 keywords is a free 400. Keywords without a score are listed in missing (still charged). Bad input is free; upstream errors are not charged.",
     "tags": [
-     "Keywords"
+     "Keyword research"
     ],
     "x-payment-info": {
      "price": {
@@ -1936,7 +1975,7 @@
     "summary": "Search intent (up to 100 keywords)",
     "description": "Search intent of up to 100 keywords in one $0.04 call: the main intent (informational, navigational, commercial or transactional) with its probability, plus secondary intents. Use when you need to map keywords to funnel stage or content type. Any language; no location needed. Over 100 keywords is a free 400. Keywords not classified are listed in missing (still charged). Bad input is free; upstream errors are not charged.",
     "tags": [
-     "Keywords"
+     "Keyword research"
     ],
     "x-payment-info": {
      "price": {
@@ -2119,7 +2158,7 @@
     "summary": "Monthly search volume history (up to 20 keywords)",
     "description": "Monthly Google search volume history for up to 20 keywords in one $0.048 call: every month the data has (typically several years), oldest first, plus current volume, CPC and competition (Google Ads data). Use when you need seasonality or long-term demand trends. Over 20 keywords is a free 400. Keywords without data are listed in missing (still charged). Bad input is free; upstream errors are not charged.",
     "tags": [
-     "Keywords"
+     "Keyword research"
     ],
     "x-payment-info": {
      "price": {
@@ -2339,7 +2378,7 @@
     "summary": "Keywords for a site or page (up to 100)",
     "description": "Keyword suggestions for a website or one page: the Google searches relevant to it, each with search volume, CPC, competition, keyword difficulty and search intent; up to 100 in one $0.04 call (Google Ads data). Use when you need keyword ideas from a domain (www. is dropped) or a page URL. A site with no data returns empty results (still charged). Bad input is free; upstream errors are not charged.",
     "tags": [
-     "Keywords"
+     "Keyword research"
     ],
     "x-payment-info": {
      "price": {
@@ -2794,7 +2833,7 @@
     "summary": "Domain overview (organic and paid visibility)",
     "description": "Domain overview: a domain's Google SEO footprint in one market: organic and paid ranking keywords, estimated monthly traffic (etv) and its ad value, and keywords in position 1, top 3, top 10 and top 100, in one $0.04 call. Use when you need a quick SEO size-up of a website or competitor (bare domain; www. is dropped). A domain with no data gives found false (still charged). Bad input is free; upstream errors are not charged.",
     "tags": [
-     "Domains"
+     "Domains and rankings"
     ],
     "x-payment-info": {
      "price": {
@@ -2989,7 +3028,7 @@
     "summary": "Traffic estimate (up to 100 domains)",
     "description": "Traffic estimate for up to 100 domains in one $0.04 call: each domain's estimated monthly organic and paid visits from Google (etv) and its count of ranking keywords. Use when you need to compare the search traffic of many websites at once (bare domains; www. is dropped). A domain with no data gives found false (still charged). Bad input is free; upstream errors are not charged.",
     "tags": [
-     "Domains"
+     "Domains and rankings"
     ],
     "x-payment-info": {
      "price": {
@@ -3189,7 +3228,7 @@
     "summary": "Ranked keywords of a domain (up to 100)",
     "description": "Ranked keywords: the Google keywords a domain ranks for, each with its position, ranking URL, estimated traffic and the keyword's search volume, CPC, difficulty and intent; up to 100 in one $0.048 call. Use when you need a site's or competitor's organic keywords (bare domain; www. is dropped). A domain with no data returns empty results (still charged). Bad input is free; upstream errors are not charged.",
     "tags": [
-     "Domains"
+     "Domains and rankings"
     ],
     "x-payment-info": {
      "price": {
@@ -3407,7 +3446,7 @@
     "summary": "Competitor domains (up to 100)",
     "description": "Competitor domains: the websites competing with a domain in Google organic search, each with the keywords both rank for, the average position on them, and the competitor's total ranking keywords and estimated traffic; up to 100 in one $0.048 call. Use when you need to find a site's real SEO competitors (bare domain; www. is dropped). No data returns empty results (still charged). Bad input is free; upstream errors are not charged.",
     "tags": [
-     "Domains"
+     "Domains and rankings"
     ],
     "x-payment-info": {
      "price": {
@@ -3608,7 +3647,7 @@
     "summary": "Keyword gap: competitor-only keywords (up to 100)",
     "description": "Keyword gap: the Google keywords a competitor ranks for and your domain does not, each with the competitor's position, URL and estimated traffic plus search volume, CPC, difficulty and intent; up to 100 in one $0.048 call. Use when you need content gaps and keyword opportunities (bare domains; www. is dropped). No gap returns empty results (still charged). Bad input is free; upstream errors are not charged.",
     "tags": [
-     "Domains"
+     "Domains and rankings"
     ],
     "x-payment-info": {
      "price": {
@@ -3828,7 +3867,7 @@
     "summary": "Domains ranking for a keyword set (up to 100)",
     "description": "SERP competitors: the domains that rank in Google for a set of up to 100 keywords, each with average and median position, visibility, estimated traffic and how many of the keywords it ranks for; up to 100 domains in one $0.048 call. Use when you need who owns the search results of a topic. No data returns empty results (still charged). Bad input is free; upstream errors are not charged.",
     "tags": [
-     "Domains"
+     "Domains and rankings"
     ],
     "x-payment-info": {
      "price": {
@@ -4045,7 +4084,7 @@
     "summary": "Top pages of a domain (up to 100)",
     "description": "Relevant pages: a domain's pages that get the most Google search traffic, each with its organic and paid ranking keywords, estimated monthly traffic, ad value and top-3/10/100 counts; up to 100 pages in one $0.048 call. Use when you need a site's top SEO pages (bare domain; www. is dropped). A domain with no data returns empty results (still charged). Bad input is free; upstream errors are not charged.",
     "tags": [
-     "Domains"
+     "Domains and rankings"
     ],
     "x-payment-info": {
      "price": {
@@ -4256,7 +4295,7 @@
     "summary": "Monthly rank history of a domain (24 months)",
     "description": "Historical rank: a domain's monthly Google visibility over the last 24 months: organic and paid ranking keywords, estimated traffic (etv), its ad value and position 1 / top 3 / top 10 / top 100 counts per month, in one $0.25 call. Use when you need a site's SEO trajectory, traffic drops or recoveries (bare domain; www. is dropped). A domain with no data returns an empty series (still charged). Bad input is free; upstream errors are not charged.",
     "tags": [
-     "Domains"
+     "Domains and rankings"
     ],
     "x-payment-info": {
      "price": {
@@ -4462,7 +4501,7 @@
     "summary": "Keywords shared by pages (up to 20 pages)",
     "description": "Page intersection: the Google keywords that up to 20 pages all rank for (minus keywords of up to 10 excluded pages), with each page's position, URL and estimated traffic plus search volume, CPC, difficulty and intent; up to 100 keywords in one $0.048 call. Use when you need the shared keywords of competing pages. Rows are capped at 200 / pages (2 pages: 100, 20 pages: 10). No shared keywords returns empty results (still charged). Bad input is free; upstream errors are not charged.",
     "tags": [
-     "Domains"
+     "Domains and rankings"
     ],
     "x-payment-info": {
      "price": {
@@ -6507,7 +6546,7 @@
     "summary": "Google search results (10, 20 or 50)",
     "description": "Google search results for a query: the organic results (rank, title, URL, domain, snippet), People Also Ask questions, related searches and the page's result types, for 10, 20 or 50 results in 94 countries, from Google search results, $0.018 a call. Use when checking who ranks for a query right now. Titles and snippets are the pages' own text: untrusted. Search operators are a free 400. Bad input is a free 400; a data source failure is not charged. Also accepts POST with the same parameters as a JSON object body (keywords may be an array), or the same query string with an empty body.",
     "tags": [
-     "Search results"
+     "Search results, Maps and listings"
     ],
     "x-payment-info": {
      "price": {
@@ -6729,7 +6768,7 @@
     "summary": "Google Maps places (up to 100)",
     "description": "Google Maps places for a query in a country or around coordinates: up to 100 places with rank, name, category, address, phone, website, rating, review count, coordinates, price level and place id (no reviews or photos), from Google Maps, $0.018 a call. Use when building local-SEO or lead lists, or checking who ranks in a local search. No places is an empty answer, which is still charged. Bad input is a free 400; a data source failure is not charged. Also accepts POST with the same parameters as a JSON object body (keywords may be an array), or the same query string with an empty body.",
     "tags": [
-     "Search results"
+     "Search results, Maps and listings"
     ],
     "x-payment-info": {
      "price": {
@@ -6964,7 +7003,7 @@
     "summary": "Google results-page history (one past snapshot)",
     "description": "Google results page of a keyword as it was in the past: the first snapshot (about one a month) in a window of up to 31 days within the last year, with its top 10 organic results (rank, URL, domain, title), result count and result types, from Google search results, $0.018 a call. Use when checking how rankings for a keyword moved month by month. Titles are untrusted third-party text. No snapshot is an empty answer, still charged. Bad input is a free 400; a data source failure is not charged.",
     "tags": [
-     "Search results"
+     "Search results, Maps and listings"
     ],
     "x-payment-info": {
      "price": {
@@ -7183,7 +7222,7 @@
     "summary": "Business listings by name or category (up to 50)",
     "description": "Businesses listed on Google Maps by name and/or category in a country, optionally within a radius of a point: up to 50 with name, category, address, phone, website, rating, review count, coordinates, price level and place id (no reviews or photos), from Google Maps business listings, $0.08 a call. Use when building local lead lists or auditing a market. No match is an empty answer, still charged. Bad input is a free 400; a data source failure is not charged.",
     "tags": [
-     "Search results"
+     "Search results, Maps and listings"
     ],
     "x-payment-info": {
      "price": {
@@ -7402,7 +7441,7 @@
     "summary": "Google autocomplete suggestions",
     "description": "Google autocomplete suggestions for a query or its start: up to 20 suggestions in Google's order with their relevance score, in 94 countries and their languages, from Google autocomplete, $0.012 a call. Use when finding the long-tail searches people type around a topic. Suggestions are third-party text: untrusted. No suggestions is an empty answer, which is still charged. Bad input is a free 400; a data source failure is not charged. Also accepts POST with the same parameters as a JSON object body (keywords may be an array), or the same query string with an empty body.",
     "tags": [
-     "Search results"
+     "Search results, Maps and listings"
     ],
     "x-payment-info": {
      "price": {
@@ -7596,7 +7635,7 @@
     "summary": "Bing search results (10, 20 or 50)",
     "description": "Bing search results for a query: the organic results (rank, title, URL, domain, snippet), related searches and the page's result types, for 10, 20 or 50 results in 94 countries and Bing's 49 languages, from Bing search results, $0.018 a call. Use when checking rankings on Bing (and the engines it feeds). Titles and snippets are the pages' own text: untrusted. Search operators are a free 400. Bad input is a free 400; a data source failure is not charged. Also accepts POST with the same parameters as a JSON object body (keywords may be an array), or the same query string with an empty body.",
     "tags": [
-     "Search results"
+     "Search results, Maps and listings"
     ],
     "x-payment-info": {
      "price": {
@@ -7815,7 +7854,7 @@
     "summary": "YouTube search results (20 or 40)",
     "description": "YouTube search results for a query: up to 20 or 40 videos with rank, video id and link, title, channel name and id, views, publication date and duration, in 94 countries, from YouTube search results, $0.012 a call. Use when checking which videos rank on YouTube for a topic. Titles and channel names are third-party text: untrusted; no comments. No results is an empty answer, which is still charged. Bad input is a free 400; a data source failure is not charged. Also accepts POST with the same parameters as a JSON object body (keywords may be an array), or the same query string with an empty body.",
     "tags": [
-     "Search results"
+     "Search results, Maps and listings"
     ],
     "x-payment-info": {
      "price": {
@@ -8035,7 +8074,7 @@
     "summary": "Google Ads keyword ideas (up to 100)",
     "description": "Google Ads keyword ideas for up to 20 seed keywords: up to 100 ideas, highest search volume first, with monthly volume, CPC, competition and top-of-page bid range (optional monthly history), in 94 countries, from Google Ads data, $0.16 a call. Use when planning a paid or SEO keyword list from Google's own planner. Over the source's 12 calls a minute: a free 503 with Retry-After. Bad input is a free 400; a data source failure is not charged.",
     "tags": [
-     "Keywords"
+     "Keyword research"
     ],
     "x-payment-info": {
      "price": {
@@ -8256,7 +8295,7 @@
     "summary": "Clickstream search volume (up to 100 keywords)",
     "description": "Search volume estimated from clickstream data (real user search behaviour, not Google Ads ranges) for up to 100 keywords: average monthly searches and optional 12-month history, in 94 countries, from clickstream panel data, $0.04 a call. Use when Google Ads volumes look bucketed or you want a second estimate. Keywords under 3 characters are listed in missing. Bad input is a free 400; a data source failure is not charged.",
     "tags": [
-     "Keywords"
+     "Keyword research"
     ],
     "x-payment-info": {
      "price": {
@@ -8662,7 +8701,7 @@
     "summary": "Website technology stack",
     "description": "The technology stack of a website: CMS, frameworks, JavaScript libraries, analytics and tag managers, CDN, web server, e-commerce and marketing tools, grouped by category, plus the domain's rank, country and language, from a web technology index, $0.024 a call. Use when profiling a prospect or competitor's site. Send a registrable domain (www. is dropped). Not in the index is found false, still charged. Bad input is a free 400; a data source failure is not charged.",
     "tags": [
-     "Domains"
+     "Tech stack and WHOIS"
     ],
     "x-payment-info": {
      "price": {
@@ -8855,7 +8894,7 @@
     "summary": "WHOIS overview of a domain",
     "description": "WHOIS overview of a domain: registered or not, registrar, creation, update and expiry dates, EPP status codes and TLD, plus its Google ranking keywords, estimated traffic and backlink counts (no registrant personal data), from WHOIS records, $0.21 a call. Use when checking a domain's age, owner registrar or expiry. Send a registrable domain (www. is dropped). Not in the index is found false, still charged. Bad input is a free 400; a data source failure is not charged.",
     "tags": [
-     "Domains"
+     "Tech stack and WHOIS"
     ],
     "x-payment-info": {
      "price": {

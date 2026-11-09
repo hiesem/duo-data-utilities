@@ -1,7 +1,7 @@
 {
  "openapi": "3.1.1",
  "info": {
-  "title": "Social media data API for social listening: mentions, posts, search, comments and profiles (x402)",
+  "title": "Social Media Data API",
   "version": "1.1.0",
   "description": "Social media data API for social listening: mentions, posts, search, comments and profiles from Bluesky, Hacker News, X (Twitter), Reddit, TikTok, Instagram, YouTube, Threads, the Meta Ad Library, LinkedIn company pages, in one JSON schema, paid per call over x402 with USDC on Base. No account, no API key.\n\n## How payment works (x402)\nEvery data route is paid per call over x402 v2 (scheme exact): HTTP 402 plus USDC on Base (CAIP-2 eip155:8453), settled through the Coinbase CDP facilitator. An unpaid request returns 402 with a base64 `PAYMENT-REQUIRED` header (price, payTo, asset) and a JSON body with a hint. Sign an EIP-3009 authorization for exactly that amount and send the request with its required parameters and a base64 `PAYMENT-SIGNATURE` header; the 200 response carries a base64 `PAYMENT-RESPONSE` receipt. Malformed input (400), unknown paths (404) and the wrong method (405) are answered before the paywall and never charged. An account, post or video that does not exist, or a search without matches, is a 404, and a total upstream failure (nothing to answer) or a capacity limit is a 503: in every one of these cases your authorization is NOT settled. A partial answer IS charged: a 200 with `complete: false` because one part failed (`platforms_missing` or `posts_missing` names it; a Hacker News reply that failed to load is left out).\n\n## Answers\nEvery 200 answer has the same envelope: `platform`, `query` (the normalised input), `as_of` (when the data was fetched), `complete` (false when part of the data could not be fetched; such a partial answer is charged and never cached), `items` (posts, comments, videos, ads, profiles or company pages in ONE schema: type, platform, id, url, created_at, text, author {handle, display_name, verified, followers}, metrics {likes, replies, reposts, views}, lang, media_urls, parent_id), `next_cursor` (pass it as `cursor` for the next page; null at the end), `source`, `disclaimer` and `request_id`. Media are links, never bytes. Answers may come from a short cache (5 minutes for posts, search and comments, 15 for profiles and aggregates, 1 hour for transcripts).\n\nMCP: https://social.duoleads.com/mcp (Streamable HTTP; tools/list free, tools/call paid with x402).\n\nA2A: https://social.duoleads.com/a2a (JSON-RPC, a2a-x402 v0.2; agent card at https://social.duoleads.com/.well-known/agent-card.json).\n\n## Disclaimer\nPublic data via third-party providers; not affiliated with or endorsed by any platform. Do not use to profile, target or train AI on individuals. Third-party data, provided as is: it may be delayed, incomplete or wrong. Terms: https://social.duoleads.com/terms",
   "contact": {
@@ -17,7 +17,54 @@
  },
  "servers": [
   {
-   "url": "https://social.duoleads.com"
+   "url": "https://social.duoleads.com",
+   "description": "Production"
+  }
+ ],
+ "tags": [
+  {
+   "name": "Bluesky",
+   "description": "Bluesky post search, account feeds and profiles."
+  },
+  {
+   "name": "Hacker News",
+   "description": "Hacker News search and threads."
+  },
+  {
+   "name": "Social listening",
+   "description": "Cross-platform search, mentions and sentiment, audience stats and account search."
+  },
+  {
+   "name": "X (Twitter)",
+   "description": "X (Twitter) post search, user timelines and profiles."
+  },
+  {
+   "name": "Reddit",
+   "description": "Reddit post search and post comments."
+  },
+  {
+   "name": "TikTok",
+   "description": "TikTok account videos, video search and follower lists."
+  },
+  {
+   "name": "Instagram",
+   "description": "Instagram profiles and posts."
+  },
+  {
+   "name": "YouTube",
+   "description": "YouTube transcripts and video comments."
+  },
+  {
+   "name": "Threads",
+   "description": "Threads account posts."
+  },
+  {
+   "name": "Meta Ad Library",
+   "description": "Meta Ad Library search."
+  },
+  {
+   "name": "LinkedIn",
+   "description": "LinkedIn company pages and profiles."
   }
  ],
  "paths": {
@@ -27,7 +74,7 @@
     "summary": "Bluesky post search",
     "description": "Bluesky Posts & Search: find public Bluesky posts by keyword, phrase, hashtag or from:handle through the AT Protocol AppView, newest first. Per post the text, author handle and display name, likes, replies, reposts, language, media links, time and URL, in one schema shared by every platform; next_cursor gives the next page. Social listening on Bluesky for brands, products and topics. Bad input is free; not found or no match is not charged. Also accepts POST with the same parameters as a JSON object body (numbers may be JSON numbers), or the same query string with an empty body.",
     "tags": [
-     "Social media data"
+     "Bluesky"
     ],
     "x-payment-info": {
      "price": {
@@ -250,7 +297,7 @@
     "summary": "Bluesky account feed",
     "description": "Bluesky Account Posts Feed: the latest public posts and replies of one Bluesky account (a handle such as name.bsky.social, a DID or a bsky.app profile URL), reposts left out. Per post the text, likes, replies, reposts, language, media links, time and URL in the shared social schema; next_cursor pages back through the feed. Bad input is free; not found or no match is not charged. Also accepts POST with the same parameters as a JSON object body (numbers may be JSON numbers), or the same query string with an empty body.",
     "tags": [
-     "Social media data"
+     "Bluesky"
     ],
     "x-payment-info": {
      "price": {
@@ -471,7 +518,7 @@
     "summary": "Bluesky profile",
     "description": "Bluesky Profile Lookup: one public Bluesky account by handle, DID or bsky.app URL: display name, bio, follower, following and post counts, verification, avatar link, creation time and DID, in the shared social schema. Bad input is free; not found or no match is not charged. Also accepts POST with the same parameters as a JSON object body (numbers may be JSON numbers), or the same query string with an empty body.",
     "tags": [
-     "Social media data"
+     "Bluesky"
     ],
     "x-payment-info": {
      "price": {
@@ -652,7 +699,7 @@
     "summary": "Hacker News search",
     "description": "Hacker News Search & Stories: full-text search of Hacker News stories or comments (HN Search by Algolia). Per hit the title, text, author, points, comment count, linked URL, time and item URL in the shared social schema; next_cursor gives the next page. Tech news, launches and developer discussion for market and competitor research. Bad input is free; not found or no match is not charged. Also accepts POST with the same parameters as a JSON object body (numbers may be JSON numbers), or the same query string with an empty body.",
     "tags": [
-     "Social media data"
+     "Hacker News"
     ],
     "x-payment-info": {
      "price": {
@@ -892,7 +939,7 @@
     "summary": "Hacker News thread",
     "description": "Hacker News Comments & Threads: one Hacker News story or comment by id or news.ycombinator.com URL with its direct replies (up to 8 per call, next_cursor for more), deleted and dead replies skipped. Per item the text as plain text, author, score, reply count, parent and time in the shared social schema. Bad input is free; not found or no match is not charged. Also accepts POST with the same parameters as a JSON object body (numbers may be JSON numbers), or the same query string with an empty body.",
     "tags": [
-     "Social media data"
+     "Hacker News"
     ],
     "x-payment-info": {
      "price": {
@@ -919,7 +966,7 @@
        "pattern": "^([0-9]+|.*=[0-9%].*)$",
        "maxLength": 200
       },
-      "example": "8863"
+      "example": "27326961"
      },
      {
       "name": "limit",
@@ -1116,7 +1163,7 @@
     "summary": "Social mentions and sentiment (aggregate)",
     "description": "Social Mentions & Sentiment: daily mention counts, distinct authors and mean VADER sentiment for a brand, product or topic over the last 1-7 days, plus the top 10 co-occurring terms. Sources: Bluesky and Hacker News, plus Reddit and X (latest, newest first) when available. One page per source: days beyond its reach come back truncated (coverage_from). Aggregate only, no text, no authors; a day under 20 known authors is suppressed. Bad input is free; not found or no match is not charged. Also accepts POST with the same parameters as a JSON object body (numbers may be JSON numbers), or the same query string with an empty body.",
     "tags": [
-     "Social media data"
+     "Social listening"
     ],
     "x-payment-info": {
      "price": {
@@ -1366,7 +1413,7 @@
     "summary": "X (Twitter) post search",
     "description": "Twitter API: Tweet Search: the latest public tweets on X matching a keyword or phrase, newest first. Per tweet the text, author handle and name, verification, followers, likes, replies, retweets, views, language, time and URL in one schema shared by every platform; parent_id names the replied-to or quoted tweet; next_cursor gives the next page. For social listening, brand monitoring and research. Bad input is free; not found or no match is not charged. Also accepts POST with the same parameters as a JSON object body (numbers may be JSON numbers), or the same query string with an empty body.",
     "tags": [
-     "Social media data"
+     "X (Twitter)"
     ],
     "x-payment-info": {
      "price": {
@@ -1575,7 +1622,7 @@
     "summary": "X (Twitter) user timeline",
     "description": "Twitter API: User Tweets: the latest public tweets of one X (Twitter) account by handle or x.com URL, newest first. Per tweet the text, author handle and name, verification, followers, likes, replies, retweets, views, language, reply or quote parent, time and URL in the shared social schema; next_cursor gives the next page. Bad input is free; not found or no match is not charged. Also accepts POST with the same parameters as a JSON object body (numbers may be JSON numbers), or the same query string with an empty body.",
     "tags": [
-     "Social media data"
+     "X (Twitter)"
     ],
     "x-payment-info": {
      "price": {
@@ -1784,7 +1831,7 @@
     "summary": "X (Twitter) profile",
     "description": "Twitter API: User Profile: one public X (Twitter) account by handle or x.com URL: display name, bio, followers, following, post count, verification, avatar link and creation time, in the shared social schema. Bad input is free; not found or no match is not charged. Also accepts POST with the same parameters as a JSON object body (numbers may be JSON numbers), or the same query string with an empty body.",
     "tags": [
-     "Social media data"
+     "X (Twitter)"
     ],
     "x-payment-info": {
      "price": {
@@ -1965,7 +2012,7 @@
     "summary": "Reddit post search",
     "description": "Reddit Posts & Subreddit Search: search public Reddit posts by keyword, within one subreddit, or list a subreddit's newest posts. Per post the title, text, subreddit, author, upvotes, comment count, linked URL, time and permalink in the shared social schema; next_cursor gives the next page. Forum research and social listening. Bad input is free; not found or no match is not charged. Also accepts POST with the same parameters as a JSON object body (numbers may be JSON numbers), or the same query string with an empty body.",
     "tags": [
-     "Social media data"
+     "Reddit"
     ],
     "x-payment-info": {
      "price": {
@@ -2192,7 +2239,7 @@
     "summary": "Reddit post comments",
     "description": "Reddit Post Comments: one Reddit post by id or URL with its comment thread (up to 3 reply levels, deleted and removed comments left out). Per comment the text, author, upvotes, parent, subreddit, time and permalink in the shared social schema; next_cursor gives more comments. Bad input is free; not found or no match is not charged. Also accepts POST with the same parameters as a JSON object body (numbers may be JSON numbers), or the same query string with an empty body.",
     "tags": [
-     "Social media data"
+     "Reddit"
     ],
     "x-payment-info": {
      "price": {
@@ -2218,7 +2265,7 @@
        "minLength": 1,
        "maxLength": 300
       },
-      "example": "z1c9z"
+      "example": "bpvaau"
      },
      {
       "name": "cursor",
@@ -2405,7 +2452,7 @@
     "summary": "TikTok account videos",
     "description": "TikTok Profile & Videos: the latest public videos of one TikTok account by handle or tiktok.com/@ URL. Per video the caption, plays, likes, comments, shares, language, cover image link, time and URL, with the creator's name, verification and followers, in the shared social schema; next_cursor pages back. Bad input is free; not found or no match is not charged. Also accepts POST with the same parameters as a JSON object body (numbers may be JSON numbers), or the same query string with an empty body.",
     "tags": [
-     "Social media data"
+     "TikTok"
     ],
     "x-payment-info": {
      "price": {
@@ -2618,7 +2665,7 @@
     "summary": "TikTok video search",
     "description": "TikTok Video Search: search public TikTok videos by keyword or hashtag. Per video the caption, creator handle, name, verification and followers, plays, likes, comments, shares, cover image link, time and URL in the shared social schema; next_cursor gives the next page. Trend and hashtag research. Bad input is free; not found or no match is not charged. Also accepts POST with the same parameters as a JSON object body (numbers may be JSON numbers), or the same query string with an empty body.",
     "tags": [
-     "Social media data"
+     "TikTok"
     ],
     "x-payment-info": {
      "price": {
@@ -2806,7 +2853,7 @@
     "summary": "Instagram profile and posts",
     "description": "Instagram Profile & Posts: one public Instagram account by handle or URL: name, bio, followers, following, post count, verification, then its recent posts and reels with caption, likes, comments, views, image link and time, in the shared social schema; next_cursor pages through the full post feed. Bad input is free; not found or no match is not charged. Also accepts POST with the same parameters as a JSON object body (numbers may be JSON numbers), or the same query string with an empty body.",
     "tags": [
-     "Social media data"
+     "Instagram"
     ],
     "x-payment-info": {
      "price": {
@@ -3024,7 +3071,7 @@
     "summary": "YouTube transcript",
     "description": "YouTube Transcript & Captions: the caption transcript of one YouTube video by id or URL (watch, shorts, live, youtu.be): the full text plus timed segments with start and end in milliseconds and the caption language. Video to text for summaries and research. A video without captions is not charged. Bad input is free; not found or no match is not charged. Also accepts POST with the same parameters as a JSON object body (numbers may be JSON numbers), or the same query string with an empty body.",
     "tags": [
-     "Social media data"
+     "YouTube"
     ],
     "x-payment-info": {
      "price": {
@@ -3209,7 +3256,7 @@
     "summary": "YouTube video comments",
     "description": "YouTube Video Comments: the public comments on one YouTube video by id or URL. Per comment the text, author channel handle, verification, likes, reply count, time and link in the shared social schema; next_cursor gives the next page. Audience feedback and sentiment research. Bad input is free; not found or no match is not charged. Also accepts POST with the same parameters as a JSON object body (numbers may be JSON numbers), or the same query string with an empty body.",
     "tags": [
-     "Social media data"
+     "YouTube"
     ],
     "x-payment-info": {
      "price": {
@@ -3396,7 +3443,7 @@
     "summary": "Threads account posts",
     "description": "Threads Posts & Replies: the recent public posts of one Threads account by handle or threads.com URL. Per post the text, likes, replies, reposts, time and URL, with the author's handle and verification, in the shared social schema. Bad input is free; not found or no match is not charged. Also accepts POST with the same parameters as a JSON object body (numbers may be JSON numbers), or the same query string with an empty body.",
     "tags": [
-     "Social media data"
+     "Threads"
     ],
     "x-payment-info": {
      "price": {
@@ -3570,7 +3617,7 @@
     "summary": "Meta Ad Library search",
     "description": "Facebook Ad Library Search: search the public Meta Ad Library by keyword for ads on Facebook and Instagram. Per ad the page name, ad text, active status, start and end dates, publisher platforms, call to action, landing link and media links in the shared social schema; next_cursor gives the next page. Competitor ad research. Bad input is free; not found or no match is not charged. Also accepts POST with the same parameters as a JSON object body (numbers may be JSON numbers), or the same query string with an empty body.",
     "tags": [
-     "Social media data"
+     "Meta Ad Library"
     ],
     "x-payment-info": {
      "price": {
@@ -3772,7 +3819,7 @@
     "summary": "Social search on X, Reddit and TikTok",
     "description": "Social Search Across Platforms: one keyword search on Reddit and TikTok, plus X (Twitter) when its key is enabled, at once (choose 1-3), run in parallel. Posts and videos from every platform in one shared schema with text, author, likes, replies, reposts, views, time and URL; platforms_missing names any platform that failed (such a partial answer is charged), next_cursor continues every platform. Bad input is free; not found or no match is not charged. Also accepts POST with the same parameters as a JSON object body (numbers may be JSON numbers), or the same query string with an empty body.",
     "tags": [
-     "Social media data"
+     "Social listening"
     ],
     "x-payment-info": {
      "price": {
@@ -4008,7 +4055,7 @@
     "summary": "Audience and engagement stats",
     "description": "Audience & Engagement Stats: numbers only for one TikTok, Instagram, YouTube or Threads account, or X when its key is enabled: followers, following, posts, and the average likes, comments and views over its last 20 posts, with the engagement rate in percent. No follower names, no post text. Influencer vetting and benchmarking. Bad input is free; not found or no match is not charged. Also accepts POST with the same parameters as a JSON object body (numbers may be JSON numbers), or the same query string with an empty body.",
     "tags": [
-     "Social media data"
+     "Social listening"
     ],
     "x-payment-info": {
      "price": {
@@ -4186,7 +4233,7 @@
     "summary": "Creator and brand account search",
     "description": "Creator & Brand Account Search: find creator and brand accounts on TikTok, Instagram or Threads by name or keyword. Only verified accounts or accounts with 10,000+ followers are returned (the rest counted in filtered_out); Threads search gives no follower counts and Instagram only for its first 10 results, so beyond those only verified accounts qualify. Per account the handle, name, bio, followers, following, posts and verification. Bad input is free; not found or no match is not charged. Also accepts POST with the same parameters as a JSON object body (numbers may be JSON numbers), or the same query string with an empty body.",
     "tags": [
-     "Social media data"
+     "Social listening"
     ],
     "x-payment-info": {
      "price": {
@@ -4424,7 +4471,7 @@
     "summary": "LinkedIn company page",
     "description": "LinkedIn Company Page Data: one LinkedIn company page by URL or page name: name, description, industry, size, employee count, headquarters, website, founding year, type, specialties and logo link, plus its recent posts (posts=1 adds the post feed with next_cursor). Company pages only, personal profiles are refused for free. B2B research. Bad input is free; not found or no match is not charged. Also accepts POST with the same parameters as a JSON object body (numbers may be JSON numbers), or the same query string with an empty body.",
     "tags": [
-     "Social media data"
+     "LinkedIn"
     ],
     "x-payment-info": {
      "price": {
@@ -4665,7 +4712,7 @@
     "summary": "Profile search (TikTok, Instagram, Threads)",
     "description": "Social Profile People Search: search public TikTok, Instagram or Threads profiles by name or keyword, unfiltered. Per profile the handle, name, bio, followers, following, posts and verification in the shared social schema; next_cursor on TikTok. Bad input is free; not found or no match is not charged. Also accepts POST with the same parameters as a JSON object body (numbers may be JSON numbers), or the same query string with an empty body.",
     "tags": [
-     "Social media data"
+     "Social listening"
     ],
     "x-payment-info": {
      "price": {
@@ -4904,7 +4951,7 @@
     "summary": "TikTok followers list",
     "description": "TikTok Followers List: the public followers of one TikTok account by handle, one page per call with next_cursor. Per follower the handle, name, bio, followers, following, posts and verification in the shared social schema. Bad input is free; not found or no match is not charged. Also accepts POST with the same parameters as a JSON object body (numbers may be JSON numbers), or the same query string with an empty body.",
     "tags": [
-     "Social media data"
+     "TikTok"
     ],
     "x-payment-info": {
      "price": {
@@ -5097,7 +5144,7 @@
     "summary": "TikTok following list",
     "description": "TikTok Following List: the public accounts one TikTok account follows, by handle, one page per call with next_cursor. Per account the handle, name, bio, followers, following, posts and verification in the shared social schema. Bad input is free; not found or no match is not charged. Also accepts POST with the same parameters as a JSON object body (numbers may be JSON numbers), or the same query string with an empty body.",
     "tags": [
-     "Social media data"
+     "TikTok"
     ],
     "x-payment-info": {
      "price": {
@@ -5290,7 +5337,7 @@
     "summary": "LinkedIn profile",
     "description": "LinkedIn Profile Lookup: one public LinkedIn profile by linkedin.com/in/ URL: name, followers, about text and photo link in the shared social schema. Experience, education and contact data are not returned. Bad input is free; not found or no match is not charged. Also accepts POST with the same parameters as a JSON object body (numbers may be JSON numbers), or the same query string with an empty body.",
     "tags": [
-     "Social media data"
+     "LinkedIn"
     ],
     "x-payment-info": {
      "price": {

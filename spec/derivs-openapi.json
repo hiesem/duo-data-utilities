@@ -1,7 +1,7 @@
 {
  "openapi": "3.1.1",
  "info": {
-  "title": "Crypto Derivatives Data API: Perp funding rates, open interest, futures basis, implied volatility, liquidations",
+  "title": "Crypto Derivatives Data API",
   "version": "1.1.0",
   "description": "Perp funding rates, open interest, futures basis, implied volatility, liquidations, order book depth and a perp screener for crypto perpetual futures across 8 exchanges (Bybit, Hyperliquid, dYdX, Gate, Kraken, Bitfinex, Deribit, OKX), paid per call over x402 with USDC on Base. No account, no API key.\n\n## How payment works (x402)\nEvery data route is paid per call over x402 v2 (scheme exact): HTTP 402 plus USDC on Base (CAIP-2 eip155:8453), settled through the Coinbase CDP facilitator. An unpaid request returns 402 with a base64 `PAYMENT-REQUIRED` header (price, payTo, asset) and a JSON body with a hint. Sign an EIP-3009 authorization for exactly that amount and send the request with its required parameters and a base64 `PAYMENT-SIGNATURE` header; the 200 response carries a base64 `PAYMENT-RESPONSE` receipt. Malformed input (400), unknown paths (404) and the wrong method (405) are answered before the paywall and never charged. When fewer venues answer than the route needs you get a 503, and a coin no venue lists gets a 404: in both cases your authorization is NOT settled.\n\n## Answers\nEvery 200 answer carries `as_of` (when the answer was built) and, per venue row, the venue data's own `as_of` and `stale` (served from the cache past its TTL, at most 10 minutes); `venues_missing` lists each venue not in the answer with a reason (not_listed, timeout, blocked, error, unavailable, not_cached = not refreshed in this request, symbol_mismatch = its price was more than 2 % off the cross-venue median, not_covered); `units` explains every unit, `colo` names the Cloudflare location that fetched the data (venue reach differs by location), `see_also` points to the next useful route, and `disclaimer` says: data only, not investment advice, not a benchmark, not affiliated with any exchange. Funding: `rate` is per funding interval, `rate_8h` = rate x 8 / interval_h, `apr_pct` = rate x 24 / interval_h x 365 x 100 (simple). Prices are USD per coin (USDT and USDC at par), sizes per coin after the venue's contract multiplier (1000PEPE, kPEPE).\n\nMCP: https://derivs.duoleads.com/mcp (Streamable HTTP; tools/list free, tools/call paid with x402).\n\nA2A: https://derivs.duoleads.com/a2a (JSON-RPC, a2a-x402 v0.2; agent card at https://derivs.duoleads.com/.well-known/agent-card.json).\n\n## Disclaimer\nData only, not investment advice, not a benchmark; not affiliated with any exchange. Third-party exchange data, provided as is: it may be delayed, incomplete or wrong, and venue coverage can change without notice. Terms: https://derivs.duoleads.com/terms",
   "contact": {
@@ -17,7 +17,42 @@
  },
  "servers": [
   {
-   "url": "https://derivs.duoleads.com"
+   "url": "https://derivs.duoleads.com",
+   "description": "Production"
+  }
+ ],
+ "tags": [
+  {
+   "name": "Funding rates",
+   "description": "Perp funding rates by exchange, funding rate history per venue and the funding arbitrage scanner."
+  },
+  {
+   "name": "Open interest",
+   "description": "Open interest by exchange for one coin."
+  },
+  {
+   "name": "Basis",
+   "description": "Futures basis, term structure and perp premium for one coin."
+  },
+  {
+   "name": "Options",
+   "description": "Implied volatility, skew and max pain from crypto options."
+  },
+  {
+   "name": "Liquidations",
+   "description": "Liquidations of one coin over the last 1-24 h."
+  },
+  {
+   "name": "Order book",
+   "description": "Order book depth and slippage of one coin across venues."
+  },
+  {
+   "name": "Screener",
+   "description": "Every perpetual, sorted by a metric you choose."
+  },
+  {
+   "name": "Snapshot",
+   "description": "The derivatives data of one coin in one call."
   }
  ],
  "paths": {
@@ -27,7 +62,7 @@
     "summary": "Perp funding rates by exchange (one coin)",
     "description": "Funding rates for perpetual futures (perp funding) of one coin across 8 exchanges: Bybit, Hyperliquid, dYdX, Gate, Kraken, Bitfinex, Deribit, OKX. Per venue the current funding rate, interval, 8h rate, APR, next funding time, mark and index; predicted funding incl. Binance and Bybit (via Hyperliquid); the last 24 hourly prints with avg/min/max/% positive. Perpetual swap funding for BTC, ETH, SOL and more. Data only. Bad input is free; under 3 venues not charged. Also accepts POST with the same parameters as a JSON object body (numbers may be JSON numbers), or the same query string with an empty body.",
     "tags": [
-     "Crypto derivatives"
+     "Funding rates"
     ],
     "x-payment-info": {
      "price": {
@@ -86,9 +121,9 @@
            "symbol": "BTCUSDT",
            "quote": "USDT",
            "contract_multiplier": 1,
-           "rate": 3.501e-05,
+           "rate": 0.00003501,
            "interval_h": 8,
-           "rate_8h": 3.501e-05,
+           "rate_8h": 0.00003501,
            "apr_pct": 3.83359,
            "next_funding_time": "2026-10-15T00:00:00Z",
            "predicted_rate": null,
@@ -102,7 +137,7 @@
            "symbol": "BTC",
            "quote": "USDC",
            "contract_multiplier": 1,
-           "rate": 1.25e-05,
+           "rate": 0.0000125,
            "interval_h": 1,
            "rate_8h": 0.0001,
            "apr_pct": 10.95,
@@ -116,7 +151,7 @@
          ],
          "summary": {
           "venues": 8,
-          "avg_rate_8h": 4.8465931e-05,
+          "avg_rate_8h": 0.000048465931,
           "avg_apr_pct": 5.30702,
           "min_apr": {
            "venue": "dydx",
@@ -133,17 +168,17 @@
           "rows": [
            {
             "source": "binance",
-            "rate": -4.729e-05,
+            "rate": -0.00004729,
             "interval_h": 8,
-            "rate_8h": -4.729e-05,
+            "rate_8h": -0.00004729,
             "apr_pct": -5.17826,
             "next_funding_time": "2026-10-15T00:00:00Z"
            },
            {
             "source": "bybit",
-            "rate": 3.501e-05,
+            "rate": 0.00003501,
             "interval_h": 8,
-            "rate_8h": 3.501e-05,
+            "rate_8h": 0.00003501,
             "apr_pct": 3.83359,
             "next_funding_time": "2026-10-15T00:00:00Z"
            }
@@ -155,19 +190,19 @@
           "prints": [
            {
             "time": "2026-10-13T23:00:00Z",
-            "rate": 1.25e-05,
+            "rate": 0.0000125,
             "rate_8h": 0.0001
            },
            {
             "time": "2026-10-14T00:00:00Z",
-            "rate": 6.651e-06,
-            "rate_8h": 5.3208e-05
+            "rate": 0.000006651,
+            "rate_8h": 0.000053208
            }
           ],
           "stats": {
            "n": 24,
-           "avg_rate_8h": 9.098383333e-05,
-           "min_rate_8h": 3.46392e-05,
+           "avg_rate_8h": 0.00009098383333,
+           "min_rate_8h": 0.0000346392,
            "max_rate_8h": 0.0001,
            "pct_positive": 100,
            "avg_apr_pct": 9.96273
@@ -284,7 +319,7 @@
     "summary": "Funding rate history (one coin, one venue, up to 30 days)",
     "description": "Funding rate history of one coin on one exchange (default Hyperliquid; or Bybit, dYdX, Gate, Kraken, Deribit, OKX), up to 30 days: every past funding print with interval, 8h rate and APR, plus avg/min/max/% positive and the window covered. Historical perpetual swap funding for backtests and carry studies on BTC, ETH, SOL and more. Data only. Bad input is free; a venue that fails is not charged. Also accepts POST with the same parameters as a JSON object body (numbers may be JSON numbers), or the same query string with an empty body.",
     "tags": [
-     "Crypto derivatives"
+     "Funding rates"
     ],
     "x-payment-info": {
      "price": {
@@ -376,14 +411,14 @@
          "prints": [
           {
            "time": "2026-10-07T23:00:00Z",
-           "rate": 1.25e-05,
+           "rate": 0.0000125,
            "interval_h": 1,
            "rate_8h": 0.0001,
            "apr_pct": 10.95
           },
           {
            "time": "2026-10-08T00:00:00Z",
-           "rate": 1.25e-05,
+           "rate": 0.0000125,
            "interval_h": 1,
            "rate_8h": 0.0001,
            "apr_pct": 10.95
@@ -391,7 +426,7 @@
          ],
          "stats": {
           "n": 168,
-          "avg_rate_8h": 5.047508095e-05,
+          "avg_rate_8h": 0.00005047508095,
           "min_rate_8h": -0.000111848,
           "max_rate_8h": 0.0001,
           "avg_apr_pct": 5.52702,
@@ -512,7 +547,7 @@
     "summary": "Funding arbitrage scanner (all coins)",
     "description": "Funding arbitrage scanner across 8 exchanges (Bybit, Hyperliquid, dYdX, Gate, Kraken, Bitfinex, Deribit, OKX): for every coin the widest cross-venue perp funding spread, the long and short venue, both funding rates, gross and fee-adjusted net APR and breakeven days, with a 24h volume liquidity filter. Funding rate arbitrage, basis trade and carry screening of perpetual swaps. Data only, no advice. Bad input is free; under 3 venues not charged. Empty filter results are still charged. Also accepts POST with the same parameters as a JSON object body (numbers may be JSON numbers), or the same query string with an empty body.",
     "tags": [
-     "Crypto derivatives"
+     "Funding rates"
     ],
     "x-payment-info": {
      "price": {
@@ -772,7 +807,7 @@
     "summary": "Perp screener (every perpetual, sorted)",
     "description": "Perp screener for all coins: every perpetual future on Bybit, Hyperliquid, dYdX, Gate, Kraken, Bitfinex, Deribit and OKX in one call, sorted by funding rate (APR), open interest (OI), 24h volume or 24h change, with the highest and lowest funding views. A funding screener and perpetuals market ranking for BTC, ETH, SOL and hundreds of altcoins. Data only. Bad input is free; under 3 venues not charged. Empty filter results are still charged. Also accepts POST with the same parameters as a JSON object body (numbers may be JSON numbers), or the same query string with an empty body.",
     "tags": [
-     "Crypto derivatives"
+     "Screener"
     ],
     "x-payment-info": {
      "price": {
@@ -896,7 +931,7 @@
             "bybit",
             "deribit"
            ],
-           "price": 1.02275e-07,
+           "price": 1.02275e-7,
            "avg_apr_pct": 19.0689,
            "max_apr": {
             "venue": "deribit",
@@ -1058,7 +1093,7 @@
     "summary": "Open interest by exchange (one coin)",
     "description": "Open interest (OI) of one coin's perpetual futures by exchange: Bybit, Hyperliquid, dYdX, Gate, Kraken, Bitfinex, Deribit, OKX. Per venue OI in coins and USD and its share, the total, and the OI change over 1h, 4h and 24h from the venues' own history. Perp open interest and futures open interest for BTC, ETH, SOL and more. Data only. Bad input is free; under 2 venues (3 for a coin listed on 3+) not charged. Also accepts POST with the same parameters as a JSON object body (numbers may be JSON numbers), or the same query string with an empty body.",
     "tags": [
-     "Crypto derivatives"
+     "Open interest"
     ],
     "x-payment-info": {
      "price": {
@@ -1273,7 +1308,7 @@
     "summary": "Futures basis, term structure and perp premium (one coin)",
     "description": "Futures basis and term structure of one coin: dated futures on Bybit, Deribit, Kraken, Gate and OKX with days to expiry, basis vs index and annualised basis (contango or backwardation, the carry), the perp premium (mark vs index/oracle) on Hyperliquid, dYdX, Bitfinex and the others, and predicted funding. Crypto futures basis for BTC, ETH and more. Data only. Bad input is free; under 2 venues not charged. Also accepts POST with the same parameters as a JSON object body (numbers may be JSON numbers), or the same query string with an empty body.",
     "tags": [
-     "Crypto derivatives"
+     "Basis"
     ],
     "x-payment-info": {
      "price": {
@@ -1384,7 +1419,7 @@
            "mark": 81631.8,
            "index": 81672.62,
            "premium_pct": -0.04998,
-           "funding_rate_8h": 3.501e-05,
+           "funding_rate_8h": 0.00003501,
            "as_of": "2026-10-14T23:00:00Z",
            "stale": false
           },
@@ -1404,17 +1439,17 @@
           "rows": [
            {
             "source": "binance",
-            "rate": -4.729e-05,
+            "rate": -0.00004729,
             "interval_h": 8,
-            "rate_8h": -4.729e-05,
+            "rate_8h": -0.00004729,
             "apr_pct": -5.17826,
             "next_funding_time": "2026-10-15T00:00:00Z"
            },
            {
             "source": "bybit",
-            "rate": 3.501e-05,
+            "rate": 0.00003501,
             "interval_h": 8,
-            "rate_8h": 3.501e-05,
+            "rate_8h": 0.00003501,
             "apr_pct": 3.83359,
             "next_funding_time": "2026-10-15T00:00:00Z"
            }
@@ -1534,7 +1569,7 @@
     "summary": "Implied volatility, skew and max pain (crypto options)",
     "description": "Implied volatility (IV) of crypto options per expiry from Deribit (always; Bybit and OKX when their cached chains are fresh): ATM IV, 25-delta skew, put/call open interest ratio, max pain and Deribit's DVOL index; with an expiry, the options chain per strike with the greeks as each venue publishes them. Volatility surface inputs for BTC and ETH options. Data only. Bad input is free; nothing is charged when no venue answers. Also accepts POST with the same parameters as a JSON object body (numbers may be JSON numbers), or the same query string with an empty body.",
     "tags": [
-     "Crypto derivatives"
+     "Options"
     ],
     "x-payment-info": {
      "price": {
@@ -1796,7 +1831,7 @@
     "summary": "Liquidations (one coin, last 1-24 h)",
     "description": "Liquidations of one coin's perpetual futures: recent forced liquidations from the Gate, Bitfinex, dYdX, Deribit and OKX public feeds, long and short liquidations in USD per venue, the totals and the largest events over 1-24h. Liquidation data for BTC, ETH, SOL and more; Bybit, Hyperliquid and Kraken are listed as not covered (WebSocket only). Data only. Bad input is free; under 2 feeds not charged. Also accepts POST with the same parameters as a JSON object body (numbers may be JSON numbers), or the same query string with an empty body.",
     "tags": [
-     "Crypto derivatives"
+     "Liquidations"
     ],
     "x-payment-info": {
      "price": {
@@ -2032,7 +2067,7 @@
     "summary": "Order book depth and slippage (one coin, 8 venues)",
     "description": "Order book depth of one coin's perpetual on Bybit, Hyperliquid, dYdX, Gate, Kraken, Bitfinex, Deribit and OKX: best bid/ask, spread in bps, market depth in USD within 0.1/0.5/1/2% of mid, bid/ask imbalance, estimated slippage for your order size and the largest resting orders (walls). L2 orderbook liquidity for BTC, ETH, SOL and more. Data only. Bad input is free; under 2 venues not charged. Also accepts POST with the same parameters as a JSON object body (numbers may be JSON numbers), or the same query string with an empty body.",
     "tags": [
-     "Crypto derivatives"
+     "Order book"
     ],
     "x-payment-info": {
      "price": {
@@ -2315,7 +2350,7 @@
     "summary": "Crypto derivatives snapshot (one coin, one call)",
     "description": "Crypto derivatives snapshot of one coin in one call: perp funding rates per exchange with predicted funding, open interest (OI) per venue, perp premium and the nearest futures basis, 24h liquidations and the long/short ratio. Venues: Bybit, Hyperliquid, dYdX, Gate, Kraken, Bitfinex, Deribit, OKX. The derivatives data bundle for trading agents on BTC, ETH, SOL and more. Data only. Bad input is free; under 3 venues not charged. Also accepts POST with the same parameters as a JSON object body (numbers may be JSON numbers), or the same query string with an empty body.",
     "tags": [
-     "Crypto derivatives"
+     "Snapshot"
     ],
     "x-payment-info": {
      "price": {
@@ -2374,16 +2409,16 @@
            {
             "venue": "bybit",
             "symbol": "BTCUSDT",
-            "rate": 3.501e-05,
+            "rate": 0.00003501,
             "interval_h": 8,
-            "rate_8h": 3.501e-05,
+            "rate_8h": 0.00003501,
             "apr_pct": 3.83359,
             "next_funding_time": "2026-10-15T00:00:00Z"
            }
           ],
           "summary": {
            "venues": 8,
-           "avg_rate_8h": 4.8465931e-05,
+           "avg_rate_8h": 0.000048465931,
            "avg_apr_pct": 5.30702,
            "min_apr": {
             "venue": "dydx",
@@ -2398,9 +2433,9 @@
           "predicted": [
            {
             "source": "binance",
-            "rate": -4.729e-05,
+            "rate": -0.00004729,
             "interval_h": 8,
-            "rate_8h": -4.729e-05,
+            "rate_8h": -0.00004729,
             "apr_pct": -5.17826,
             "next_funding_time": "2026-10-15T00:00:00Z"
            }
