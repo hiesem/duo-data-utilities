@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "duo-data-utilities"
-version = "0.2.0"
+version = "0.2.1"
 description = "IBAN, ISIN, VAT/tax ID and GTIN barcode validation plus 29 more pay-per-call utilities, and crypto derivatives data (perp funding rates, open interest, futures basis, implied volatility, liquidations, order book depth) for AI agents (x402, USDC on Base, no API key)."
 readme = "README.md"
 license = { text = "MIT" }
