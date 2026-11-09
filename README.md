@@ -89,7 +89,7 @@ book = client.derivs.orderbook(coin="BTC", size_usd=250_000)  # $0.003
 derivs = DerivsClient(Account.from_key(os.environ["DUO_PAYER_KEY"]))  # derivs only
 ```
 
-- **Price guard:** `client.derivs` has its own cap, $0.005 per call by default. `createClient({ account, derivs: { maxPriceUsd: 0.003 } })` refuses the $0.005 routes (Python: `derivs_max_price_usd=0.003`). The other rules are the same: Base USDC only, only to `0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39`, nothing is signed before the check.
+- **Price guard:** `client.derivs` has its own cap. By default each route is capped at its own listed price ($0.003 or $0.005), so a challenge above it is refused. `createClient({ account, derivs: { maxPriceUsd: 0.003 } })` sets one cap for every route and refuses the $0.005 routes (Python: `derivs_max_price_usd=0.003`). The other rules are the same: Base USDC only, only to `0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39`, nothing is signed before the check.
 - **Not charged:** bad input is a free 400 with `error.expected`. When fewer venues answer than the route needs, the answer is a 503 and nothing is charged. Both throw `DuoApiError`.
 - **Answers** are the JSON body itself (no `data` envelope), with `venues_missing`, `units`, `as_of` and a `see_also` pointer to the next useful route. TypeScript types: `DerivsFundingRatesData` and so on.
 - **Coins:** BTC, btc, BTCUSDT, BTC-PERP, XBT, 1000PEPE and kPEPE all name a coin.
@@ -129,7 +129,7 @@ const keywords = createKeywordsClient({ account });
 await keywords.relatedQueries({ keyword: "seo api", country: "us" }); // $0.03
 ```
 
-- **Price guard:** `client.keywords` has its own cap. By default the six original routes (keyword overview, search volume, keyword ideas, trend, related queries, interest by region) are capped at $0.045 per call, and every other route at its own listed price, so a challenge above it is refused. `createClient({ account, keywords: { maxPriceUsd: 0.04 } })` sets one cap for every route (that one refuses trend and every route above $0.04). The other rules are the same: Base USDC only, only to `0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39`, and nothing is signed before the check.
+- **Price guard:** `client.keywords` has its own cap. By default each of the 44 routes is capped at its own listed price, so a challenge above it is refused. `createClient({ account, keywords: { maxPriceUsd: 0.04 } })` sets one cap for every route (that one refuses trend and every route above $0.04). The other rules are the same: Base USDC only, only to `0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39`, and nothing is signed before the check.
 - **Methods:** each route has its own HTTP method (most are POST with a JSON body); the client picks it. `SEO_KEYWORD_ROUTES` lists all 44 with method, price and MCP tool.
 - **Errors:** a bad input is a free 400. An upstream failure is a 503 with "nothing was charged". Both throw `DuoApiError`.
 - **MCP:** the same 44 tools are at `https://keywords.duoleads.com/mcp`.
@@ -302,7 +302,7 @@ print(check.verdict, check.reasons)
 
 ## Pricing and the price guard
 
-- Every main API route costs $0.05 per call, paid in USDC on Base (`eip155:8453`) with x402 v2. Derivs routes cost $0.003 or $0.005 and have their own cap (default $0.005); keyword routes cost $0.012 to $0.25 and social routes $0.01 to $0.025, each capped by default at its own price (the six original keyword routes at $0.045). See each section.
+- Every main API route costs $0.05 per call, paid in USDC on Base (`eip155:8453`) with x402 v2. Derivs routes cost $0.003 or $0.005, keyword routes $0.012 to $0.25 and social routes $0.01 to $0.025, each capped by default at its own listed price. See each section.
 - `maxPriceUsd` defaults to `0.05`. Before anything is signed, the client refuses a payment requirement that asks for more than that, a network other than Base, an asset other than Base USDC, or another payee. A refused call makes no payment and throws `PriceGuardError`.
 - The client only signs payments to the service's public address `0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39` (`payTo` option; `pay_to` in Python). Set it if you point `baseUrl` at another deployment.
 - The client never retries a paid call on its own.

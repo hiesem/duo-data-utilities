@@ -1,7 +1,7 @@
 {
   "name": "duo-data-utilities",
-  "version": "0.3.0",
-  "description": "Pay-per-call data APIs for AI agents in one TypeScript client: 33 validation utilities (IBAN, VAT/tax ID, ISIN, GTIN/EAN barcodes, timezones, geohash), SEO and keyword data (search volume, CPC, SERP, backlinks), social media data (X/Twitter, Reddit, TikTok, YouTube) and crypto derivatives data (funding rates, open interest). x402, USDC on Base, no API key.",
+  "version": "0.3.1",
+  "description": "Pay-per-call data APIs for AI agents, one TypeScript client: IBAN, VAT, ISIN, GTIN validation, timezones, geo; SEO keyword data, SERP, backlinks; social media data (X/Twitter, Reddit, TikTok); crypto funding rates. x402 USDC, no API key.",
   "keywords": [
     "iban",
     "iban-validator",
@@ -104,8 +104,8 @@
     "test": "npm run check:generated && vitest run"
   },
   "dependencies": {
-    "@x402/evm": "^2.27.0",
-    "@x402/fetch": "^2.27.0",
+    "@x402/evm": "^2.30.0",
+    "@x402/fetch": "^2.30.0",
     "viem": "^2.48.11"
   },
   "devDependencies": {

@@ -112,6 +112,37 @@ describe("MCP configuration", () => {
   });
 });
 
+describe("price guard wording (R64-PA-01: every route is capped at its own price by default)", () => {
+  const docs = ["README.md", "python/README.md", ...["x402-seo-keyword-data", "x402-crypto-derivatives-data", "x402-social-media-data"].map((n) => `packages/${n}/README.md`)];
+  const sources = ["src/client.ts", "src/keywords.ts", "src/derivs.ts", "python/duo_data_utilities/client.py", "python/duo_data_utilities/derivs.py"];
+
+  it("no README or doc comment still describes the old flat defaults", () => {
+    const stale = [/original (keyword(-research)? )?routes (are capped )?at \$0\.045/i, /default \$0\.005/, /\$0\.005 per call by default/, /caps each call at \$0\.005/, /Default 0\.005\./, /\(default 0\.005\)/, /0\.045 on the six original/, /default \$0\.045 on/];
+    for (const file of [...docs, ...sources]) for (const pattern of stale) expect(read(file), `${file} ${pattern}`).not.toMatch(pattern);
+  });
+
+  it("the main README and each package README state the per-route default", () => {
+    expect(read("README.md")).toContain("each capped by default at its own listed price");
+    for (const file of docs.slice(2)) expect(read(file), file).toContain("By default each route is capped at its own listed price");
+  });
+});
+
+describe("npm descriptions (R64-FIND-03)", () => {
+  const files = ["package.json", ...["x402-seo-keyword-data", "x402-crypto-derivatives-data", "x402-social-media-data"].map((n) => `packages/${n}/package.json`)];
+  // npm search cuts a description at 255 characters; vendor names are assembled from fragments so this file does not carry them.
+  const vendors = [new RegExp("data" + "for" + "seo", "i"), new RegExp("scrape" + "creators", "i"), new RegExp("twitter" + "api\\.io", "i")];
+
+  for (const file of files) {
+    it(`${file}: at most 250 characters, ends on a full word, names no vendor`, () => {
+      const { description } = JSON.parse(read(file)) as { description: string };
+      expect(description.length, description).toBeLessThanOrEqual(250);
+      expect(description, "ends with a full word and a full stop").toMatch(/[A-Za-z0-9)]\.$/);
+      expect(description).not.toMatch(/\s{2,}/);
+      for (const vendor of vendors) expect(description).not.toMatch(vendor);
+    });
+  }
+});
+
 describe("package metadata", () => {
   const pkg = JSON.parse(read("package.json"));
 
@@ -129,6 +160,6 @@ describe("package metadata", () => {
   it("uses the MIT licence and the agreed package name and version", () => {
     expect(pkg.license).toBe("MIT");
     expect(pkg.name).toBe("duo-data-utilities");
-    expect(pkg.version).toBe("0.3.0");
+    expect(pkg.version).toBe("0.3.1");
   });
 });

@@ -55,7 +55,7 @@ export interface DuoClientOptions {
   derivs?: {
     /** Derivs API origin. Default https://derivs.duoleads.com. */
     baseUrl?: string;
-    /** Largest price in USD that `client.derivs` signs for one call. Default 0.005. */
+    /** Largest price in USD that `client.derivs` signs for one call, on every route. Default: each route's own price ($0.003 or $0.005). */
     maxPriceUsd?: number;
   };
   /**
@@ -65,7 +65,7 @@ export interface DuoClientOptions {
   keywords?: {
     /** Keyword API origin. Default https://keywords.duoleads.com. */
     baseUrl?: string;
-    /** Largest price in USD that `client.keywords` signs for one call. Default 0.045 on the six original routes, each other route's own price. */
+    /** Largest price in USD that `client.keywords` signs for one call, on every route. Default: each route's own price ($0.012 to $0.25). */
     maxPriceUsd?: number;
   };
   /**
@@ -98,14 +98,14 @@ export type DuoClient = GeneratedClient & {
   /**
    * Crypto derivatives data from https://derivs.duoleads.com: perp funding rates, funding history and
    * arbitrage, perp screener, open interest, futures basis, implied volatility, liquidations, order book
-   * depth and a one-call snapshot. $0.003 or $0.005 per call, capped by its own price guard (default $0.005).
+   * depth and a one-call snapshot. $0.003 or $0.005 per call, capped by its own price guard (default: each route's price).
    */
   derivs: DerivsClient;
   /**
    * SEO and keyword data from https://keywords.duoleads.com (44 routes): Google search volume, CPC, competition,
    * keyword difficulty and intent, keyword ideas, Google Trends, domain and ranking data, backlinks, SERP, Maps,
    * on-page and PageSpeed audits, Amazon, brand and AI-answer visibility, tech stack and WHOIS. $0.012 to $0.25
-   * per call, capped by its own price guard (default $0.045 on the six original routes, each other route's price).
+   * per call, capped by its own price guard (default: each route's own price).
    */
   keywords: KeywordsClient;
   /**

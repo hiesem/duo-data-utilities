@@ -6,8 +6,8 @@ describe("x402-crypto-derivatives-data", () => {
   it("lists 10 routes and names itself in the User-Agent", () => {
     expect(DERIVS_ROUTES).toHaveLength(10);
     expect(createClient).toBe(createDerivsClient);
-    expect(SDK_VERSION).toBe("0.3.1");
-    expect(SDK_USER_AGENT).toBe("x402-crypto-derivatives-data-js/0.3.1 (+https://github.com/hiesem/duo-data-utilities)");
+    expect(SDK_VERSION).toBe("0.3.2");
+    expect(SDK_USER_AGENT).toBe("x402-crypto-derivatives-data-js/0.3.2 (+https://github.com/hiesem/duo-data-utilities)");
   });
 
   it("every route method GETs https://derivs.duoleads.com", async () => {

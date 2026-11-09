@@ -63,7 +63,7 @@ describe("derivs route table", () => {
     for (const r of DERIVS_ROUTES) expect(r.priceUsd).toBe(r.amount === "5000" ? "0.005" : "0.003");
   });
 
-  it("defaults to a $0.005 cap and the derivs MCP endpoint", () => {
+  it("keeps $0.005 as the cap for a path it does not know, and the derivs MCP endpoint", () => {
     expect(DEFAULT_DERIVS_MAX_PRICE_USD).toBe(0.005);
     expect(DERIVS_MCP_URL).toBe("https://derivs.duoleads.com/mcp");
   });
@@ -124,14 +124,14 @@ describe("paying derivs routes with a wallet (mocked 402)", () => {
     }
   });
 
-  it("refuses $0.006 by default and signs nothing", async () => {
+  it("refuses $0.006 by default on a $0.003 route (its own price is the cap) and signs nothing", async () => {
     const { signer, signTypedData } = spySigner();
     const server = await derivsServer(() => "6000");
     try {
       const client = createDerivsClient({ account: signer, baseUrl: server.baseUrl });
       const error = await client.fundingRates({ coin: "BTC" }).catch((e: unknown) => e);
       expect(error).toBeInstanceOf(PriceGuardError);
-      expect(String((error as Error).message)).toMatch(/above the maximum \$0\.005/);
+      expect(String((error as Error).message)).toMatch(/above the maximum \$0\.003/);
       expect(signTypedData).not.toHaveBeenCalled();
       expect(server.requests.every((r) => r.paymentSignature === null)).toBe(true);
     } finally {
@@ -176,8 +176,8 @@ describe("paying derivs routes with a wallet (mocked 402)", () => {
     const server = await derivsServer((path) => (path === "/v1/orderbook" ? "6000" : amountOf(path)));
     try {
       const client = createClient({ account: signer, derivs: { baseUrl: server.baseUrl } });
-      // 6000 is refused although the main API's cap is 50000: client.derivs has its own $0.005 cap.
-      await expect(client.derivs.orderbook({ coin: "BTC", size_usd: 100000 })).rejects.toThrow(/above the maximum \$0\.005/);
+      // 6000 is refused although the main API's cap is 50000: client.derivs caps orderbook at its own $0.003.
+      await expect(client.derivs.orderbook({ coin: "BTC", size_usd: 100000 })).rejects.toThrow(/above the maximum \$0\.003/);
       expect(signTypedData).not.toHaveBeenCalled();
       const rates = await client.derivs.call("/v1/funding-rates", { coin: "BTC" });
       expect(rates).toEqual(example("/v1/funding-rates"));

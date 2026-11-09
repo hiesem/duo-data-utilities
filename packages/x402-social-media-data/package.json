@@ -1,7 +1,7 @@
 {
   "name": "x402-social-media-data",
-  "version": "0.3.1",
-  "description": "Social media data API client for AI agents: social listening across X (Twitter), Reddit, TikTok, Instagram, YouTube, Threads, LinkedIn, Bluesky and Hacker News. Public posts, profiles, comments, transcripts and search; 26 routes, pay per call with x402 (USDC on Base), no API key.",
+  "version": "0.3.2",
+  "description": "Social media data API client for AI agents: social listening on X (Twitter), Reddit, TikTok, Instagram, YouTube, Threads, LinkedIn, Bluesky, Hacker News. Posts, profiles, comments, search. Pay per call with x402 (USDC), no API key.",
   "keywords": [
     "social-media-data",
     "social-media-api",
@@ -79,8 +79,8 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@x402/evm": "^2.27.0",
-    "@x402/fetch": "^2.27.0",
+    "@x402/evm": "^2.30.0",
+    "@x402/fetch": "^2.30.0",
     "viem": "^2.48.11"
   },
   "devDependencies": {

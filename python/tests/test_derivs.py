@@ -91,7 +91,8 @@ def test_pays_the_half_cent_snapshot(mock_server: Any, throwaway_account: Any) -
 def test_refuses_six_tenths_of_a_cent_by_default(mock_server: Any, throwaway_account: Any) -> None:
     signer = SpySigner(throwaway_account)
     server = mock_server(derivs_reply(lambda _path: "6000"))
-    with pytest.raises(PriceGuardError, match=r"above the maximum \$0\.005"):
+    # funding-rates is listed at $0.003, which is its default cap
+    with pytest.raises(PriceGuardError, match=r"above the maximum \$0\.003"):
         DerivsClient(signer, base_url=server.base_url).funding_rates(coin="BTC")
     assert signer.signatures == 0
     assert all(r.payment_signature is None for r in server.requests)
@@ -128,8 +129,8 @@ def test_duo_client_derivs_has_its_own_cap(mock_server: Any, throwaway_account: 
     signer = SpySigner(throwaway_account)
     server = mock_server(derivs_reply(lambda path: "6000" if path == "/v1/orderbook" else derivs_amount(path)))
     client = DuoClient(signer, derivs_base_url=server.base_url)
-    # 6000 is refused although the main API's cap is 50000.
-    with pytest.raises(PriceGuardError, match=r"above the maximum \$0\.005"):
+    # 6000 is refused although the main API's cap is 50000: orderbook is capped at its own $0.003.
+    with pytest.raises(PriceGuardError, match=r"above the maximum \$0\.003"):
         client.derivs.orderbook(coin="BTC", size_usd=100000)
     assert signer.signatures == 0
     client.derivs.perp_screener(sort="oi", limit=10)

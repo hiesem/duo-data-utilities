@@ -19,7 +19,7 @@ from ._http import (
 )
 from ._version import USER_AGENT
 from .counterparty import CounterpartyResult, run_counterparty_check
-from .derivs import DEFAULT_DERIVS_BASE_URL, DEFAULT_DERIVS_MAX_PRICE_USD, DerivsClient
+from .derivs import DEFAULT_DERIVS_BASE_URL, DerivsClient
 from .errors import DuoApiError
 from .generated import DuoMethods
 from .price_guard import DEFAULT_MAX_PRICE_USD, DEFAULT_PAY_TO, usd_to_atomic
@@ -82,7 +82,8 @@ class DuoClient(DuoMethods):
     product, pass f"{USER_AGENT} my-agent/1.0".
 
     `derivs` is a DerivsClient for https://derivs.duoleads.com (crypto derivatives data, $0.003 or $0.005 per
-    call) on the same wallet or session, with its own price cap `derivs_max_price_usd` (default 0.005).
+    call) on the same wallet or session, with its own price cap `derivs_max_price_usd` (default: each route's own
+    listed price).
     """
 
     def __init__(
@@ -96,7 +97,7 @@ class DuoClient(DuoMethods):
         pay_to: str | None = DEFAULT_PAY_TO,
         user_agent: str = USER_AGENT,
         derivs_base_url: str = DEFAULT_DERIVS_BASE_URL,
-        derivs_max_price_usd: float = DEFAULT_DERIVS_MAX_PRICE_USD,
+        derivs_max_price_usd: float | None = None,
     ) -> None:
         if (account is None) == (session is None):
             raise TypeError("pass exactly one of account (pays with your wallet) or session (a requests.Session that already pays)")

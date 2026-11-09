@@ -31,7 +31,7 @@ Each method sends one GET, pays the 402 challenge with your wallet and resolves 
 
 ## Price guard
 
-Before anything is signed, the client checks the payment requirement: Base USDC only, only to the service's address `0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39`, and never above the cap (default $0.005; `maxPriceUsd: 0.003` refuses the $0.005 routes). A refused call signs nothing and throws `PriceGuardError`. The client never retries a paid call on its own.
+Before anything is signed, the client checks the payment requirement: Base USDC only, only to the service's address `0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39`, and never above the cap. By default each route is capped at its own listed price ($0.003 or $0.005); `maxPriceUsd: 0.003` sets one cap for every route and refuses the $0.005 routes. A refused call signs nothing and throws `PriceGuardError`. The client never retries a paid call on its own.
 
 ## Errors and charges
 

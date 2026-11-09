@@ -2,7 +2,7 @@
 
 Typed Python client for https://api.duoleads.com: IBAN, ISIN, VAT/tax ID, GTIN barcode and 29 more pay-per-call utilities. Each call costs $0.05 in USDC on Base, paid with x402 v2. No API key, no signup.
 
-Also crypto derivatives data from https://derivs.duoleads.com, $0.003 or $0.005 per call: perp funding rates, funding history and arbitrage, perp screener, open interest, futures basis, implied volatility, liquidations and order book depth across Bybit, Hyperliquid, dYdX, Gate, Kraken, Bitfinex, Deribit and OKX. Use `DuoClient(account).derivs.funding_rates(coin="BTC")` or `DerivsClient(account)`; its price guard caps each call at $0.005.
+Also crypto derivatives data from https://derivs.duoleads.com, $0.003 or $0.005 per call: perp funding rates, funding history and arbitrage, perp screener, open interest, futures basis, implied volatility, liquidations and order book depth across Bybit, Hyperliquid, dYdX, Gate, Kraken, Bitfinex, Deribit and OKX. Use `DuoClient(account).derivs.funding_rates(coin="BTC")` or `DerivsClient(account)`; its price guard caps each route at its own listed price ($0.003 or $0.005) unless you pass `max_price_usd` (`derivs_max_price_usd` on `DuoClient`).
 
 ```sh
 pip install "git+https://github.com/hiesem/duo-data-utilities#subdirectory=python"

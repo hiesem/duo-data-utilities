@@ -26,9 +26,9 @@ import { SDK_USER_AGENT } from "./version.js";
 
 export const DEFAULT_KEYWORDS_BASE_URL = "https://keywords.duoleads.com";
 /**
- * Largest price `client.keywords` signs by default for one call to one of the six original routes (KEYWORDS_ROUTES) or
- * to a path it does not know, in USD: the most expensive original route (trend) costs $0.045. Every other route
- * (SEO_KEYWORD_ROUTES) is capped by default at its own listed price, so a challenge above that price is refused.
+ * Largest price `client.keywords` signs by default for one call to a path it does not know, in USD. Every listed
+ * route (SEO_KEYWORD_ROUTES, the six original routes included) is capped by default at its own listed price, so a
+ * challenge above that price is refused.
  */
 export const DEFAULT_KEYWORDS_MAX_PRICE_USD = 0.045;
 /** The most expensive keyword route (historical-rank), in USD. */
@@ -180,8 +180,8 @@ export interface KeywordsClientOptions {
   /** API origin. Default https://keywords.duoleads.com. Plain http is only accepted for localhost. */
   baseUrl?: string;
   /**
-   * Largest price in USD signed for one call, on every route. Default: 0.045 for the six original routes and unknown
-   * paths, and each other route's own listed price (up to 0.25). Set 0.04 to refuse trend and every route above $0.04.
+   * Largest price in USD signed for one call, on every route. Default: each route's own listed price ($0.012 to
+   * $0.25), and 0.045 for a path the client does not know. Set 0.04 to refuse trend and every route above $0.04.
    */
   maxPriceUsd?: number;
   /** The only payee signed for. Default 0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39; null accepts any. */
@@ -265,9 +265,8 @@ function keywordsError(path: string, status: number, ok: boolean, body: unknown)
 }
 
 const POST_PATHS = new Set<string>(SEO_KEYWORD_ROUTES.filter((r) => r.httpMethod === "POST").map((r) => r.path));
-const V1_PATHS = new Set<string>(KEYWORDS_ROUTES.map((r) => r.path));
-/** Default cap per path when the caller set no maxPriceUsd: a v2 route's own price, else the v1 default. */
-const ROUTE_CAP_USD = new Map<string, number>(SEO_KEYWORD_ROUTES.filter((r) => !V1_PATHS.has(r.path)).map((r) => [r.path, Number(r.priceUsd)]));
+/** Default cap per path when the caller set no maxPriceUsd: each of the 44 routes' own price (unknown paths: the default). */
+const ROUTE_CAP_USD = new Map<string, number>(SEO_KEYWORD_ROUTES.map((r) => [r.path, Number(r.priceUsd)]));
 
 /** Drops null and undefined members: the JSON body of a POST route. */
 function bodyOf(params: object): string {
@@ -278,8 +277,8 @@ function bodyOf(params: object): string {
 
 /**
  * Creates a client for https://keywords.duoleads.com. Pass `account` to pay with your own wallet (USDC on Base
- * via x402). Before it signs, the client refuses any price above `maxPriceUsd` (default: $0.045 on the six original
- * routes, each other route's own listed price).
+ * via x402). Before it signs, the client refuses any price above `maxPriceUsd` (default: each route's own listed
+ * price).
  * `createClient(...).keywords` is the same client, sharing the wallet with the main API.
  */
 export function createKeywordsClient(options: KeywordsClientOptions = {}): KeywordsClient {

@@ -150,7 +150,7 @@ describe("keyword route table", () => {
     expect(KEYWORDS_ROUTES.filter((r) => r.httpMethod === "POST").map((r) => r.path)).toEqual(["/v1/keyword-overview", "/v1/keyword-ideas"]);
   });
 
-  it("defaults to a $0.045 cap (the most expensive route) and the keyword MCP endpoint", () => {
+  it("keeps $0.045 as the cap for a path it does not know, and the keyword MCP endpoint", () => {
     expect(DEFAULT_KEYWORDS_MAX_PRICE_USD).toBe(0.045);
     expect(KEYWORDS_MCP_URL).toBe("https://keywords.duoleads.com/mcp");
   });
@@ -274,8 +274,8 @@ describe("paying keyword routes with a wallet (mocked 402)", () => {
     const server = await kwServer((path) => (path === "/v1/related-queries" ? "46000" : (PLAN_PRICES[path] ?? "0")));
     try {
       const client = createClient({ account: signer, keywords: { baseUrl: server.baseUrl } });
-      // 46000 is refused although the main API's cap is 50000: client.keywords has its own $0.045 cap.
-      await expect(client.keywords.relatedQueries({ keyword: "seo api" })).rejects.toThrow(/above the maximum \$0\.045/);
+      // 46000 is refused although the main API's cap is 50000: client.keywords caps related-queries at its own $0.03.
+      await expect(client.keywords.relatedQueries({ keyword: "seo api" })).rejects.toThrow(/above the maximum \$0\.03\b/);
       expect(signTypedData).not.toHaveBeenCalled();
       await client.keywords.keywordIdeas({ keyword: "phone", limit: 2 });
       expect(signTypedData).toHaveBeenCalledTimes(1);

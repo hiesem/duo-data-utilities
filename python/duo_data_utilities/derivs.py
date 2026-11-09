@@ -20,13 +20,16 @@ from x402.http.clients.requests import PaymentError
 
 from ._http import _parse_json, _paying_session, _price_guard_refusal, _receipt_of, normalise_base_url
 from ._version import USER_AGENT
-from .derivs_generated import DerivsMethods
+from .derivs_generated import DERIVS_ROUTES, DerivsMethods
 from .errors import DuoApiError
 from .price_guard import DEFAULT_PAY_TO, usd_to_atomic
 
 DEFAULT_DERIVS_BASE_URL = "https://derivs.duoleads.com"
-# The most expensive derivs route costs $0.005.
+# The cap for a path the client does not know (the most expensive derivs route costs $0.005). Every listed route
+# is capped by default at its own price, $0.003 or $0.005.
 DEFAULT_DERIVS_MAX_PRICE_USD = 0.005
+# Default cap per path when the caller passed no max_price_usd: each route's own price.
+_ROUTE_CAP_USD: dict[str, float] = {r["path"]: float(r["price_usd"]) for r in DERIVS_ROUTES}
 # Paid MCP endpoint (Streamable HTTP; payment in params._meta["x402/payment"]).
 DERIVS_MCP_URL = "https://derivs.duoleads.com/mcp"
 
@@ -89,9 +92,10 @@ def _derivs_error(path: str, response: requests.Response, body: Any) -> DuoApiEr
 class DerivsClient(DerivsMethods):
     """Typed methods for the 10 derivs routes, plus call and call_with_receipt.
 
-    Pass `account` to pay with your wallet; the client refuses any price above `max_price_usd` (default
-    0.005; pass 0.003 to refuse the $0.005 routes), any network but Base, any asset but USDC and any payee
-    but `pay_to`, before it signs. Pass `session` instead to use a requests.Session that already pays.
+    Pass `account` to pay with your wallet; the client refuses any price above `max_price_usd` (by default
+    each route's own listed price, $0.003 or $0.005, and 0.005 for a path it does not know; pass 0.003 to
+    refuse the $0.005 routes), any network but Base, any asset but USDC and any payee but `pay_to`, before
+    it signs. Pass `session` instead to use a requests.Session that already pays.
     `DuoClient(...).derivs` is the same client, sharing the wallet with the main API.
     """
 
@@ -101,7 +105,7 @@ class DerivsClient(DerivsMethods):
         *,
         session: requests.Session | None = None,
         base_url: str = DEFAULT_DERIVS_BASE_URL,
-        max_price_usd: float = DEFAULT_DERIVS_MAX_PRICE_USD,
+        max_price_usd: float | None = None,
         timeout: float | None = None,
         pay_to: str | None = DEFAULT_PAY_TO,
         user_agent: str = USER_AGENT,
@@ -110,13 +114,31 @@ class DerivsClient(DerivsMethods):
             raise TypeError("pass exactly one of account (pays with your wallet) or session (a requests.Session that already pays)")
         if "\r" in user_agent or "\n" in user_agent:
             raise ValueError("user_agent must not contain line breaks")
-        max_atomic = usd_to_atomic(max_price_usd)
+        if max_price_usd is not None:
+            usd_to_atomic(max_price_usd)  # validates it at construction
         self._user_agent = user_agent
         self._base_url = normalise_base_url(base_url)
         self._max_price_usd = max_price_usd
         self._timeout = timeout
-        self._session = session if session is not None else _paying_session(account, max_atomic, max_price_usd, pay_to)
+        self._account = account
+        self._pay_to = pay_to
+        self._session = session
+        # One paying session per price cap (at most one per distinct route price), built on first use.
+        self._sessions: dict[float, requests.Session] = {}
         super().__init__(self.call)
+
+    def _cap_for(self, path: str) -> float:
+        if self._max_price_usd is not None:
+            return self._max_price_usd
+        return _ROUTE_CAP_USD.get(path, DEFAULT_DERIVS_MAX_PRICE_USD)
+
+    def _session_for(self, path: str) -> requests.Session:
+        if self._session is not None:
+            return self._session
+        cap = self._cap_for(path)
+        if cap not in self._sessions:
+            self._sessions[cap] = _paying_session(self._account, usd_to_atomic(cap), cap, self._pay_to)
+        return self._sessions[cap]
 
     def call(self, path: str, params: Mapping[str, Any] | None = None) -> dict[str, Any]:
         """Calls any derivs route by path (e.g. /v1/funding-rates) and returns its JSON body."""
@@ -126,7 +148,7 @@ class DerivsClient(DerivsMethods):
         """Like `call`, and also returns the settlement receipt."""
         assert_derivs_path(path)
         try:
-            response = self._session.get(
+            response = self._session_for(path).get(
                 f"{self._base_url}{path}",
                 params=derivs_query(params or {}),
                 headers={"accept": "application/json", "User-Agent": self._user_agent},

@@ -6,7 +6,7 @@
 //   - paths are /v1/<name> (one segment), e.g. /v1/funding-rates;
 //   - a 200 answer is the data object itself (no {ok, data, meta} envelope);
 //   - an error answer is {error: {status, code, message, param?, expected?}, request_id?}.
-import { createDerivsGeneratedClient, type DerivsGeneratedClient } from "./derivs-generated.js";
+import { createDerivsGeneratedClient, DERIVS_ROUTES, type DerivsGeneratedClient } from "./derivs-generated.js";
 import { DuoApiError } from "./errors.js";
 import { DEFAULT_PAY_TO, usdToAtomic } from "./price-guard.js";
 import {
@@ -23,7 +23,10 @@ import {
 import { SDK_USER_AGENT } from "./version.js";
 
 export const DEFAULT_DERIVS_BASE_URL = "https://derivs.duoleads.com";
-/** Largest price `client.derivs` signs for one call by default, in USD: the most expensive route costs $0.005. */
+/**
+ * Largest price `client.derivs` signs by default for one call to a path it does not know, in USD (the most expensive
+ * route costs $0.005). Every listed route (DERIVS_ROUTES) is capped by default at its own price, $0.003 or $0.005.
+ */
 export const DEFAULT_DERIVS_MAX_PRICE_USD = 0.005;
 /** The paid MCP endpoint of the derivs service (Streamable HTTP; payment in `_meta["x402/payment"]`). */
 export const DERIVS_MCP_URL = "https://derivs.duoleads.com/mcp";
@@ -35,7 +38,10 @@ export interface DerivsClientOptions {
   fetch?: FetchLike;
   /** API origin. Default https://derivs.duoleads.com. Plain http is only accepted for localhost. */
   baseUrl?: string;
-  /** Largest price in USD signed for one call. Default 0.005. Set 0.003 to refuse the $0.005 routes. */
+  /**
+   * Largest price in USD signed for one call, on every route. Default: each route's own listed price ($0.003 or
+   * $0.005), and 0.005 for a path the client does not know. Set 0.003 to refuse the $0.005 routes.
+   */
   maxPriceUsd?: number;
   /** The only payee signed for. Default 0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39; null accepts any. */
   payTo?: string | null;
@@ -60,6 +66,9 @@ export type DerivsClient = DerivsGeneratedClient & {
 
 // Every derivs route is GET /v1/<name>. Anything else is refused before a request is made.
 const DERIVS_PATH = /^\/v1\/[a-z0-9-]+$/;
+
+/** Default cap per path when the caller set no maxPriceUsd: each route's own price (unknown paths: the default). */
+const ROUTE_CAP_USD = new Map<string, number>(DERIVS_ROUTES.map((r) => [r.path, Number(r.priceUsd)]));
 
 export function assertDerivsPath(path: string): void {
   if (!DERIVS_PATH.test(path)) throw new TypeError(`not a derivs route path: ${JSON.stringify(path)} (expected /v1/<name>)`);
@@ -109,7 +118,8 @@ function derivsError(path: string, status: number, ok: boolean, body: unknown): 
 
 /**
  * Creates a client for https://derivs.duoleads.com. Pass `account` to pay with your own wallet (USDC on
- * Base via x402). The client refuses any price above `maxPriceUsd` (default $0.005) before it signs.
+ * Base via x402). Before it signs, the client refuses any price above `maxPriceUsd` (default: each route's own
+ * listed price).
  * `createClient(...).derivs` is the same client, sharing the wallet with the main API.
  */
 export function createDerivsClient(options: DerivsClientOptions = {}): DerivsClient {
@@ -117,20 +127,28 @@ export function createDerivsClient(options: DerivsClientOptions = {}): DerivsCli
     throw new TypeError("createDerivsClient needs exactly one of `account` (pays with your wallet) or `fetch` (a fetch that already pays)");
   }
   const baseUrl = normaliseBaseUrl(options.baseUrl ?? DEFAULT_DERIVS_BASE_URL);
-  const maxPriceUsd = options.maxPriceUsd ?? DEFAULT_DERIVS_MAX_PRICE_USD;
   const userAgent = options.userAgent ?? SDK_USER_AGENT;
   if (/[\r\n]/.test(userAgent)) throw new TypeError("userAgent must not contain line breaks");
-  const maxAtomic = usdToAtomic(maxPriceUsd);
+  const capFor = (path: string): number => options.maxPriceUsd ?? ROUTE_CAP_USD.get(path) ?? DEFAULT_DERIVS_MAX_PRICE_USD;
+  usdToAtomic(capFor("")); // validates maxPriceUsd at construction
   const payTo = options.payTo === undefined ? DEFAULT_PAY_TO : options.payTo;
-  const payingFetch: FetchLike =
-    options.account !== undefined ? buildPayingFetch(options.account, maxAtomic, maxPriceUsd, payTo) : (options.fetch as FetchLike);
+  const account = options.account;
+  // One paying fetch per price cap (at most one per distinct route price), built on first use.
+  const byCap = new Map<number, FetchLike>();
+  const payingFetchFor = (path: string): FetchLike => {
+    if (account === undefined) return options.fetch as FetchLike;
+    const cap = capFor(path);
+    let f = byCap.get(cap);
+    if (!f) byCap.set(cap, (f = buildPayingFetch(account, usdToAtomic(cap), cap, payTo)));
+    return f;
+  };
 
   const callPaid = async <T>(path: string, params: object = {}): Promise<DerivsPaidResult<T>> => {
     assertDerivsPath(path);
     const query = buildDerivsQuery(params);
     const headers: Record<string, string> = { accept: "application/json" };
     if (canSetUserAgent() && userAgent) headers["user-agent"] = userAgent;
-    const response = await payingFetch(`${baseUrl}${path}${query ? `?${query}` : ""}`, { method: "GET", headers });
+    const response = await payingFetchFor(path)(`${baseUrl}${path}${query ? `?${query}` : ""}`, { method: "GET", headers });
     const body = parseJson(await response.text());
     if (response.ok && isRecord(body) && !("error" in body)) return { data: body as T, receipt: receiptOf(response) };
     throw derivsError(path, response.status, response.ok, body);

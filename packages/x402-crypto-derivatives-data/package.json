@@ -1,7 +1,7 @@
 {
   "name": "x402-crypto-derivatives-data",
-  "version": "0.3.1",
-  "description": "Crypto derivatives data API client for AI agents and trading bots: perp funding rates, funding history and arbitrage, perp screener, open interest, futures basis, implied volatility, liquidations, order book depth across 8 exchanges. Pay per call with x402 (USDC on Base), no API key.",
+  "version": "0.3.2",
+  "description": "Crypto derivatives data API client for AI agents and trading bots: perp funding rates, funding arbitrage, open interest, futures basis, implied volatility, liquidations, order books on 8 exchanges. Pay per call with x402 (USDC), no API key.",
   "keywords": [
     "crypto",
     "crypto-api",
@@ -84,8 +84,8 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@x402/evm": "^2.27.0",
-    "@x402/fetch": "^2.27.0",
+    "@x402/evm": "^2.30.0",
+    "@x402/fetch": "^2.30.0",
     "viem": "^2.48.11"
   },
   "devDependencies": {

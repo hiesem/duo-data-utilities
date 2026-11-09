@@ -7,8 +7,8 @@ describe("x402-seo-keyword-data", () => {
     expect(SEO_KEYWORD_ROUTES).toHaveLength(44);
     expect(KEYWORDS_ROUTES).toHaveLength(6);
     expect(createClient).toBe(createKeywordsClient);
-    expect(SDK_VERSION).toBe("0.3.1");
-    expect(SDK_USER_AGENT).toBe("x402-seo-keyword-data-js/0.3.1 (+https://github.com/hiesem/duo-data-utilities)");
+    expect(SDK_VERSION).toBe("0.3.2");
+    expect(SDK_USER_AGENT).toBe("x402-seo-keyword-data-js/0.3.2 (+https://github.com/hiesem/duo-data-utilities)");
   });
 
   it("every route method calls https://keywords.duoleads.com with the route's HTTP method", async () => {

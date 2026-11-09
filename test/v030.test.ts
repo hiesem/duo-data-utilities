@@ -66,7 +66,7 @@ describe("back-compatibility with 0.2.0", () => {
     const old = JSON.parse(readFileSync(new URL("./fixtures/exports-0.2.0.json", import.meta.url), "utf8")) as string[];
     for (const name of old) expect(Object.keys(sdk), name).toContain(name);
   });
-  it("keeps the six original keyword routes and the $0.045 default", () => {
+  it("keeps the six original keyword routes and the $0.045 default for unknown paths", () => {
     expect(KEYWORDS_ROUTES.map((r) => r.path)).toEqual(["/v1/keyword-overview", "/v1/search-volume", "/v1/keyword-ideas", "/v1/trend", "/v1/related-queries", "/v1/interest-by-region"]);
     expect(DEFAULT_KEYWORDS_MAX_PRICE_USD).toBe(0.045);
   });
@@ -119,12 +119,12 @@ describe("keyword route table (44 routes)", () => {
     }
   });
 
-  it("an explicit maxPriceUsd applies to every route; the six original routes keep the $0.045 default", async () => {
+  it("an explicit maxPriceUsd applies to every route; by default the six original routes are capped at their own price too", async () => {
     const { signer, signTypedData } = spySigner();
     const s = await server("keywords.duoleads.com", (p) => (p === "/v1/related-queries" ? "46000" : "48000"));
     try {
       await expect(createKeywordsClient({ account: signer, baseUrl: s.baseUrl, maxPriceUsd: 0.04 }).keywordGap({ domain: "a.com", competitor: "b.com" })).rejects.toThrow(/above the maximum \$0\.04/);
-      await expect(createKeywordsClient({ account: signer, baseUrl: s.baseUrl }).relatedQueries({ keyword: "x" })).rejects.toThrow(/above the maximum \$0\.045/);
+      await expect(createKeywordsClient({ account: signer, baseUrl: s.baseUrl }).relatedQueries({ keyword: "x" })).rejects.toThrow(/above the maximum \$0\.03\b/);
       expect(signTypedData).not.toHaveBeenCalled();
       await createKeywordsClient({ account: signer, baseUrl: s.baseUrl }).keywordGap({ domain: "a.com", competitor: "b.com" });
       expect(signTypedData).toHaveBeenCalledTimes(1);

@@ -33,7 +33,7 @@ Each method sends the route's request (most are POST with a JSON body, a few GET
 
 ## Price guard
 
-Before anything is signed, the client checks the payment requirement: Base USDC only, only to the service's address `0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39`, and never above the cap. By default each route is capped at its own listed price (the six original keyword-research routes at $0.045); `createClient({ account, maxPriceUsd: 0.05 })` sets one cap for every route. A refused call signs nothing and throws `PriceGuardError`. The client never retries a paid call on its own.
+Before anything is signed, the client checks the payment requirement: Base USDC only, only to the service's address `0xCD673f7e1daD254347AEab6be0DEFe8b9C6b3A39`, and never above the cap. By default each route is capped at its own listed price; `createClient({ account, maxPriceUsd: 0.05 })` sets one cap for every route. A refused call signs nothing and throws `PriceGuardError`. The client never retries a paid call on its own.
 
 ## Errors and charges
 

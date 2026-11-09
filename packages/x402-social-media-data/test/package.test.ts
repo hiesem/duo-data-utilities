@@ -6,8 +6,8 @@ describe("x402-social-media-data", () => {
   it("lists 26 routes and names itself in the User-Agent", () => {
     expect(SOCIAL_ROUTES).toHaveLength(26);
     expect(createClient).toBe(createSocialClient);
-    expect(SDK_VERSION).toBe("0.3.1");
-    expect(SDK_USER_AGENT).toBe("x402-social-media-data-js/0.3.1 (+https://github.com/hiesem/duo-data-utilities)");
+    expect(SDK_VERSION).toBe("0.3.2");
+    expect(SDK_USER_AGENT).toBe("x402-social-media-data-js/0.3.2 (+https://github.com/hiesem/duo-data-utilities)");
   });
 
   it("every route method GETs https://social.duoleads.com", async () => {
