@@ -67,6 +67,11 @@ class Recorded:
     query: dict[str, list[str]]
     payment_signature: str | None
     user_agent: str | None = None
+    body: bytes | None = None
+    content_type: str | None = None
+
+    def json(self) -> Any:
+        return json.loads(self.body or b"null")
 
 
 @dataclass
@@ -85,13 +90,22 @@ class MockServer:
 
         class Handler(http.server.BaseHTTPRequestHandler):
             def do_GET(self) -> None:  # noqa: N802 - http.server naming
+                self._answer("GET")
+
+            def do_POST(self) -> None:  # noqa: N802 - http.server naming
+                self._answer("POST")
+
+            def _answer(self, method: str) -> None:
                 url = urlsplit(self.path)
+                length = int(self.headers.get("Content-Length") or 0)
                 recorded = Recorded(
-                    method="GET",
+                    method=method,
                     path=url.path,
                     query=parse_qs(url.query, keep_blank_values=True),
                     payment_signature=self.headers.get("PAYMENT-SIGNATURE"),
                     user_agent=self.headers.get("User-Agent"),
+                    body=self.rfile.read(length) if length else None,
+                    content_type=self.headers.get("Content-Type"),
                 )
                 outer.requests.append(recorded)
                 answer = reply(recorded)
@@ -154,5 +168,16 @@ def derivs_challenge_header(path: str, amount: str, edit: Callable[[dict[str, An
         challenge.pop("extensions", None)
         if edit is not None:
             edit(challenge)
+
+    return challenge_header(change)
+
+
+def service_challenge_header(url: str, amount: str | int) -> str:
+    """The real captured challenge with another price and resource (keywords, social: their own amounts)."""
+
+    def change(challenge: dict[str, Any]) -> None:
+        challenge["accepts"][0]["amount"] = str(amount)
+        challenge["resource"] = {"url": url, "mimeType": "application/json"}
+        challenge.pop("extensions", None)
 
     return challenge_header(change)

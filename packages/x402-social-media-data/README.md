@@ -12,6 +12,8 @@ npm install x402-social-media-data viem
 
 `viem` creates the wallet account that pays. Node.js 20 or later.
 
+Python: `pip install x402-social-media-data` (the same client in snake_case; source in [`python/`](python/)).
+
 ## Quick start
 
 ```ts

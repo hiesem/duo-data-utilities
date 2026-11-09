@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "x402-seo-keyword-data"
+version = "0.3.0"
+description = "SEO and keyword data API client for AI agents: Google search volume, CPC, keyword difficulty, keyword ideas, Google Trends, SERP results, backlinks, domain rankings, keyword gap. 44 routes, pay per call with x402 (USDC on Base), no API key."
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "Duo Data Utilities" }]
+requires-python = ">=3.10"
+keywords = ["seo", "seo-api", "keyword-research", "keyword-data", "search-volume", "keyword-volume", "cpc", "keyword-difficulty", "keyword-ideas", "related-keywords", "google-trends", "serp", "serp-api", "google-search", "google-maps", "bing", "youtube-search", "backlinks", "backlink-checker", "referring-domains", "domain-overview", "ranked-keywords", "competitor-analysis", "keyword-gap", "traffic-estimate", "on-page-seo", "pagespeed", "amazon-keywords", "business-listings", "brand-mentions", "llm-mentions", "ai-visibility", "tech-stack", "whois", "x402", "usdc", "base", "mcp", "ai-agents", "agent-tools", "pay-per-call", "no-api-key", "api-client", "python"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "License :: OSI Approved :: MIT License",
+  "Typing :: Typed",
+]
+dependencies = [
+  "x402[requests,evm]>=2.25.0,<3",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[project.urls]
+Homepage = "https://keywords.duoleads.com"
+Documentation = "https://keywords.duoleads.com/docs"
+Repository = "https://github.com/hiesem/x402-seo-keyword-data"
+Issues = "https://github.com/hiesem/x402-seo-keyword-data/issues"
+
+[tool.setuptools.packages.find]
+include = ["x402_seo_keyword_data*"]
+
+[tool.setuptools.package-data]
+x402_seo_keyword_data = ["py.typed"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -16,10 +16,10 @@ npm install duo-data-utilities viem
 
 `viem` creates the wallet account that pays. This package also depends on it. Node.js 20 or later.
 
-Python (not on PyPI, install from GitHub):
+Python (all four services; or one service: `pip install x402-seo-keyword-data`, `x402-crypto-derivatives-data` or `x402-social-media-data`):
 
 ```sh
-pip install "git+https://github.com/hiesem/duo-data-utilities#subdirectory=python"
+pip install duo-data-utilities
 ```
 
 ## Quick start
@@ -183,6 +183,13 @@ await keywords.relatedQueries({ keyword: "seo api", country: "us" }); // $0.03
 | `keywords.llmMentions` | `POST /v1/llm-mentions` | $0.21 | `llm_mentions` | AI answers mentioning a keyword (up to 20) |
 <!-- /routes -->
 
+Python: the same 44 routes, in snake_case, on `DuoClient(account).keywords` or `KeywordsClient(account)` (also published alone on PyPI as `x402-seo-keyword-data`). Parameters keep their API names:
+
+```python
+volume = client.keywords.search_volume(keywords=["phone", "watch"], country="us")  # $0.04 (GET)
+gap = client.keywords.keyword_gap(domain="example.com", competitor="example.org")   # $0.048 (POST, JSON body)
+```
+
 Keyword docs: https://keywords.duoleads.com/docs · OpenAPI: https://keywords.duoleads.com/openapi.json · Index: https://keywords.duoleads.com/llms.txt · Terms: https://keywords.duoleads.com/terms · Privacy: https://keywords.duoleads.com/privacy
 
 ## Social media data: X (Twitter), Reddit, TikTok, Instagram, YouTube, LinkedIn, Bluesky, Hacker News
@@ -235,6 +242,13 @@ await social.hackernewsSearch({ q: "x402" }); // $0.01
 | `social.linkedinProfile` | `GET /v1/linkedin/profile` | $0.02 | `linkedin_profile` | LinkedIn profile |
 <!-- /routes -->
 
+Python: the same 26 routes, in snake_case, on `DuoClient(account).social` or `SocialClient(account)` (also published alone on PyPI as `x402-social-media-data`):
+
+```python
+posts = client.social.bluesky_search(q="open source", limit=10)  # $0.01
+tweets = client.social.x_search(q="nasa")                        # $0.02
+```
+
 Social docs: https://social.duoleads.com/docs · OpenAPI: https://social.duoleads.com/openapi.json · Index: https://social.duoleads.com/llms.txt · Terms: https://social.duoleads.com/terms · Privacy: https://social.duoleads.com/privacy
 
 ## Methods
@@ -283,7 +297,7 @@ The MCP server is at `https://api.duoleads.com/mcp` (Streamable HTTP). `tools/li
 
 ## Python
 
-Python 3.10 or later. The client is typed (`py.typed`) and uses `requests` with x402's EVM signer. Routes and method names match the TypeScript client, in snake_case. The Python client covers the main API and the derivs service; the keyword and social services are TypeScript only (or plain HTTP).
+Python 3.10 or later. The client is typed (`py.typed`) and uses `requests` with x402's EVM signer. Routes and method names match the TypeScript client, in snake_case. The Python client covers all four services: `client.derivs`, `client.keywords` and `client.social` share the wallet of `DuoClient`, and `DerivsClient`, `KeywordsClient` and `SocialClient` work on their own. Each per-service client is also published alone on PyPI (`x402-crypto-derivatives-data`, `x402-seo-keyword-data`, `x402-social-media-data`), standalone like the npm packages.
 
 ```python
 import os

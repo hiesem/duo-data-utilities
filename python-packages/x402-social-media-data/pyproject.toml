@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "x402-social-media-data"
+version = "0.3.0"
+description = "Social media data API client for AI agents: social listening on X (Twitter), Reddit, TikTok, Instagram, YouTube, Threads, LinkedIn, Bluesky, Hacker News. Posts, profiles, comments, search. Pay per call with x402 (USDC), no API key."
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "Duo Data Utilities" }]
+requires-python = ">=3.10"
+keywords = ["social-media-data", "social-media-api", "social-listening", "twitter-api", "x-api", "twitter", "reddit", "reddit-api", "tiktok", "tiktok-api", "instagram", "youtube", "youtube-transcript", "threads", "linkedin", "linkedin-company", "bluesky", "hacker-news", "facebook-ads", "brand-monitoring", "mentions", "social-search", "x402", "usdc", "base", "mcp", "ai-agents", "agent-tools", "pay-per-call", "no-api-key", "api-client", "python"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "License :: OSI Approved :: MIT License",
+  "Typing :: Typed",
+]
+dependencies = [
+  "x402[requests,evm]>=2.25.0,<3",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[project.urls]
+Homepage = "https://social.duoleads.com"
+Documentation = "https://social.duoleads.com/docs"
+Repository = "https://github.com/hiesem/x402-social-media-data"
+Issues = "https://github.com/hiesem/x402-social-media-data/issues"
+
+[tool.setuptools.packages.find]
+include = ["x402_social_media_data*"]
+
+[tool.setuptools.package-data]
+x402_social_media_data = ["py.typed"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "x402-crypto-derivatives-data"
+version = "0.3.0"
+description = "Crypto derivatives data API client for AI agents and trading bots: perp funding rates, funding arbitrage, open interest, futures basis, implied volatility, liquidations, order books on 8 exchanges. Pay per call with x402 (USDC), no API key."
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "Duo Data Utilities" }]
+requires-python = ">=3.10"
+keywords = ["crypto", "crypto-api", "derivatives", "perp", "perpetual-futures", "perp-funding", "funding-rate", "funding-rates", "funding-arbitrage", "perp-screener", "open-interest", "futures-basis", "basis", "implied-volatility", "options", "liquidations", "order-book", "orderbook", "slippage", "market-depth", "hyperliquid", "bybit", "okx", "deribit", "dydx", "trading-bot", "crypto-trading", "x402", "usdc", "base", "mcp", "ai-agents", "agent-tools", "pay-per-call", "no-api-key", "api-client", "python"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "License :: OSI Approved :: MIT License",
+  "Typing :: Typed",
+]
+dependencies = [
+  "x402[requests,evm]>=2.25.0,<3",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[project.urls]
+Homepage = "https://derivs.duoleads.com"
+Documentation = "https://derivs.duoleads.com/docs"
+Repository = "https://github.com/hiesem/x402-crypto-derivatives-data"
+Issues = "https://github.com/hiesem/x402-crypto-derivatives-data/issues"
+
+[tool.setuptools.packages.find]
+include = ["x402_crypto_derivatives_data*"]
+
+[tool.setuptools.package-data]
+x402_crypto_derivatives_data = ["py.typed"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -7,6 +7,9 @@ python/.venv/
 python/build/
 python/dist/
 python/*.egg-info/
+python-packages/*/build/
+python-packages/*/dist/
+python-packages/*/*.egg-info/
 __pycache__/
 .pytest_cache/
 .mypy_cache/

@@ -39,3 +39,10 @@ jobs:
           python-version: ${{ matrix.python }}
       - run: python -m pip install -e "./python[dev]"
       - run: python -m pytest python/tests
+      - run: python python/scripts/generate.py --check
+      - name: Standalone per-service packages
+        run: |
+          for d in python-packages/*/; do
+            python -m pip install -e "$d[dev]"
+            (cd "$d" && python -m pytest -q tests)
+          done

@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // Writes the standalone GitHub mirror of each per-service package (github.com/hiesem/<name>):
 // the package's own files plus exactly the shared ../../src files it imports (transitively), with
-// imports rewritten so the tree builds and tests on its own. Output is deterministic.
+// imports rewritten so the tree builds and tests on its own, plus the standalone Python package of the same name
+// (python-packages/<name>/, written by python/scripts/generate.py) under python/. Output is deterministic.
 //   node scripts/sync-mirrors.mjs [--out <dir>]   write the mirrors (default: .mirrors/, gitignored)
 //   node scripts/sync-mirrors.mjs --check         build them in a temp dir and verify every import resolves
 //                                                 inside the tree and nothing outside it is referenced
@@ -77,7 +78,7 @@ function sharedClosure(entryText) {
 
 const LIB_HEADER = `// Generated from ${MONOREPO} (src/), do not edit here: change it in the monorepo and re-run scripts/sync-mirrors.mjs.\n`;
 
-const GITIGNORE = ["node_modules/", "dist/", "coverage/", "*.tsbuildinfo", ".env", ".env.*", "*.key", "*.pem", "*.tgz", ""].join("\n");
+const GITIGNORE = ["node_modules/", "dist/", "coverage/", "*.tsbuildinfo", ".env", ".env.*", "*.key", "*.pem", "*.tgz", "__pycache__/", "*.egg-info/", "python/build/", "python/dist/", ".pytest_cache/", ".venv/", ""].join("\n");
 
 const CI = `name: ci
 
@@ -106,6 +107,20 @@ jobs:
       - run: npm test
       - run: npm run build
       - run: npm pack --dry-run
+
+  python:
+    name: Python \${{ matrix.python }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ["3.10", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: \${{ matrix.python }}
+      - run: python -m pip install -e "./python[dev]"
+      - run: python -m pytest python/tests
 `;
 
 function tsconfig() {
@@ -128,6 +143,13 @@ function mirror(name) {
   for (const f of ["README.md", "LICENSE", "package.json", "package-lock.json", "vitest.config.ts"]) files.set(f, read(`${pkgDir}/${f}`));
   files.set("tsup.config.ts", read(`${pkgDir}/tsup.config.ts`).replace("// Bundles the shared client code from ../../src into this package (no dependency on duo-data-utilities).", "// Bundles src/ (including the shared client code in src/lib) into dist/ (no runtime dependency on duo-data-utilities)."));
   files.set("tsconfig.json", tsconfig());
+  // The Python package of the same name: every file of python-packages/<name>/ except build and cache output.
+  const pyDir = join(ROOT, "python-packages", name);
+  if (!existsSync(pyDir)) throw new Error(`${name}: python-packages/${name} is missing (run python3 python/scripts/generate.py)`);
+  for (const f of walk(pyDir)) {
+    if (/(^|\/)(__pycache__|[^/]*\.egg-info|build|dist|\.pytest_cache|\.venv)(\/|$)/.test(f)) continue;
+    files.set(`python/${f}`, read(`python-packages/${name}/${f}`));
+  }
   files.set(".gitignore", GITIGNORE);
   files.set(".github/workflows/ci.yml", CI);
 

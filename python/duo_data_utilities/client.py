@@ -22,7 +22,9 @@ from .counterparty import CounterpartyResult, run_counterparty_check
 from .derivs import DEFAULT_DERIVS_BASE_URL, DerivsClient
 from .errors import DuoApiError
 from .generated import DuoMethods
+from .keywords import DEFAULT_KEYWORDS_BASE_URL, KeywordsClient
 from .price_guard import DEFAULT_MAX_PRICE_USD, DEFAULT_PAY_TO, usd_to_atomic
+from .social import DEFAULT_SOCIAL_BASE_URL, SocialClient
 
 DEFAULT_BASE_URL = "https://api.duoleads.com"
 
@@ -84,6 +86,11 @@ class DuoClient(DuoMethods):
     `derivs` is a DerivsClient for https://derivs.duoleads.com (crypto derivatives data, $0.003 or $0.005 per
     call) on the same wallet or session, with its own price cap `derivs_max_price_usd` (default: each route's own
     listed price).
+
+    `keywords` is a KeywordsClient for https://keywords.duoleads.com (SEO and keyword data, 44 routes, $0.012 to
+    $0.25 per call) and `social` a SocialClient for https://social.duoleads.com (social media data, 26 routes,
+    $0.01 to $0.025 per call), on the same wallet or session. Each caps every route at its own listed price unless
+    `keywords_max_price_usd` / `social_max_price_usd` sets one cap for all of its routes.
     """
 
     def __init__(
@@ -98,6 +105,10 @@ class DuoClient(DuoMethods):
         user_agent: str = USER_AGENT,
         derivs_base_url: str = DEFAULT_DERIVS_BASE_URL,
         derivs_max_price_usd: float | None = None,
+        keywords_base_url: str = DEFAULT_KEYWORDS_BASE_URL,
+        keywords_max_price_usd: float | None = None,
+        social_base_url: str = DEFAULT_SOCIAL_BASE_URL,
+        social_max_price_usd: float | None = None,
     ) -> None:
         if (account is None) == (session is None):
             raise TypeError("pass exactly one of account (pays with your wallet) or session (a requests.Session that already pays)")
@@ -110,15 +121,11 @@ class DuoClient(DuoMethods):
         self._timeout = timeout
         self._session = session if session is not None else _paying_session(account, max_atomic, max_price_usd, pay_to)
         super().__init__(self.call)
-        self.derivs = DerivsClient(
-            account if session is None else None,
-            session=session,
-            base_url=derivs_base_url,
-            max_price_usd=derivs_max_price_usd,
-            timeout=timeout,
-            pay_to=pay_to,
-            user_agent=user_agent,
-        )
+        shared: dict[str, Any] = {"session": session, "timeout": timeout, "pay_to": pay_to, "user_agent": user_agent}
+        wallet = account if session is None else None
+        self.derivs = DerivsClient(wallet, base_url=derivs_base_url, max_price_usd=derivs_max_price_usd, **shared)
+        self.keywords = KeywordsClient(wallet, base_url=keywords_base_url, max_price_usd=keywords_max_price_usd, **shared)
+        self.social = SocialClient(wallet, base_url=social_base_url, max_price_usd=social_max_price_usd, **shared)
 
     def call(self, path: str, params: Mapping[str, Any] | None = None) -> dict[str, Any]:
         """Calls any route by path and returns its `data` object. Costs $0.05 per call."""
