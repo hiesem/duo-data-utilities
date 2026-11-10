@@ -1,6 +1,6 @@
 {
   "name": "duo-data-utilities",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Pay-per-call data APIs for AI agents, one TypeScript client: IBAN, VAT, ISIN, GTIN validation, timezones, geo; SEO keyword data, SERP, backlinks; social media data (X/Twitter, Reddit, TikTok); crypto funding rates. x402 USDC, no API key.",
   "keywords": [
     "iban",

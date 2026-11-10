@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "x402-crypto-derivatives-data"
-version = "0.3.0"
+version = "0.3.1"
 description = "Crypto derivatives data API client for AI agents and trading bots: perp funding rates, funding arbitrage, open interest, futures basis, implied volatility, liquidations, order books on 8 exchanges. Pay per call with x402 (USDC), no API key."
 readme = "README.md"
 license = { text = "MIT" }
