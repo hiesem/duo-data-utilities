@@ -364,6 +364,7 @@ The SDK sends a User-Agent naming the SDK and version; the API stores only a coa
 - Machine-readable index: https://api.duoleads.com/llms.txt
 - Terms: https://api.duoleads.com/terms
 - Privacy: https://api.duoleads.com/privacy
+- Listed on PayAPI Market (settlement-verified): [Duo Data Utilities](https://payapi.market/api/duo-data-utilities), [SEO and Keyword Data API](https://payapi.market/api/seo-and-keyword-data-api), [Crypto Derivatives Data API](https://payapi.market/api/crypto-derivatives-data-api), [Social Media Data API](https://payapi.market/api/social-media-data-api)
 
 The HTTP routes also work without this SDK. An unpaid `GET` returns `402 Payment Required` with a `PAYMENT-REQUIRED` header, and any x402 v2 client can pay that challenge.
 

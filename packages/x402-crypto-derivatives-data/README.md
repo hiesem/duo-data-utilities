@@ -69,6 +69,7 @@ The same 10 tools are a paid MCP server at `https://derivs.duoleads.com/mcp` (St
 - Machine-readable index: https://derivs.duoleads.com/llms.txt
 - Terms: https://derivs.duoleads.com/terms
 - Privacy: https://derivs.duoleads.com/privacy
+- Listed on PayAPI Market (settlement-verified): https://payapi.market/api/crypto-derivatives-data-api
 
 Data only: not investment advice, not a benchmark, not affiliated with any exchange.
 

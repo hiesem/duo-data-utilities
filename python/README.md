@@ -72,4 +72,6 @@ Errors raise `DuoApiError` with `code`, `param`, `expected`, `status` and `reque
 
 The full documentation, the route tables and the MCP servers are in the repository README: https://github.com/hiesem/duo-data-utilities
 
+Listed on PayAPI Market (settlement-verified): [Duo Data Utilities](https://payapi.market/api/duo-data-utilities), [SEO and Keyword Data API](https://payapi.market/api/seo-and-keyword-data-api), [Crypto Derivatives Data API](https://payapi.market/api/crypto-derivatives-data-api), [Social Media Data API](https://payapi.market/api/social-media-data-api).
+
 The client sends a User-Agent naming the SDK and version (`duo-data-utilities-py/<version> (+https://github.com/hiesem/duo-data-utilities)`); the services store only a coarse client class, see https://api.duoleads.com/privacy. Pass `user_agent=` to change it.

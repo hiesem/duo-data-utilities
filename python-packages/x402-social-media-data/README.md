@@ -47,6 +47,7 @@ Answers are third parties' public data. Read the service's terms and privacy not
 
 - Service and docs: https://social.duoleads.com (OpenAPI: https://social.duoleads.com/openapi.json)
 - Paid MCP server with the same 26 tools: `https://social.duoleads.com/mcp`
+- Listed on PayAPI Market (settlement-verified): https://payapi.market/api/social-media-data-api
 
 Not affiliated with or endorsed by X, Reddit, TikTok, Meta, LinkedIn, YouTube, Bluesky, Hacker News or any other platform. The client sends a User-Agent naming this package and its version; pass `user_agent=` to change it.
 

@@ -89,6 +89,7 @@ The same 26 tools are a paid MCP server at `https://social.duoleads.com/mcp` (St
 - Machine-readable index: https://social.duoleads.com/llms.txt
 - Terms: https://social.duoleads.com/terms
 - Privacy: https://social.duoleads.com/privacy
+- Listed on PayAPI Market (settlement-verified): https://payapi.market/api/social-media-data-api
 
 ## Source
 

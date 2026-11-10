@@ -44,6 +44,7 @@ Bad input is a free 400 with `error.expected`. When fewer venues answer than the
 
 - Service and docs: https://derivs.duoleads.com (OpenAPI: https://derivs.duoleads.com/openapi.json)
 - Paid MCP server with the same 10 tools: `https://derivs.duoleads.com/mcp`
+- Listed on PayAPI Market (settlement-verified): https://payapi.market/api/crypto-derivatives-data-api
 
 Data only, not investment advice, not affiliated with any exchange. The client sends a User-Agent naming this package and its version; pass `user_agent=` to change it.
 

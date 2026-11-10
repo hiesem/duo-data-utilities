@@ -105,6 +105,7 @@ The same 44 tools are a paid MCP server at `https://keywords.duoleads.com/mcp` (
 - Machine-readable index: https://keywords.duoleads.com/llms.txt
 - Terms: https://keywords.duoleads.com/terms
 - Privacy: https://keywords.duoleads.com/privacy
+- Listed on PayAPI Market (settlement-verified): https://payapi.market/api/seo-and-keyword-data-api
 
 Data only: search volumes, CPC and rankings are estimates from third-party providers and public sources; not affiliated with or endorsed by Google, Bing, YouTube or Amazon.
 

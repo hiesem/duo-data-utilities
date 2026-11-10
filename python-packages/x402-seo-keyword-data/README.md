@@ -47,6 +47,7 @@ A bad input is answered free with a 400; an upstream failure is a 503 with "noth
 - Service and docs: https://keywords.duoleads.com (OpenAPI: https://keywords.duoleads.com/openapi.json)
 - Paid MCP server with the same 44 tools: `https://keywords.duoleads.com/mcp`
 - Terms and privacy: https://keywords.duoleads.com/terms, https://keywords.duoleads.com/privacy
+- Listed on PayAPI Market (settlement-verified): https://payapi.market/api/seo-and-keyword-data-api
 
 The client sends a User-Agent naming this package and its version (`x402-seo-keyword-data-py/<version> (+https://github.com/hiesem/duo-data-utilities)`); pass `user_agent=` to change it. Not affiliated with or endorsed by Google, Amazon, Microsoft or any other platform.
 
